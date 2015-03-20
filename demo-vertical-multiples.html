@@ -10,13 +10,12 @@
 			}
 			.section{
 				position: absolute;
-				width: auto;
-				height: 100%;
+				width: 100%;
+				height: auto;
 			}
-			
+
 			/* opts styles */
 			.section div{
-				display: inline-block;
 				position: relative;
 				margin: 100px;
 				width: 200px;
@@ -40,8 +39,7 @@
 			.section div:nth-child(4){
 				z-index: 10;
 				background-color: rgb(200, 200, 0);
-				top: 20px;
-				left: 10%;
+				left: 50%;
 			}
 			.section div:last-child{
 				z-index: 10;
@@ -70,13 +68,13 @@
 			var divs = document.querySelectorAll('.vs-transform');
 			
 			var smooth = new Smooth({
-				direction: 'horizontal',
+				direction: 'vertical',
 				section: section,
 				ease: 0.1,
-				//els: divs
+				els: divs
 			});
 			smooth.init();
-			
+
 		});
 	</script>
 </html>
