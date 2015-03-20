@@ -30,11 +30,11 @@ body{
 .section{
   position: absolute;
   
-  // if it's a vertical scrolling
+  /* if it's a vertical scrolling */
   width: 100%; 
   height: auto;
   
-  // if it's a horizontal scrolling
+  /* if it's a horizontal scrolling */
   width: auto; 
   height: 100%;
 }
@@ -73,7 +73,6 @@ smooth.init();
 
 As you can see, there's a bunch of parameters; direction, the container (section), the easing and all the DOM nodes you want to transform (optional - if there's no parallax, the transform is applied to the section)
 
-
 Later, you might want to stop the events and requestAnimationFrame by doing:
 
 ```javascript
@@ -82,4 +81,4 @@ smooth.destroy();
 
 ## License
 
-MIT, see LICENSE.md.
+MIT, see [LICENSE.md]().
