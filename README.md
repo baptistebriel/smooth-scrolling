@@ -81,4 +81,4 @@ smooth.destroy();
 
 ## License
 
-MIT, see [LICENSE.md]().
+MIT, see [LICENSE.md](https://github.com/BaptisteBriel/smooth/blob/master/LICENSE).
