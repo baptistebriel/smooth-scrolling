@@ -81,7 +81,9 @@ Smooth.prototype.run = function(){
 
 Smooth.prototype.resize = function(){
 
-	this.bounding = this.section.getBoundingClientRect().height - window.innerHeight;
+	this.bounding = (this.direction == 'vertical')
+		? this.section.getBoundingClientRect().height - window.innerHeight
+		: this.section.getBoundingClientRect().left + this.section.getBoundingClientRect().right - window.innerHeight
 
 };
 
