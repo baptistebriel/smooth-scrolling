@@ -50,35 +50,10 @@
 	</head>
 	<body>
 		<div class="section vs-section" data-speed="0.1">
-			<a href="/demo-vertical.html">Vertical scroll</a><br>
-			<a href="/demo-vertical-multiples.html">Vertical scroll with parallax</a><br>
-			<a href="/demo-horizontal.html">Horizontal scroll</a><br>
-			<a href="/demo-horizontal-multiples.html">Horizontal scroll with parallax</a><br>
-			<div class="vs-transform" data-speed="0.2"></div>
-			<div class="vs-transform" data-speed="0.4"></div>
-			<div class="vs-transform" data-speed="0.6"></div>
-			<div class="vs-transform" data-speed="0.8"></div>
-			<div class="vs-transform" data-speed="1"></div>
+			<a href="/smooth/demo-vertical.html">Vertical scroll</a><br>
+			<a href="/smooth/demo-vertical-multiples.html">Vertical scroll with parallax</a><br>
+			<a href="/smooth/demo-horizontal.html">Horizontal scroll</a><br>
+			<a href="/smooth/demo-horizontal-multiples.html">Horizontal scroll with parallax</a><br>
 		</div>
 	</body>
-	<script src="rAF.js"></script>
-	<script src="vs.js"></script>
-	<script src="smooth.js"></script>
-	<script>
-		var DOMReady = function(a,b,c){b=document,c='addEventListener';b[c]?b[c]('DOMContentLoaded',a):window.attachEvent('onload',a)}
-		DOMReady(function(){
-			
-			var section = document.querySelector('.vs-section');
-			var divs = document.querySelectorAll('.vs-transform');
-			
-			var smooth = new Smooth({
-				direction: 'vertical',
-				section: section,
-				ease: 0.1,
-				//els: divs
-			});
-			smooth.init();
-
-		});
-	</script>
 </html>
