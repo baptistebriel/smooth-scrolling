@@ -246,13 +246,11 @@ header{
 			}
 		}
 	}
-	.logo{
+	.logo-icon{
 		position: relative;
 		display: block;
 		margin: 0 auto 0 auto;
 		.size(30px,30px);
-		.border-radius(100%);
-		.transition(background .8s cubic-bezier(.19,1,.22,1););
 
 		svg{
 			position: absolute;
@@ -260,13 +258,11 @@ header{
 			margin: 6px auto;
 
 			path{
-				fill: @grey;
-			}
-		}
-
-		&:hover{
-			svg path{
 				fill: @base;
+			}
+			circle{
+				stroke: @base;
+				stroke-width: 1;
 			}
 		}
 	}
