@@ -1,0 +1,283 @@
+/* -----
+Basic Mixin'
+----- */
+.size(@width, @height){
+  width: @width;
+  height: @height;
+} /* .size(50px,30px); */
+.box-sizing(@type){
+  -webkit-box-sizing: @type;
+     -moz-box-sizing: @type;
+	  box-sizing: @type;
+} /* .box-sizing(border-box); */
+.center-block(){
+      display: block;
+   margin-left: auto;
+  margin-right: auto;
+} /* .center-block(); */
+.background-size(@arguments){
+  -webkit-background-size: @arguments;
+     -moz-background-size: @arguments;
+          background-size: @arguments;
+} /* .background-size(cover); */
+.user-select(@argument: none){
+  -webkit-user-select: @argument;
+     -moz-user-select: @argument;
+      -ms-user-select: @argument;
+          user-select: @argument;
+} /* .user-select(none); */
+.border-radius(@radius){
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+          border-radius: @radius;
+} /* .border-radius(3px); */
+.backface-visibility(@visibility){
+    -webkit-backface-visibility: @visibility;
+       -moz-backface-visibility: @visibility;
+            backface-visibility: @visibility;
+} /* .backface-visibility(hidden); */
+.box-shadow(@arguments) {
+  -webkit-box-shadow: @arguments;
+     -moz-box-shadow: @arguments;
+          box-shadow: @arguments;
+} /* .box-shadow(0px 0px 10px rgba(0,0,0,0)); */
+.scale-with-grid(){
+     max-width: 100%;
+	height: auto;
+} /* .scale-with-grid(); */
+ 
+ 
+/* -----
+Transition
+----- */
+.transition(@transition){
+  -webkit-transition: @transition;  
+     -moz-transition: @transition;
+      -ms-transition: @transition;
+       -o-transition: @transition;
+} /* .transition(all 1s cubic-bezier(.19,1,.22,1);); */
+ 
+/* -----
+Transform
+----- */
+.transform(@options){
+  -webkit-transform: @options;
+     -moz-transform: @options;
+      -ms-transform: @options;
+       -o-transform: @options;
+          transform: @options;
+} /* .transform(perspective(0) translate3d(50px, 40px, 80px) scale3d(1, 2, 0) rotate3d(0, 1, 0, 45deg)); */
+.transform-origin(@x: 50%, @y: 50%, @z: 0){
+  -webkit-transform-origin: @arguments;
+     -moz-transform-origin: @arguments;
+      -ms-transform-origin: @arguments;
+       -o-transform-origin: @arguments;
+          transform-origin: @arguments;
+} /* .transform-origin(50%, 50%, 0); */
+.transform-style(@value: flat){ 
+  -webkit-transform-style: @value;   
+     -moz-transform-style: @value;
+      -ms-transform-style: @value;
+          transform-style: @value; 
+} /* .transform-style(preserve-3d); */
+ 
+/* -----
+Matrix
+----- */
+.matrix(@rotate: 0.86, @scale: 0.5, @translate: -0.5, @skew: 0.86, @x: 0, @y: 0){
+  -webkit-transform: matrix(@rotate, @scale, @translate, @skew, @x, @y);
+     -moz-transform: matrix(@rotate, @scale, @translate, @skew, @x, @y);
+      -ms-transform: matrix(@rotate, @scale, @translate, @skew, @x, @y);
+       -o-transform: matrix(@rotate, @scale, @translate, @skew, @x, @y);
+          transform: matrix(@rotate, @scale, @translate, @skew, @x, @y);
+  filter: e(%("progid:DXImageTransform.Microsoft.Matrix(M11=%d, M12=%d, M21=%d, M22=%d, sizingMethod='auto expand')", @rotate, @scale, @translate, @skew));
+} /* .matrix(0.9,0.2,-0.5,0.9,0,0); */
+.matrix3d(@values: "1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1"){
+  -webkit-transform: matrix3d(e(@values));
+     -moz-transform: matrix3d(e(@values));
+      -ms-transform: matrix3d(e(@values));
+       -o-transform: matrix3d(e(@values));
+          transform: matrix3d(e(@values));
+} /* .matrix3d("1, 0, 0, 0, 0, 0.60, 0, -0.0009, 0, 0, 1, 0, 0, 0, 0, 1"); */
+ 
+/* -----
+Translate
+----- */
+.translate(@x: 0, @y: 0) when not (@x = x) and not (@x = y) and not (@x = z){
+  -webkit-transform: translate(@x * 1px, @y * 1px);
+     -moz-transform: translate(@x * 1px, @y * 1px);
+      -ms-transform: translate(@x * 1px, @y * 1px);
+       -o-transform: translate(@x * 1px, @y * 1px);
+          transform: translate(@x * 1px, @y * 1px);
+} /* .translate(20,40); */
+.translate3d(@x: 0, @y: 0, @z: 0){
+  -webkit-transform: translate3d(@x * 1px, @y * 1px, @z * 1px);
+     -moz-transform: translate3d(@x * 1px, @y * 1px, @z * 1px);
+      -ms-transform: translate3d(@x * 1px, @y * 1px, @z * 1px);
+       -o-transform: translate3d(@x * 1px, @y * 1px, @z * 1px);
+          transform: translate3d(@x * 1px, @y * 1px, @z * 1px);
+} /* .translate3d(20,40,60); */
+.translate(@axis, @x: 0) when (@axis = x){
+  -webkit-transform: e(%('translateX(%d)', @x * 1px));
+     -moz-transform: e(%('translateX(%d)', @x * 1px));
+      -ms-transform: e(%('translateX(%d)', @x * 1px));
+       -o-transform: e(%('translateX(%d)', @x * 1px));
+          transform: e(%('translateX(%d)', @x * 1px));
+} /* .translate(x,20); */
+.translate(@axis, @y: 0) when (@axis = y){
+  -webkit-transform: e(%('translateY(%d)', @y * 1px));
+     -moz-transform: e(%('translateY(%d)', @y * 1px));
+      -ms-transform: e(%('translateY(%d)', @y * 1px));
+       -o-transform: e(%('translateY(%d)', @y * 1px));
+          transform: e(%('translateY(%d)', @y * 1px));
+} /* .translate(y,20); */
+.translate(@axis, @z: 0) when (@axis = z){
+  -webkit-transform: e(%('translateZ(%d)', @z * 1px));
+     -moz-transform: e(%('translateZ(%d)', @z * 1px));
+      -ms-transform: e(%('translateZ(%d)', @z * 1px));
+       -o-transform: e(%('translateZ(%d)', @z * 1px));
+          transform: e(%('translateZ(%d)', @z * 1px));
+} /* .translate(z,20); */
+ 
+/* -----
+Rotate
+----- */
+.rotate(@degrees: 5){
+  -webkit-transform: rotate(~"@{degrees}deg");
+     -moz-transform: rotate(~"@{degrees}deg");
+      -ms-transform: rotate(~"@{degrees}deg");
+       -o-transform: rotate(~"@{degrees}deg");
+          transform: rotate(~"@{degrees}deg");
+} /* .rotate(45); */
+.rotate3d(@x: 0, @y: 0, @z: 0, @degrees: 120){
+  -webkit-transform: rotate3d(@x, @y, @z, ~"@{degrees}deg");
+     -moz-transform: rotate3d(@x, @y, @z, ~"@{degrees}deg");
+      -ms-transform: rotate3d(@x, @y, @z, ~"@{degrees}deg");
+       -o-transform: rotate3d(@x, @y, @z, ~"@{degrees}deg");
+          transform: rotate3d(@x, @y, @z, ~"@{degrees}deg");
+} /* .rotate3d(10,10,10,20); */
+.rotate(@axis, @degrees: 120) when (@axis = x){
+  -webkit-transform: e(%('rotateX(%d)', ~"@{degrees}deg"));
+     -moz-transform: e(%('rotateX(%d)', ~"@{degrees}deg"));
+      -ms-transform: e(%('rotateX(%d)', ~"@{degrees}deg"));
+       -o-transform: e(%('rotateX(%d)', ~"@{degrees}deg"));
+          transform: e(%('rotateX(%d)', ~"@{degrees}deg"));
+} /* .rotate(x,45); */
+.rotate(@axis, @degrees: 10) when (@axis = y){
+  -webkit-transform: e(%('rotateY(%d)', ~"@{degrees}deg"));
+     -moz-transform: e(%('rotateY(%d)', ~"@{degrees}deg"));
+      -ms-transform: e(%('rotateY(%d)', ~"@{degrees}deg"));
+       -o-transform: e(%('rotateY(%d)', ~"@{degrees}deg"));
+          transform: e(%('rotateY(%d)', ~"@{degrees}deg"));
+} /* .rotate(y,45); */
+.rotate(@axis, @degrees: 10) when (@axis = z){
+  -webkit-transform: e(%('rotateZ(%d)', ~"@{degrees}deg"));
+     -moz-transform: e(%('rotateZ(%d)', ~"@{degrees}deg"));
+      -ms-transform: e(%('rotateZ(%d)', ~"@{degrees}deg"));
+       -o-transform: e(%('rotateZ(%d)', ~"@{degrees}deg"));
+          transform: e(%('rotateZ(%d)', ~"@{degrees}deg"));
+} /* .rotate(z,45); */
+ 
+/* -----
+Scale
+----- */
+.scale(@ratio: 1){
+  -webkit-transform: scale(@ratio);
+     -moz-transform: scale(@ratio);
+      -ms-transform: scale(@ratio);
+       -o-transform: scale(@ratio);
+          transform: scale(@ratio);
+} /* .scale(.5); */
+.scale3d(@x: 1, @y: 1, @z: 1){
+  -webkit-transform: scale3d(@x, @y, @z);
+     -moz-transform: scale3d(@x, @y, @z);
+      -ms-transform: scale3d(@x, @y, @z);
+          transform: scale3d(@x, @y, @z);
+} /* .scale3d(1,1,1); */
+.scale(@axis, @value: 1) when (@axis = x){
+  -webkit-transform: e(%('scaleX(%d)', @value));
+     -moz-transform: e(%('scaleX(%d)', @value));
+      -ms-transform: e(%('scaleX(%d)', @value));
+       -o-transform: e(%('scaleX(%d)', @value));
+          transform: e(%('scaleX(%d)', @value));
+} /* .scale(x,.5); */
+.scale(@axis, @value: 1) when (@axis = y){
+  -webkit-transform: e(%('scaleY(%d)', @value));
+     -moz-transform: e(%('scaleY(%d)', @value));
+      -ms-transform: e(%('scaleY(%d)', @value));
+       -o-transform: e(%('scaleY(%d)', @value));
+          transform: e(%('scaleY(%d)', @value));
+} /* .scale(y,.5); */
+.scale(@axis, @value: 1) when (@axis = z){
+  -webkit-transform: e(%('scaleZ(%d)', @value));
+     -moz-transform: e(%('scaleZ(%d)', @value));
+      -ms-transform: e(%('scaleZ(%d)', @value));
+       -o-transform: e(%('scaleZ(%d)', @value));
+          transform: e(%('scaleZ(%d)', @value));
+} /* .scale(z,.5); */
+ 
+/* -----
+Skew
+----- */
+.skew(@degrees-x: 20, @degrees-y: 20) when not (@degrees-x = x) and not (@degrees-x = y){
+  -webkit-transform: skew(~"@{degrees-x}deg", ~"@{degrees-y}deg");
+   -moz-transform: skew(~"@{degrees-x}deg", ~"@{degrees-y}deg");
+    -ms-transform: skew(~"@{degrees-x}deg", ~"@{degrees-y}deg");
+     -o-transform: skew(~"@{degrees-x}deg", ~"@{degrees-y}deg");
+        transform: skew(~"@{degrees-x}deg", ~"@{degrees-y}deg");
+} /* .skew(30,4); */
+.skew(@axis, @degrees-x: 20) when (@axis = x){
+  -webkit-transform: e(%('skewX(%d)', ~"@{degrees-x}deg"));
+   -moz-transform: e(%('skewX(%d)', ~"@{degrees-x}deg"));
+    -ms-transform: e(%('skewX(%d)', ~"@{degrees-x}deg"));
+     -o-transform: e(%('skewX(%d)', ~"@{degrees-x}deg"));
+        transform: e(%('skewX(%d)', ~"@{degrees-x}deg"));
+} /* .skew(x,20); */
+.skew(@axis, @degrees-y: 20) when (@axis = y){
+  -webkit-transform: e(%('skewY(%d)', ~"@{degrees-y}deg"));
+ -moz-transform: e(%('skewY(%d)', ~"@{degrees-y}deg"));
+  -ms-transform: e(%('skewY(%d)', ~"@{degrees-y}deg"));
+   -o-transform: e(%('skewY(%d)', ~"@{degrees-y}deg"));
+      transform: e(%('skewy(%d)', ~"@{degrees-y}deg"));
+} /* .skew(y,-30); */
+ 
+/* -----
+Perspective
+----- */
+.perspective(@value: none, @unit: px){
+  -webkit-perspective: ~"@{value}@{unit}";
+     -moz-perspective: ~"@{value}@{unit}";
+      -ms-perspective: ~"@{value}@{unit}";
+          perspective: ~"@{value}@{unit}";
+} /* .perspective(250); */
+.perspective-origin(@values: 50% 50%){
+  -webkit-perspective-origin: @values;
+     -moz-perspective-origin: @values;
+      -ms-perspective-origin: @values;
+          perspective-origin: @values;
+} /* .perspective-origin(top center); */
+ 
+/* -----
+Animation
+----- */
+.animate(@name: none, @duration: 2s, @timing: ease, @delay: 0, @iteration-count: 1, @direction: normal){
+  -webkit-animation: @name @duration @timing @delay @iteration-count @direction;
+     -moz-animation: @name @duration @timing ~"@{delay}s" @iteration-count @direction;
+       -o-animation: @name @duration @timing @delay @iteration-count @direction;
+} /* .animate(fadeIn, 2s, ease, 0, 1, normal); */
+ 
+.animation-state(@state: running){
+  -webkit-animation-play-state: @state;
+     -moz-animation-play-state: @state;
+          animation-play-state: @state;
+} /* .animation-state(paused); */
+ 
+/* -----
+Hover
+----- */
+.hover-color(@color){
+  &:hover{color: @color;}
+}
+.hover-bg(@color){
+  &:hover{background-color: @color;}
+}

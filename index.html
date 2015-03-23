@@ -1,59 +1,44 @@
 <html>
 	<head>
 		<title>Smooth Scroll</title>
-		<style>
-			body{
-				margin: 0;
-				padding: 0;
-				background: #fff;
-				overflow: hidden;
-			}
-			.section{
-				position: absolute;
-				width: 100%;
-				height: auto;
-			}
-
-			/* opts styles */
-			.section div{
-				position: relative;
-				margin: 100px;
-				width: 200px;
-				height: 400px;
-			}
-			.section div:first-child{
-				z-index: 10;
-				background-color: rgb(200, 0, 0);
-				left: 0%;
-			}
-			.section div:nth-child(2){
-				z-index: 10;
-				background-color: rgb(0, 200, 0);
-				left: 40%;
-			}
-			.section div:nth-child(3){
-				z-index: 10;
-				background-color: rgb(0, 0, 200);
-				left: 30%;
-			}
-			.section div:nth-child(4){
-				z-index: 10;
-				background-color: rgb(200, 200, 0);
-				left: 50%;
-			}
-			.section div:last-child{
-				z-index: 10;
-				background-color: rgb(200, 0, 200);
-				left: 20%;
-			}
-		</style>
+		<link rel="stylesheet" href="/smooth/includes/css/layout.min.css">
 	</head>
 	<body>
-		<div class="section vs-section" data-speed="0.1">
-			<a href="/smooth/demo-vertical.html">Vertical scroll</a><br>
-			<a href="/smooth/demo-vertical-multiples.html">Vertical scroll with parallax</a><br>
-			<a href="/smooth/demo-horizontal.html">Horizontal scroll</a><br>
-			<a href="/smooth/demo-horizontal-multiples.html">Horizontal scroll with parallax</a><br>
+		<header class="device-content">
+			<section class="left">
+				<a href="">Smooth</a>
+			</section>
+			<section class="right">
+				<a href="https://github.com/BaptisteBriel/smooth" target="_blank">Download on Github</a>
+			</section>
+			<hr>
+		</header>
+		<div class="device-content overflow">
+			<div class="content">
+				<div class="inner-padding">
+					<h1 class="m">Smooth scrolling</h1>
+					<p>
+						Smooth is a small JavaScript module based on VirtualScroll<br>
+						to create smooth scrolling and parallax effects on scroll.<br>
+					</p>
+				</div>
+				<hr>
+				<div class="inner-padding">
+					<h1>Demos</h1>
+					<p><a href="/smooth/demo-vertical.html" target="_blank">Vertical scroll</a></p>
+					<p><a href="/smooth/demo-vertical-multiples.html" target="_blank">Vertical scroll with parallax</a></p>
+					<p><a href="/smooth/demo-horizontal.html" target="_blank">Horizontal scroll</a></p>
+					<p><a href="/smooth/demo-horizontal-multiples.html" target="_blank">Horizontal scroll with parallax</a></p>
+				</div>
+				<hr>
+				<div class="inner-padding">
+					<h1>Have some suggestions ?</h1>
+					<p>
+						<a href="https://twitter.com/BaptisteBriel" target="_blank">Tweet</a> me or send me an <a href="mailto:b.briel@suspended-animations.com">e-mail</a>.
+					</p>
+				</div>
+				<hr>
+			</div>
 		</div>
 	</body>
 </html>
