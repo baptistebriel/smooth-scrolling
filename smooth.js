@@ -44,7 +44,7 @@ Smooth.prototype.init = function(){
 Smooth.prototype.calc = function(e){
 	
 	this.pos.targetY += e.deltaY;
-	this.pos.targetX += e.deltaX; // || e.deltaY
+	this.pos.targetX += e.deltaX;
 	
 	this.pos.targetY = Math.max(this.bounding * -1, this.pos.targetY);
 	this.pos.targetY = Math.min(0, this.pos.targetY);

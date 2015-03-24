@@ -12,7 +12,7 @@ Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday
 First, you'll need some simple HTML:
 
 ```html
-<div class="section vs-section" data-speed="0.1">
+<div class="section vs-section">
   <div class="vs-transform" data-speed="0.2"></div>
   <div class="vs-transform" data-speed="0.4"></div>
   <div class="vs-transform" data-speed="0.6"></div>

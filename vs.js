@@ -1,7 +1,7 @@
 var vs = (function(document) {
 
 	var vs = {};
-
+	
 	var numListeners, listeners = [], initialized = false;
 
 	var touchStartX, touchStartY;
