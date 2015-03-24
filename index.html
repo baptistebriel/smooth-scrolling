@@ -42,6 +42,99 @@
 				</div>
 				<hr>
 				<div class="inner-padding">
+					<h1>Usage</h1>
+					<p>First, you'll need some simple HTML:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">HTML</span>
+									<span class="comment">----- */</span>
+									<span><<span>div</span> class="section vs-section"></span><br>
+										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="0.2"><<span>/div</span>></span><br>
+										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="0.4"><<span>/div</span>></span><br>
+										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="0.6"><<span>/div</span>></span><br>
+										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="0.8"><<span>/div</span>></span><br>
+										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="1"><<span>/div</span>></span><br>
+									<span><<span>/div</span>></span>
+								</code>
+							</section>
+						</div>
+					</div>
+					<p>And some basic CSS:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">CSS</span>
+									<span class="comment">----- */</span>
+									<span>body {</span><br>
+										<span class="tab-2">overflow: hidden;</span><br>
+									<span>}</span><br>
+									<span>.section {</span><br>
+  										<span class="tab-2">position: absolute;</span><br>
+  									<span>}</span>
+								</code>
+							</section>
+						</div>
+					</div>
+					<p>Also, don't forget to load the sources:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">HTML</span>
+									<span class="comment">----- */</span>
+									<<span>script</span> src="rAF.js"><span><</span>/<span>script</span>> <span class="inline-comment">// requestAnimationFrame</span><br>
+									<<span>script</span> src="vs.js"><span><</span>/<span>script</span>> <span class="inline-comment">// VirtualScroll</span><br>
+									<<span>script</span> src="smooth.js"><span><</span>/<span>script</span>> <span class="inline-comment">// Smooth.js</span><br>
+								</code>
+							</section>
+						</div>
+					</div>
+					<p>Now to the JavaScript part:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">JavaScript</span>
+									<span class="comment">----- */</span>
+									<span class="comment">// get our section</span>
+									var section = document.querySelector('.vs-section');<br>
+									<span class="comment">// get our extra divs</span>
+									var divs = document.querySelectorAll('.vs-transform');<br><br>
+
+									<span class="comment">// initialize the object w/ some parameters</span>
+									var smooth = new Smooth({<br>
+										<span class="tab-2">direction: 'vertical',<br>
+										<span class="tab-2">section: section,<br>
+										<span class="tab-2">ease: 0.1,<br>
+										<span class="tab-2">els: divs <span class="inline-comment">// optional</span><br>
+									});<br><br>
+									<span class="comment">// kickoff the smooth scroll</span>
+									smooth.init();
+								</code>
+							</section>
+						</div>
+					</div>
+					<p>As you can see, there's a bunch of parameters; the direction, the section,<br>the easing and all the DOM nodes you want to transform.</p><br>
+					<p>Later, you might want to stop the events and requestAnimationFrame by doing:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									smooth.destroy();
+								</code>
+							</section>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<div class="inner-padding">
 					<h1>Have some suggestions ?</h1>
 					<p>
 						<a href="https://twitter.com/BaptisteBriel" target="_blank">Tweet</a> me or send me an <a href="mailto:b.briel@suspended-animations.com">e-mail</a>.

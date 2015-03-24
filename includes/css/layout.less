@@ -100,6 +100,7 @@ body{
 
 .vs-section{
 	position: absolute;
+	left: 0; right: 0;
 }
 
 .overflow{
@@ -337,6 +338,126 @@ p{
 
 			&:hover{
 				color: @base;
+			}
+		}
+	}
+}
+
+code{
+	font-size: 13px;
+	line-height: 18px;
+}
+
+.code{
+	display: block;
+	position: relative;
+	.size(100%,auto);
+	margin: .5rem auto 2rem auto;
+
+	.box{
+		position: relative;
+		margin: auto;
+		.size(480px,auto);
+		color: @blue;
+		border: 1px solid @base;
+		background: @white;
+		overflow: hidden;
+
+		&.no-border{
+			border: none;
+		}
+
+		.icons{
+			.size(100%,90px);
+			padding: 30px 0 30px 50px;
+			border-bottom: 1px solid @base;
+
+			.icon-demo{
+				display: inline-block;
+				margin: 0 10px;
+				cursor: pointer;
+
+				&.current{
+					path{
+						fill: @base;
+					}
+				}
+				path{
+					fill: @grey-light;
+					.transition(all .8s cubic-bezier(.19,1,.22,1););
+				}
+
+				&:hover{
+					path{
+						fill: @base;
+					}
+				}
+			}
+		}
+		nav{
+			display: none;
+			float: left;
+			.size(55px,218px);
+			padding: 15px 15px 15px 10px;
+			border-right: 1px solid @base;
+
+			&.i{
+				height: 128px;
+			}
+
+			span{
+				font: bold 11px 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+				display: block;
+				text-transform: uppercase;
+				color: @grey-light;
+				margin-bottom: 2px;
+
+				&.current{
+					color: @base;
+				}
+			}
+		}
+		section{
+			float: left;
+			.size(100%,auto);
+			padding: 15px;
+			line-height: 18px;
+			overflow: hidden;
+
+			&.i{
+				height: 128px;
+			}
+
+			.code-more{
+				width: 1000px;
+			}
+			.comment{
+				display: block;
+				color: @grey-light;
+				margin-bottom: 2px;
+			}
+			.inline-comment{
+				display: inline-block;
+				color: @grey-light;
+			}
+			.var{
+				display: block;
+				margin: 8px 0;
+			}
+			.grey{
+				color: @grey-light;
+			}
+			.red{
+				color: @red;
+			}
+			.tab-1{
+				margin-left: 10px;
+			}
+			.tab-2{
+				margin-left: 20px;
+			}
+			.tab-3{
+				margin-left: 30px;
 			}
 		}
 	}
