@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<title>Smooth Scroll</title>
+		<style>
+			body{
+				margin: 0;
+				padding: 0;
+				background: #fff;
+				overflow: hidden;
+			}
+			.section{
+				position: absolute;
+				width: 100%;
+				height: auto;
+				padding-bottom: 15rem;
+			}
+
+			/* opts styles */
+			.section .vs-transform{
+				position: relative;
+				margin: 100px;
+				width: 200px;
+				height: 400px;
+			}
+			.section .vs-transform:first-child{
+				z-index: 10;
+				background-color: rgb(200, 0, 0);
+				left: 0%;
+			}
+			.section .vs-transform:nth-child(2){
+				z-index: 10;
+				background-color: rgb(0, 200, 0);
+				left: 40%;
+			}
+			.section .vs-transform:nth-child(3){
+				z-index: 10;
+				background-color: rgb(0, 0, 200);
+				left: 30%;
+			}
+			.section .vs-transform:nth-child(4){
+				z-index: 10;
+				background-color: rgb(200, 200, 0);
+				left: 50%;
+			}
+			.section .vs-transform:nth-child(5){
+				z-index: 10;
+				background-color: rgb(200, 0, 200);
+				left: 20%;
+			}
+			.vs-scrollto{
+				display: block;
+				text-align: center;
+				padding-bottom: 2rem;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="section vs-section" data-speed="0.1">
+			<div class="vs-transform js-scrollTo-1" data-speed="0.2"></div>
+			<div class="vs-transform js-scrollTo-2" data-speed="0.4"></div>
+			<div class="vs-transform js-scrollTo-3" data-speed="0.6"></div>
+			<div class="vs-transform js-scrollTo-4" data-speed="0.8"></div>
+			<div class="vs-transform js-scrollTo-5" data-speed="1"></div>
+			<div class="vs-scrollto" data-scroll="0">To top</div>
+			<div class="vs-scrollto" data-scroll="js-scrollTo-1">First div</div>
+			<div class="vs-scrollto" data-scroll="js-scrollTo-2">Second div</div>
+			<div class="vs-scrollto" data-scroll="js-scrollTo-3">Third div</div>
+			<div class="vs-scrollto" data-scroll="js-scrollTo-4">Fourth div</div>
+			<div class="vs-scrollto" data-scroll="js-scrollTo-5">Fifth div</div>
+		</div>
+	</body>
+	<script src="rAF.js"></script>
+	<script src="vs.js"></script>
+	<script src="smooth.js"></script>
+	<script>
+		var DOMReady = function(a,b,c){b=document,c='addEventListener';b[c]?b[c]('DOMContentLoaded',a):window.attachEvent('onload',a)}
+		DOMReady(function(){
+			
+			var section = document.querySelector('.vs-section');
+			var divs = document.querySelectorAll('.vs-transform');
+			
+			var smooth = new Smooth({
+				direction: 'vertical',
+				section: section,
+				ease: 0.1,
+				//els: divs
+			});
+			smooth.init();
+
+			// setTimeout(function(){
+			// 	smooth.scrollTo(400);
+			// }, 1200);
+
+		});
+	</script>
+</html>
