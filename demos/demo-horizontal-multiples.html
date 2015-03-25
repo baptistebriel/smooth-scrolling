@@ -10,12 +10,13 @@
 			}
 			.section{
 				position: absolute;
-				width: 100%;
-				height: auto;
+				width: auto;
+				height: 100%;
 			}
-
+			
 			/* opts styles */
 			.section div{
+				display: inline-block;
 				position: relative;
 				margin: 100px;
 				width: 200px;
@@ -39,7 +40,8 @@
 			.section div:nth-child(4){
 				z-index: 10;
 				background-color: rgb(200, 200, 0);
-				left: 50%;
+				top: 20px;
+				left: 10%;
 			}
 			.section div:last-child{
 				z-index: 10;
@@ -57,9 +59,9 @@
 			<div class="vs-transform" data-speed="1"></div>
 		</div>
 	</body>
-	<script src="rAF.js"></script>
-	<script src="vs.js"></script>
-	<script src="smooth.js"></script>
+	<script src="/rAF.js"></script>
+	<script src="/vs.js"></script>
+	<script src="/smooth.js"></script>
 	<script>
 		var DOMReady = function(a,b,c){b=document,c='addEventListener';b[c]?b[c]('DOMContentLoaded',a):window.attachEvent('onload',a)}
 		DOMReady(function(){
@@ -68,13 +70,13 @@
 			var divs = document.querySelectorAll('.vs-transform');
 			
 			var smooth = new Smooth({
-				direction: 'vertical',
+				direction: 'horizontal',
 				section: section,
 				ease: 0.1,
-				//els: divs
+				els: divs
 			});
 			smooth.init();
-
+			
 		});
 	</script>
 </html>

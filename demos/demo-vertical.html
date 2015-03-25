@@ -57,9 +57,9 @@
 			<div class="vs-transform" data-speed="1"></div>
 		</div>
 	</body>
-	<script src="rAF.js"></script>
-	<script src="vs.js"></script>
-	<script src="smooth.js"></script>
+	<script src="/rAF.js"></script>
+	<script src="/vs.js"></script>
+	<script src="/smooth.js"></script>
 	<script>
 		var DOMReady = function(a,b,c){b=document,c='addEventListener';b[c]?b[c]('DOMContentLoaded',a):window.attachEvent('onload',a)}
 		DOMReady(function(){
@@ -71,7 +71,7 @@
 				direction: 'vertical',
 				section: section,
 				ease: 0.1,
-				els: divs
+				//els: divs
 			});
 			smooth.init();
 
