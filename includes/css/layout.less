@@ -281,6 +281,7 @@ header{
 
 .content{
 	opacity: 0;
+	padding-bottom: 4rem;
 	.transition(all 1s cubic-bezier(.19,1,.22,1););
 	.transform(translate3d(0, 100px, 0));
 
@@ -295,7 +296,7 @@ header{
 	}
 }
 .inner-padding{
-	padding: @50px 0 @57px;
+	padding: @50px 0;
 }
 
 h1{
@@ -357,9 +358,10 @@ code{
 	.box{
 		position: relative;
 		margin: auto;
-		.size(480px,auto);
+		.size(520px,auto);
 		color: @blue;
-		border: 1px solid @base;
+		border: 1px solid @grey-hr;
+		border-radius: 3px;
 		background: @white;
 		overflow: hidden;
 

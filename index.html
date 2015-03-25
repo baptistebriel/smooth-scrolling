@@ -11,7 +11,7 @@
 		</div>
 		<header class="device-content absolute">
 			<section class="left">
-				<a href="https://github.com/BaptisteBriel/smooth">Smooth</a>
+				<a href="http://baptistebriel.github.io/smooth/">Smooth</a>
 			</section>
 			<section class="right">
 				<a href="https://github.com/BaptisteBriel/smooth" target="_blank">Download on Github</a>
@@ -35,13 +35,12 @@
 				<hr>
 				<div class="inner-padding">
 					<h1>Demos</h1>
-					<p><a href="/smooth/demos/demo-vertical.html" target="_blank">Vertical scroll</a> <a href="/smooth/demos/demo-vertical-multiples.html" target="_blank">(with parallax)</a></p>
+					<p><a href="/smooth/demos/demo-vertical.html" target="_blank">Vertical scroll</a> <a href="/smooth/demos/demo-vertical-multiples.html" target="_blank">(with parallax)</a> <a href="/smooth/demos/demo-scrollto.html" target="_blank">(with scrollTo)</a></p>
 					<p><a href="/smooth/demos/demo-horizontal.html" target="_blank">Horizontal scroll</a> <a href="/smooth/demos/demo-horizontal-multiples.html" target="_blank">(with parallax)</a></p>
-					<p><a href="/smooth/demos/demo-scrollto.html" target="_blank">Vertical scroll with scrollTo methods</a></p>
 				</div>
 				<hr>
 				<div class="inner-padding">
-					<h1>Usage</h1>
+					<h1>Setup</h1>
 					<p>First, you'll need some simple HTML:</p>
 					<div class="code">
 						<div class="box">
@@ -57,6 +56,7 @@
 										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="0.8"><<span>/div</span>></span><br>
 										<span class="tab-2"><<span>div</span> class="vs-transform" data-speed="1"><<span>/div</span>></span><br>
 									<span><<span>/div</span>></span>
+									<span class="comment">// note: classes starting with 'vs-' are required</span>
 								</code>
 							</section>
 						</div>
@@ -71,7 +71,7 @@
 									<span class="comment">----- */</span>
 									<span>body {</span><br>
 										<span class="tab-2">overflow: hidden;</span><br>
-									<span>}</span><br>
+									<span>}</span><br><br>
 									<span>.section {</span><br>
   										<span class="tab-2">position: absolute;</span><br>
   									<span>}</span>
@@ -94,6 +94,10 @@
 							</section>
 						</div>
 					</div>
+				</div>
+				<hr>
+				<div class="inner-padding js-usage">
+					<h1>Usage</h1>
 					<p>Now to the JavaScript part:</p>
 					<div class="code">
 						<div class="box">
@@ -131,6 +135,47 @@
 							</section>
 						</div>
 					</div>
+				</div>
+				<hr>
+				<div class="inner-padding js-methods">
+					<h1>Methods</h1>
+					<p>There's two 'scrollTo' method:</p>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">HTML</span>
+									<span class="comment">----- */</span>
+									<span class="comment">// this is a default box</span>
+									<span><<span>div</span> class="vs-transform js-referer" data-speed="0.2"><<span>/div</span>></span><br><br>
+									<span class="comment">// now we create an anchor (could be a nav menu)</span>
+									<span><<span>span</span> class="vs-scrollto" data-scroll="js-referer">text</span><span><<span>/span</span>></span>
+									<span class="comment">// note that the 'data-scroll' has to contains</span>
+									<span class="comment">// one of the same classes as the box you want to scroll to</span>
+								</code>
+							</section>
+						</div>
+					</div>
+					<div class="code">
+						<div class="box">
+							<section>
+								<code>
+									<span class="comment">/* -----</span>
+									<span class="comment">JS</span>
+									<span class="comment">----- */</span>
+									<span class="comment">// scrollTo with a fixed value (usefull for simple scrollTop)</span>
+									smooth.scrollTo(0);<br><br>
+									<span class="comment">// scrollTo a specific div</span>
+									var div = document.querySelector('.js-referer');<br>
+									var offset = div.getBoundingClientRect().top;<br><br>
+									<span class="comment">// this should also work :)</span>
+									smooth.scrollTo(offset);
+								</code>
+							</section>
+						</div>
+					</div>
+					<p>And lots of features coming soon!</p>
 				</div>
 				<hr>
 				<div class="inner-padding">
