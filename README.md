@@ -7,7 +7,7 @@ Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday
 
 `git clone https://github.com/BaptisteBriel/smooth.git`
 
-### Usage
+### Setup
 
 First, you'll need some simple HTML:
 
@@ -52,6 +52,8 @@ Also, don't forget to load the sources:
 <script src="smooth.js"></script>
 ```
 
+### Usage
+
 Now to the JavaScript part;  
 The usage is very simple. To launch a new smooth scroll just use the Smooth object like this:
 
@@ -78,6 +80,36 @@ Later, you might want to stop the events and requestAnimationFrame by doing:
 
 ```javascript
 smooth.destroy();
+```
+
+### Methods
+
+There's two 'scrollTo' method:  
+
+With just HTML:  
+
+```html
+<!-- this is a default box -->
+<div class="vs-transform js-referer" data-speed="0.2"></div>
+
+<!-- now we create an anchor (could be a nav menu) -->
+<span class="vs-scrollto" data-scroll="js-referer">text</span>
+<!-- note that the 'data-scroll' has to contains -->
+<!-- one of the same classes as the box you want to scroll to -->
+```
+
+Or with JavaScript:  
+
+```javascript
+// scrollTo with a fixed value (usefull for simple scrollTop)
+smooth.scrollTo(0);
+
+// scrollTo a specific div
+var div = document.querySelector('.js-referer');
+var offset = div.getBoundingClientRect().top;
+
+// this should also work :)
+smooth.scrollTo(offset);
 ```
 
 ## License
