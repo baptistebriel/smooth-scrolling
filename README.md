@@ -55,7 +55,7 @@ Also, don't forget to load the sources:
 ### Usage
 
 Now to the JavaScript part;  
-The usage is very simple. To launch a new smooth scroll just use the Smooth object like this:
+To launch a new smooth scroll just use the Smooth object like this:
 
 ```javascript
 // get our section
