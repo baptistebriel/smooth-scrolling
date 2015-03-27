@@ -84,9 +84,9 @@ smooth.destroy();
 
 ### Methods
 
-There's two 'scrollTo' method:  
+There's two 'scrollTo' methods:  
 
-With just HTML:  
+With HTML:  
 
 ```html
 <!-- this is a default box -->
@@ -98,7 +98,7 @@ With just HTML:
 <!-- one of the same classes as the box you want to scroll to -->
 ```
 
-Or with JavaScript:  
+Or JavaScript:  
 
 ```javascript
 // scrollTo with a fixed value (usefull for simple scrollTop)
