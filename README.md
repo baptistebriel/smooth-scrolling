@@ -108,7 +108,7 @@ smooth.scrollTo(0);
 var div = document.querySelector('.js-referer');
 var offset = div.getBoundingClientRect().top;
 
-// this should also work :)
+// this should work :)
 smooth.scrollTo(offset);
 ```
 
