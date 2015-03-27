@@ -100,7 +100,28 @@ body{
 
 .vs-section{
 	position: absolute;
+	top: 0;
 	left: 0; right: 0;
+}
+
+.vs-scrollbar{
+	display: block;
+	position: absolute;
+	background: @grey-hr;
+
+	&.vs-vertical{
+		top: 0; right: 0; bottom: 0;
+		.size(10px,100%);
+	}
+
+	&.vs-horizontal{
+		top: 0; right: 0; bottom: 0;
+		.size(100%,10px);
+	}
+
+	.vs-scrolldrag{
+		.size(100%,auto);
+	}
 }
 
 .overflow{

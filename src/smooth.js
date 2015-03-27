@@ -18,7 +18,7 @@ var Smooth = function(opt) {
 	this.els = (typeof opt.els != 'undefined') ? Array.prototype.slice.call(opt.els, 0) : [this.section];
 	
 	this.to = Array.prototype.slice.call(document.querySelectorAll('.vs-scrollto'), 0);
-	
+
 	this.bounding = (this.direction == 'vertical')
 		? this.section.getBoundingClientRect().height - window.innerHeight
 		: this.section.getBoundingClientRect().left + this.section.getBoundingClientRect().right - window.innerHeight
@@ -71,7 +71,7 @@ Smooth.prototype.calc = function(e){
 Smooth.prototype.run = function(){
 
 	var self = this;
-	var t, s;
+	var t, s, v, b, r;
 
 	this.pos.currentY += (this.pos.targetY - this.pos.currentY) * this.ease;
 	this.pos.currentX += (this.pos.targetX - this.pos.currentX) * this.ease;
