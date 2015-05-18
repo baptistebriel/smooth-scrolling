@@ -21,8 +21,6 @@ var Smooth = function(opt) {
 	
 	this.to = Array.prototype.slice.call(document.querySelectorAll('.vs-scrollto'), 0);
 
-	this.scroll = document.createElement('div');
-
 	this.bounding = (this.direction == 'vertical')
 		? this.section.getBoundingClientRect().height - window.innerHeight
 		: this.section.getBoundingClientRect().left + this.section.getBoundingClientRect().right - window.innerHeight
@@ -53,10 +51,6 @@ Smooth.prototype.init = function(){
 		el.addEventListener('click', self.getTo.bind(self, el));
 	});
 
-	this.scroll.classList = "scroll";
-	this.scroll.style[this.prop] = (this.bounding * this.ease);
-	this.section.parentNode.insertBefore(this.scroll, this.section.nextSibling);
-
 	document.addEventListener('touchmove', function(e) { 
     		e.preventDefault(); 
 	});
@@ -83,7 +77,7 @@ Smooth.prototype.calc = function(e){
 Smooth.prototype.run = function(){
 
 	var self = this;
-	var t, s, v, b, r;
+	var t, s;
 
 	this.pos.currentY += (this.pos.targetY - this.pos.currentY) * this.ease;
 	this.pos.currentX += (this.pos.targetX - this.pos.currentX) * this.ease;
