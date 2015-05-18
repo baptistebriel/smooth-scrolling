@@ -10,6 +10,8 @@ var Smooth = function(opt) {
 	this.pos = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
 	
 	this.direction = opt.direction || 'vertical';
+
+	this.prop = (this.direction == 'vertical') ? 'height' : 'width';
 	
 	this.section = opt.section || document.querySelector('.vs-section');
 	
@@ -18,6 +20,8 @@ var Smooth = function(opt) {
 	this.els = (typeof opt.els != 'undefined') ? Array.prototype.slice.call(opt.els, 0) : [this.section];
 	
 	this.to = Array.prototype.slice.call(document.querySelectorAll('.vs-scrollto'), 0);
+
+	this.scroll = document.createElement('div');
 
 	this.bounding = (this.direction == 'vertical')
 		? this.section.getBoundingClientRect().height - window.innerHeight
@@ -49,6 +53,14 @@ Smooth.prototype.init = function(){
 		el.addEventListener('click', self.getTo.bind(self, el));
 	});
 
+	this.scroll.classList = "scroll";
+	this.scroll.style[this.prop] = (this.bounding * this.ease);
+	this.section.parentNode.insertBefore(this.scroll, this.section.nextSibling);
+
+	document.addEventListener('touchmove', function(e) { 
+    		e.preventDefault(); 
+	});
+	
 	window.addEventListener('resize', this.resize.bind(this));
 
 	this.run();
@@ -56,7 +68,7 @@ Smooth.prototype.init = function(){
 };
 
 Smooth.prototype.calc = function(e){
-	
+
 	this.pos.targetY += e.deltaY;
 	this.pos.targetX += e.deltaX;
 	
@@ -101,7 +113,7 @@ Smooth.prototype.getTo = function(self, el){
 	else{
 		this.pos.targetX = -el.target.targetPos;
 	}
-	
+
 };
 
 Smooth.prototype.scrollTo = function(offset){
