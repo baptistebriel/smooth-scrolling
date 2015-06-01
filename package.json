@@ -6,8 +6,7 @@
   "dependencies": {
     "classie": "^0.1.0",
     "dom-css": "^1.1.1",
-    "dom-event": "0.0.5",
-    "draggy": "^1.1.8"
+    "dom-event": "0.0.5"
   },
   "devDependencies": {
     "gulp": "~3.8.7",
