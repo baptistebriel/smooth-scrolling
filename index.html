@@ -187,9 +187,34 @@
 			</div>
 		</div>
 	</body>
-	<script src="/smooth/src/rAF.js"></script>
-	<script src="/smooth/src/vs.js"></script>
-	<script src="/smooth/src/smooth.js"></script>
+	<script>
+	// requestAnimationFrame polyfill
+	(function() {
+	    var lastTime = 0;
+	    var vendors = ['webkit', 'moz'];
+	    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+	        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+	        window.cancelAnimationFrame =
+	          window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+	    }
+
+	    if (!window.requestAnimationFrame)
+	        window.requestAnimationFrame = function(callback, element) {
+	            var currTime = new Date().getTime();
+	            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+	            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+	              timeToCall);
+	            lastTime = currTime + timeToCall;
+	            return id;
+	        };
+
+	    if (!window.cancelAnimationFrame)
+	        window.cancelAnimationFrame = function(id) {
+	            clearTimeout(id);
+	        };
+	}());
+	</script>
+	<script src="/smooth/src/build.min.js"></script>
 	<script>
 	window.onload = function(){
 		document.body.classList.add('loaded');
@@ -203,13 +228,13 @@
 	var smooth = new Smooth({
 	  direction: 'vertical',
 	  section: section,
-	  ease: 0.1,
+	  ease: 0.04,
 	  // coming soon
-	  // bar: { 
-	  // 	active: true,
-	  // 	bg: '#e9e9e9',
-	  // 	main: '#000'
-	  // },
+	  scrollbar: { 
+	  	active: true,
+	  	bg: '#FFF',
+	  	main: '#c5c5c5'
+	  },
 	  //els: divs // optional
 	});
 	// kickoff the smooth scroll

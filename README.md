@@ -1,11 +1,19 @@
 # smoooth
 Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/) to create smooth scrolling and parallax effects on scroll.
 
+[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+
 # Getting Started
 
 ### Clone the repository
 
 `git clone https://github.com/BaptisteBriel/smooth.git`
+
+### Using npm
+
+`npm install smooth-scrolling`
+
+[![NPM](https://nodei.co/npm/smooth-scrolling.png)](https://www.npmjs.com/package/smooth-scrolling)
 
 ### Setup
 
@@ -43,12 +51,10 @@ body{
 
 Also, don't forget to load the sources:
 - requestAnimationFrame polyfill (rAF.js)
-- VirtualScroll (vs.js)
 - Smooth (smooth.js)
 
 ```html
 <script src="rAF.js"></script>
-<script src="vs.js"></script>
 <script src="smooth.js"></script>
 ```
 
