@@ -74,6 +74,11 @@ var smooth = new Smooth({
   direction: 'vertical',
   section: section,
   ease: 0.1,
+  scrollbar: { 
+    active: true,
+    bg: '#FFF',
+    main: '#c5c5c5'
+  },
   els: divs // optional
 });
 // kickoff the smooth scroll
