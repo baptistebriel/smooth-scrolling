@@ -38,8 +38,8 @@ var Smooth = window.Smooth = module.exports = function(opt) {
 			el: document.createElement('div'),
 			clicked: false,
 			deltaY: 0, deltaX: 0,
-			speed: opt.scrollbar.speed || 3,
-			height: opt.scrollbar.height || 50,
+			speed: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.speed || 3 : 3,
+			height: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.height || 50 : 50,
 		},
 		bg: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.bg : 'false',
 		main: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.main : 'false'
