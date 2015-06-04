@@ -62,7 +62,7 @@ If you want a custom scrollbar, you'll need additional CSS.
   width: 5px; height: 100%;
 }
 .vs-scrollbar.vs-horizontal{
-  top: 0; right: 0; bottom: 0;
+  bottom: 0; left: 0; right: 0;
   width: 100%; height: 5px;
 }
 .vs-scrollbar .vs-scrolldrag{
