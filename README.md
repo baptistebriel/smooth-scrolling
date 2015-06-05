@@ -55,7 +55,6 @@ If you want a custom scrollbar, you'll need additional CSS.
 .vs-scrollbar{
   display: block;
   position: absolute;
-  background: #e9e9e9
 }
 .vs-scrollbar.vs-vertical{
   top: 0; right: 0; bottom: 0;
