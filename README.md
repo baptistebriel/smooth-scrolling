@@ -118,7 +118,7 @@ As you can see, there's a bunch of parameters:
 - `section` : the global container of your page; will have CSS transform by default on scroll.
 - `ease` : the easing value (generally between 0 and 1) - 1 will be faster.
 - `scrollbar` : the scrollbar settings
-- `els` : DOM list to transform. If it's not specified (then no parallax), the transform is applied to the section
+- `els` : DOM list. If it's not specified (no parallax), the transform is applied to the section
 
 Later, you might want to stop the events and requestAnimationFrame by doing:
 
