@@ -81,6 +81,8 @@ Also, don't forget to load the sources:
 <script src="smooth.js"></script>
 ```
 
+The requestAnimationFrame polyfill could be found [here](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).
+
 ### Usage
 
 Now to the JavaScript part;  
