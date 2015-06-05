@@ -112,7 +112,13 @@ var smooth = new Smooth({
 smooth.init();
 ```
 
-As you can see, there's a bunch of parameters; direction, the container (section), the easing and all the DOM nodes you want to transform (optional - if there's no parallax, the transform is applied to the section)
+As you can see, there's a bunch of parameters:
+
+- `direction` : 'vertical' or 'horizontal' scrolling.
+- `section` : the global container of your page; will have CSS transform by default on scroll.
+- `ease` : the easing value (generally between 0 and 1) - 1 will be faster.
+- `scrollbar` : the scrollbar settings
+- `els` : DOM list to transform. If it's not specified (then no parallax), the transform is applied to the section
 
 Later, you might want to stop the events and requestAnimationFrame by doing:
 
