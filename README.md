@@ -76,6 +76,9 @@ Also, don't forget to load the sources:
 - requestAnimationFrame polyfill (rAF.js)
 - Smooth (smooth.js)
 
+If you're using smooth-scrolling on npm with browserify, you'll just need the requestAnimationFrame polyfill.
+If you're not, `smooth.js` is located under /src. It's the standard source code which doesn't `require()` modules so you can use it normally without npm and browserify.
+
 ```html
 <script src="rAF.js"></script>
 <script src="smooth.js"></script>
