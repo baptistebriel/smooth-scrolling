@@ -75,6 +75,7 @@ If you want a custom scrollbar, you'll need additional CSS.
 
 If you're not using the npm version of smooth-scrolling, `smooth.js` is located under src/.
 VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are located under lib/
+
 *This is the standard source code which doesn't `require()` modules so you can use it normally without npm and browserify.*
 
 ```html
