@@ -88,7 +88,7 @@ The requestAnimationFrame polyfill was taken from [here](http://www.paulirish.co
 
 #### With browserify
 
-If you're using smooth-scrolling on npm, you'll just need the requestAnimationFrame polyfill located under lib/rAF.js
+If you're using smooth-scrolling on npm, you'll just need the requestAnimationFrame polyfill located under lib/
 
 ```html
 <script src="lib/rAF.js"></script>
