@@ -71,24 +71,33 @@ If you want a custom scrollbar, you'll need additional CSS.
 }
 ```
 
-Also, don't forget to load the sources:
-- requestAnimationFrame polyfill (rAF.js)
-- Smooth (smooth.js)
+#### Normal usage
 
-If you're using smooth-scrolling on npm with browserify, you'll just need the requestAnimationFrame polyfill.
-If you're not, `smooth.js` is located under /src. It's the standard source code which doesn't `require()` modules so you can use it normally without npm and browserify.
+If you're not using the npm version of smooth-scrolling, `smooth.js` is located under src/.
+VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are located under lib/
+*This is the standard source code which doesn't `require()` modules so you can use it normally without npm and browserify.*
 
 ```html
-<script src="rAF.js"></script>
-<script src="smooth.js"></script>
+<script src="lib/rAF.js"></script>
+<script src="lib/vs.js"></script>
+<script src="src/smooth.js"></script>
 ```
 
-The requestAnimationFrame polyfill could be found [here](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).
+The requestAnimationFrame polyfill was taken from [here](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).
+
+#### With browserify
+
+If you're using smooth-scrolling on npm, you'll just need the requestAnimationFrame polyfill located under lib/rAF.js
+
+```html
+<script src="lib/rAF.js"></script>
+<script src="src/build.min.js"></script>
+```
 
 ### Usage
 
 Now to the JavaScript part;  
-To launch a new smooth scroll just use the Smooth object like this:
+To launch a new smooth scroll, just use the Smooth object like this:
 
 ```javascript
 // get our section
@@ -155,6 +164,11 @@ var offset = div.getBoundingClientRect().top;
 // this should work :)
 smooth.scrollTo(offset);
 ```
+
+## Further understanding
+
+If you didn't already read [the tutorial](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/), I highly recommend it.
+Smooth.js is basically what's explained on the blog post. I just needed a simple script to get things done without having to write lots of code every time I wanted to use this technique.
 
 ## License
 
