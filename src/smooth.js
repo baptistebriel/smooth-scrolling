@@ -32,9 +32,6 @@ Smooth.prototype.constructor = Smooth;
 Smooth.prototype.init = function(){
 
 	var self = this;
-	
-	// not supporting scrollbar for now
-	//this.build();
 
 	vs.on(this.calc);
 
@@ -63,7 +60,7 @@ Smooth.prototype.init = function(){
 
 Smooth.prototype.createBound = function(){
 	
-	['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
+	['calc', 'getTo', 'prevent', 'resize']
 	.forEach(function(fn) {
 		this[fn] = this[fn].bind(this);
 	}, this);
