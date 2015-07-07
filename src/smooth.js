@@ -2,10 +2,12 @@ var Smooth = function(opt) {
 	
 	if (!(this instanceof Smooth))
 		return new Smooth(opt)
+		
+	this.createBound();
 
 	opt = opt || {}
 
-	this.rAF;
+	this.rAF = undefined;
 	
 	this.pos = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
 	
@@ -30,8 +32,11 @@ Smooth.prototype.constructor = Smooth;
 Smooth.prototype.init = function(){
 
 	var self = this;
+	
+	// not supporting scrollbar for now
+	//this.build();
 
-	vs.on(this.calc.bind(this));
+	vs.on(this.calc);
 
 	this.els.forEach(function(el){
 		el.speed = (self.els.length >= 2) ? el.getAttribute('data-speed') : 1;
@@ -48,10 +53,26 @@ Smooth.prototype.init = function(){
 		
 		el.addEventListener('click', self.getTo.bind(self, el));
 	});
-
-	window.addEventListener('resize', this.resize.bind(this));
-
+	
+	document.addEventListener('touchmove', this.prevent);
+	window.addEventListener('resize', this.resize);
+	
 	this.run();
+
+};
+
+Smooth.prototype.createBound = function(){
+	
+	['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
+	.forEach(function(fn) {
+		this[fn] = this[fn].bind(this);
+	}, this);
+    
+};
+
+Smooth.prototype.prevent = function(e){
+
+	e.preventDefault();
 
 };
 
@@ -117,15 +138,16 @@ Smooth.prototype.resize = function(){
 
 Smooth.prototype.destroy = function(){
 
-	vs.off(this.calc.bind(this));
+	vs.off(this.calc);
 	
 	cancelAnimationFrame(this.rAF);
 	this.rAF = undefined;
 	
 	this.to.forEach(function(el){
-		el.removeEventListener('click', self.getTo.bind(self, el));
+		el.removeEventListener('click', self.getTo);
 	});
  	
-	window.removeEventListener('resize', this.resize.bind(this));
+	document.removeEventListener('touchmove', this.prevent);
+	window.removeEventListener('resize', this.resize);
 
 };
