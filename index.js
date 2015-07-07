@@ -9,8 +9,8 @@ var Smooth = window.Smooth = module.exports = function(opt) {
 	if (!(this instanceof Smooth))
 		return new Smooth(opt)
 
-    this.createBound();
-
+	this.createBound();
+	
 	opt = opt || {}
 
 	this.rAF = undefined;
@@ -54,14 +54,14 @@ Smooth.prototype.init = function(){
 
 	var self = this;
 
-    this.build();
+	this.build();
 
 	vs.on(this.calc);
 
 	this.els.forEach(function(el){
 		el.speed = (self.els.length >= 2) ? el.getAttribute('data-speed') : 1;
 	});
-
+	
 	this.to.forEach(function(el){
 		var data = el.getAttribute('data-scroll');
 
@@ -81,12 +81,13 @@ Smooth.prototype.init = function(){
 
 };
 
-// Store bound methods to avoid memory leaks
 Smooth.prototype.createBound = function(){
-    ['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
-    .forEach(function(fn) {
-        this[fn] = this[fn].bind(this);
-    }, this);
+	
+	['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
+	.forEach(function(fn) {
+		this[fn] = this[fn].bind(this);
+	}, this);
+    
 };
 
 Smooth.prototype.prevent = function(e){
@@ -231,7 +232,8 @@ Smooth.prototype.run = function(){
 };
 
 Smooth.prototype.getTo = function(event){
-    var el = event.target;
+    
+	var el = event.target;
 	if(this.direction == 'vertical') this.pos.targetY = -el.targetPos;
 	else this.pos.targetX = -el.targetPos;
 
