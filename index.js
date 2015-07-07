@@ -9,6 +9,8 @@ var Smooth = window.Smooth = module.exports = function(opt) {
 	if (!(this instanceof Smooth))
 		return new Smooth(opt)
 
+    this.createBound();
+
 	opt = opt || {}
 
 	this.rAF = undefined;
@@ -52,9 +54,9 @@ Smooth.prototype.init = function(){
 
 	var self = this;
 
-	this.build();
+    this.build();
 
-	vs.on(this.calc.bind(this));
+	vs.on(this.calc);
 
 	this.els.forEach(function(el){
 		el.speed = (self.els.length >= 2) ? el.getAttribute('data-speed') : 1;
@@ -62,21 +64,29 @@ Smooth.prototype.init = function(){
 
 	this.to.forEach(function(el){
 		var data = el.getAttribute('data-scroll');
-		
+
 		el.targetPos = (!isNaN(data))
 			? data
 			: (self.direction == 'vertical')
 				? document.querySelector('.'+data).getBoundingClientRect().top
 				: document.querySelector('.'+data).getBoundingClientRect().left
 
-		on(el, 'click', self.getTo.bind(self, el))
+		on(el, 'click', self.getTo)
 	});
 
-	on(document, 'touchmove', this.prevent.bind(this))
-	on(window, 'resize', this.resize.bind(this))
+	on(document, 'touchmove', this.prevent);
+	on(window, 'resize', this.resize);
 
 	this.run();
 
+};
+
+// Store bound methods to avoid memory leaks
+Smooth.prototype.createBound = function(){
+    ['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
+    .forEach(function(fn) {
+        this[fn] = this[fn].bind(this);
+    }, this);
 };
 
 Smooth.prototype.prevent = function(e){
@@ -127,12 +137,12 @@ Smooth.prototype.build = function(){
 		parent.appendChild(el);
 
 		// events
-		on(el, 'mousedown', this.down.bind(this));
-		on(parent, 'click', this.calcScroll.bind(this));
-		on(document, 'mousemove', this.move.bind(this));
+		on(el, 'mousedown', this.down);
+		on(parent, 'click', this.calcScroll);
+		on(document, 'mousemove', this.move);
 
 	}
- 
+
 };
 
 Smooth.prototype.down = function(e){
@@ -141,12 +151,12 @@ Smooth.prototype.down = function(e){
 
 	this.scrollbar.drag.clicked = true;
 
-	on(document, 'mouseup', this.up.bind(this));
+	on(document, 'mouseup', this.up);
 
 };
 
 Smooth.prototype.up = function(){
-	
+
 	this.scrollbar.drag.clicked = false;
 
 };
@@ -194,44 +204,44 @@ Smooth.prototype.run = function(){
 			: 'translateX(' + (self.pos.currentX * el.speed) + 'px) translateZ(0)'
 
 		css(el, 'transform', t);
-	
+
 	});
 
 	if(this.scrollbar.active){
 
 		h = self.scrollbar.drag.height;
- 		
+
 		r = (self.direction == 'vertical')
 			? (Math.abs(self.pos.currentY) / (self.bounding / (window.innerHeight - h))) + (h / .5) - h
 			: (Math.abs(self.pos.currentX) / (self.bounding / (window.innerWidth - h))) + (h / .5) - h
-		
+
 		r = Math.max(0, r-h);
 		r = Math.min(r, r+h);
- 		
+
 		v = (self.direction == 'vertical')
 			? 'translateY(' + r + 'px) translateZ(0)'
 			: 'translateX(' + r + 'px) translateZ(0)'
 
 		css(self.scrollbar.drag.el, 'transform', v);
-		
+
 	}
 
 	this.rAF = requestAnimationFrame(this.run.bind(this));
 
 };
 
-Smooth.prototype.getTo = function(self, el){
+Smooth.prototype.getTo = function(event){
+    var el = event.target;
+	if(this.direction == 'vertical') this.pos.targetY = -el.targetPos;
+	else this.pos.targetX = -el.targetPos;
 
-	if(this.direction == 'vertical') this.pos.targetY = -el.target.targetPos;
-	else this.pos.targetX = -el.target.targetPos;
-	
 };
 
 Smooth.prototype.scrollTo = function(offset){
 
 	if(this.direction == 'vertical') this.pos.targetY = -offset;
 	else this.pos.targetX = -offset;
-	
+
 };
 
 Smooth.prototype.resize = function(){
@@ -244,25 +254,25 @@ Smooth.prototype.resize = function(){
 
 Smooth.prototype.destroy = function(){
 
-	vs.off(this.calc.bind(this));
-	
+	vs.off(this.calc);
+
 	cancelAnimationFrame(this.rAF);
 	this.rAF = undefined;
 
 	this.to.forEach(function(el){
-		off(el, 'click', self.getTo.bind(self, el))
+		off(el, 'click', self.getTo)
 	});
 
-	off(document, 'touchmove', this.prevent.bind(this));
-	off(window, 'resize', this.resize.bind(this));
+	off(document, 'touchmove', this.prevent);
+	off(window, 'resize', this.resize);
 
 	if(this.scrollbar.active){
 
-		off(this.scrollbar.el, 'click', this.calcScroll.bind(this));
-		off(this.scrollbar.drag.el, 'mousedown', this.down.bind(this));
-		
-		off(document, 'mousemove', this.move.bind(this));
-		off(document, 'mouseup', this.up.bind(this));
+		off(this.scrollbar.el, 'click', this.calcScroll);
+		off(this.scrollbar.drag.el, 'mousedown', this.down);
+
+		off(document, 'mousemove', this.move);
+		off(document, 'mouseup', this.up);
 	}
 
 };
