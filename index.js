@@ -11,8 +11,8 @@ var Smooth = window.Smooth = module.exports = function(opt) {
 
 	opt = opt || {}
 
-	this.rAF;
-	
+	this.rAF = undefined;
+
 	this.pos = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
 	
 	this.direction = opt.direction || 'vertical';
