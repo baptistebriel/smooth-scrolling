@@ -97,8 +97,8 @@ Smooth.prototype.run = function(){
 	this.els.forEach(function(el) {
 
 		t = (self.direction == 'vertical')
-			? 'translateY(' + (self.pos.currentY * el.speed) + 'px) translateZ(0)'
-			: 'translateX(' + (self.pos.currentX * el.speed) + 'px) translateZ(0)'
+			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + (self.pos.currentY * el.speed) + ',0,1)'
+			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + (self.pos.currentX * el.speed) + ',0,0,1)'
 		s = el.style;
 
 		s['webkitTransform'] = t;
