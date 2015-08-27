@@ -1,7 +1,7 @@
 var vs = require('./lib/vs');
 var classie = require('classie');
 var css = require('dom-css');
-var on = require('dom-event')
+var on = require('dom-event');
 var off = on.off;
 
 var Smooth = window.Smooth = module.exports = function(opt) {
@@ -97,13 +97,13 @@ Smooth.prototype.prevent = function(e){
 };
 
 Smooth.prototype.calc = function(e){
-
+	
 	this.pos.targetY += e.deltaY;
 	this.pos.targetX += e.deltaX;
 	
 	this.pos.targetY = Math.max(this.bounding * -1, this.pos.targetY);
 	this.pos.targetY = Math.min(0, this.pos.targetY);
-
+	
 	this.pos.targetX = Math.max(this.bounding * -1, this.pos.targetX);
 	this.pos.targetX = Math.min(0, this.pos.targetX);
 
@@ -164,7 +164,7 @@ Smooth.prototype.up = function(){
 
 Smooth.prototype.move = function(e){
 
-	if (this.scrollbar.drag.clicked) this.calcScroll(e);
+	this.scrollbar.drag.clicked && this.calcScroll(e);
 
 };
 
@@ -193,7 +193,7 @@ Smooth.prototype.calcScroll = function(e){
 Smooth.prototype.run = function(){
 
 	var self = this;
-	var t, s, r, v, b, h;
+	var t, r, v, h;
 
 	this.pos.currentY += (this.pos.targetY - this.pos.currentY) * this.ease;
 	this.pos.currentX += (this.pos.targetX - this.pos.currentX) * this.ease;
@@ -234,15 +234,13 @@ Smooth.prototype.run = function(){
 Smooth.prototype.getTo = function(event){
     
 	var el = event.target;
-	if(this.direction == 'vertical') this.pos.targetY = -el.targetPos;
-	else this.pos.targetX = -el.targetPos;
+	"vertical" == this.direction ? this.pos.targetY = -el.targetPos : this.pos.targetX = -el.targetPos;
 
 };
 
 Smooth.prototype.scrollTo = function(offset){
-
-	if(this.direction == 'vertical') this.pos.targetY = -offset;
-	else this.pos.targetX = -offset;
+	
+	"vertical" == this.direction ? this.pos.targetY = -offset : this.pos.targetX = -offset;
 
 };
 
