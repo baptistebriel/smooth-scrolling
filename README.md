@@ -13,8 +13,6 @@ Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday
 
 `npm install smooth-scrolling`
 
-[![NPM](https://nodei.co/npm/smooth-scrolling.png)](https://www.npmjs.com/package/smooth-scrolling)
-
 ### Setup
 
 First, you'll need some simple HTML:
@@ -49,7 +47,9 @@ body{
 }
 ```
 
-If you want a custom scrollbar, you'll need additional CSS.
+If you need the default `body` scrollbar then check out this [CodePen](http://codepen.io/BaptisteBriel/pen/EVaQBe) demo.
+
+If you want a custom one, you'll need some additional CSS:
 
 ```css
 .vs-scrollbar{
@@ -73,26 +73,16 @@ If you want a custom scrollbar, you'll need additional CSS.
 
 #### Normal usage
 
-If you're not using the npm version of smooth-scrolling, `smooth.js` is located under src/.
-VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are located under lib/
+If you're not using the `npm` version of `smooth-scrolling`, `smooth.js` is located under `/src/`.
 
-*This is the standard source code which doesn't `require()` modules so you can use it normally without npm and browserify.*
+VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are located under `/lib/`
+
+*This is the standard source code. If you're using the npm version, you'll just need the requestAnimationFrame [polyfill](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).*
 
 ```html
 <script src="lib/rAF.js"></script>
 <script src="lib/vs.js"></script>
 <script src="src/smooth.js"></script>
-```
-
-The requestAnimationFrame polyfill was taken from [here](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).
-
-#### With browserify
-
-If you're using smooth-scrolling on npm, you'll just need the requestAnimationFrame polyfill located under lib/
-
-```html
-<script src="lib/rAF.js"></script>
-<script src="src/build.min.js"></script>
 ```
 
 ### Usage
