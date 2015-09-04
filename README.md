@@ -47,9 +47,7 @@ body{
 }
 ```
 
-If you need the default `body` scrollbar then check out this [CodePen](http://codepen.io/BaptisteBriel/pen/EVaQBe) demo.
-
-If you want a custom one, you'll need some additional CSS:
+If you need the default `body` scrollbar then check out this [CodePen](http://codepen.io/BaptisteBriel/pen/EVaQBe) demo. If you want a custom one, you'll need some additional CSS:
 
 ```css
 .vs-scrollbar{
@@ -71,7 +69,7 @@ If you want a custom one, you'll need some additional CSS:
 }
 ```
 
-#### Normal usage
+### Usage
 
 If you're not using the `npm` version of `smooth-scrolling`, `smooth.js` is located under `/src/`.
 
@@ -84,8 +82,6 @@ VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are lo
 <script src="lib/vs.js"></script>
 <script src="src/smooth.js"></script>
 ```
-
-### Usage
 
 Now to the JavaScript part;  
 To launch a new smooth scroll, just use the Smooth object like this:
