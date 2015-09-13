@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {
     "classie": "^0.1.0",
-    "dom-css": "^1.1.1",
+    "dom-css": "^1.1.2",
     "dom-event": "0.0.5"
   },
   "devDependencies": {
