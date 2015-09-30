@@ -201,9 +201,9 @@ Smooth.prototype.run = function(){
 	this.els.forEach(function(el) {
 
 		t = (self.direction == 'vertical')
-			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + (self.pos.currentY * el.speed) + ',0,1)'
-			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + (self.pos.currentX * el.speed) + ',0,0,1)'
-
+			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + (self.pos.currentY * el.speed).toFixed(2) + ',0,1)'
+			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + (self.pos.currentX * el.speed).toFixed(2) + ',0,0,1)'
+		
 		css(el, 'transform', t);
 
 	});
@@ -220,8 +220,8 @@ Smooth.prototype.run = function(){
 		r = Math.min(r, r+h);
 
 		v = (self.direction == 'vertical')
-			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + r + ',0,1)'
-			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + r + ',0,0,1)'
+			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + r.toFixed(2) + ',0,1)'
+			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + r.toFixed(2) + ',0,0,1)'
 			
 		css(self.scrollbar.drag.el, 'transform', v);
 
