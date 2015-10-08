@@ -16,7 +16,7 @@
     "gulp-jshint": "1.11.2",
     "gulp-notify": "2.0.1",
     "gulp-rename": "1.2.2",
-    "gulp-uglify": "1.0.2",
+    "gulp-uglify": "1.4.1",
     "gulp-util": "3.0.6"
   },
   "scripts": {},
