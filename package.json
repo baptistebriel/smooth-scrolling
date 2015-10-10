@@ -14,7 +14,7 @@
     "gulp-browserify": "0.5.1",
     "gulp-concat": "2.3.5",
     "gulp-jshint": "1.11.2",
-    "gulp-notify": "2.0.1",
+    "gulp-notify": "2.2.0",
     "gulp-rename": "1.2.2",
     "gulp-uglify": "1.4.1",
     "gulp-util": "3.0.6"
