@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "gulp": "3.9.0",
-    "gulp-autoprefixer": "3.0.2",
+    "gulp-autoprefixer": "3.1.0",
     "gulp-browserify": "0.5.1",
     "gulp-concat": "2.3.5",
     "gulp-jshint": "1.11.2",
