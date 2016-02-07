@@ -254,16 +254,21 @@ class Smooth {
 
     resize() {
         
+        const prop = this.vars.direction === 'vertical' ? 'height' : 'width';
+
         this.vars.height = document.documentElement.clientHeight || window.innerHeight
         this.vars.width = document.documentElement.clientWidth || window.innerWidth
         
-        !this.extends && (this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.native ? 0 : this.vars.height))
-
+        if(!this.extends) {
+            const bounding = this.dom.section.getBoundingClientRect()
+            this.vars.bounding = this.vars.direction === 'vertical' ? bounding.height - (this.vars.native ? 0 : this.vars.height) : bounding.right - (this.vars.native ? 0 : this.vars.width)
+        }
+        
         if(!this.vars.native) {
             this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding)
-            css(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height)
+            css(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height)
         } else {
-            css(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding)
+            css(this.dom.scroll, prop, this.vars.bounding)
         }
     }
     
