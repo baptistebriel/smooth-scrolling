@@ -26,7 +26,16 @@
     "demo-performances": "watchify -v -t babelify demos/performances/index.js -o demos/performances/build.js"
   },
   "browserify": {
-    "transform": [[ "babelify", { "presets": ["es2015"] } ]]
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
   },
   "author": "Baptiste Briel",
   "license": "ISC"

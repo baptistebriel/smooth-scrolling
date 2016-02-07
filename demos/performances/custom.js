@@ -2,7 +2,7 @@ import Smooth from '../../index'
 
 class Custom extends Smooth {
     
-    constructor(opt = {}) {
+    constructor(opt) {
         
         super(opt);
 
@@ -16,20 +16,20 @@ class Custom extends Smooth {
     
     run() {
         
-        this.perfs.now = window.performance.now();
+        this.perfs.now = window.performance.now()
         
-        super.run();
+        super.run()
 
-        this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
+        this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
         
-        console.log(this.perfs.now - this.perfs.last);
+        console.log(this.perfs.now - this.perfs.last)
 
-        this.perfs.last = this.perfs.now;
+        this.perfs.last = this.perfs.now
     }
     
     resize() {
         
-        this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height;
+        this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
         
         super.resize();
     }

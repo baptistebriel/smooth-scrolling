@@ -14,9 +14,9 @@ const smooth = new Smooth({
   native: true,
   section: section,
   ease: 0.1
-});
+})
 
-smooth.init();
+smooth.init()
 ```
 
 ### Options
@@ -31,11 +31,11 @@ smooth.init();
 
 ### Methods
 
-### `smooth.init();`
+### `smooth.init()`
 
 Will add all event listeners and DOM elements.
 
-### `smooth.destroy();`
+### `smooth.destroy()`
 
 Will remove all event listeners and DOM elements.
 
@@ -92,9 +92,9 @@ const smooth = new Custom({
   section: section,
   opacity: opacity,
   ease: 0.1
-});
+})
 
-smooth.init();
+smooth.init()
 ```
 
 ## Further understanding

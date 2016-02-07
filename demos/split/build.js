@@ -91,6 +91,8 @@ var Split = function (_Smooth) {
 
                 var bounding = el.getBoundingClientRect();
                 var bounds = {
+                    el: el,
+                    state: true,
                     top: bounding.top,
                     bottom: bounding.bottom,
                     speed: '-1'
@@ -111,6 +113,8 @@ var Split = function (_Smooth) {
         key: 'inViewport',
         value: function inViewport(el, index) {
 
+            if (!this.sections) return;
+
             var cache = this.sections[index];
             var current = this.vars.current;
             var transform = current * cache.speed;
@@ -120,12 +124,16 @@ var Split = function (_Smooth) {
 
             if (inview) {
 
+                // !cache.state && (this.dom.section.appendChild(cache.el), cache.state = true);
+
                 el.style.display = 'block';
                 el.style[this.prefix] = this.getTransform(transform);
             } else {
 
                 el.style.display = 'none';
                 el.style[this.prefix] = 'none';
+
+                // cache.state && cache.el.parentNode && (cache.el.parentNode.removeChild(cache.el), cache.state = false);
             }
         }
     }]);
@@ -135,7 +143,7 @@ var Split = function (_Smooth) {
 
 exports.default = Split;
 
-},{"../../index":3,"dom-css":9}],2:[function(require,module,exports){
+},{"../../index":3,"dom-css":12}],2:[function(require,module,exports){
 'use strict';
 
 var _custom = require('./custom');
@@ -496,1125 +504,7 @@ window.Smooth = Smooth;
 
 exports.default = Smooth;
 
-},{"dom-classes":7,"dom-create-element":8,"dom-css":9,"dom-event":10,"perfnow":14,"prefix":16,"virtual-scroll":22}],4:[function(require,module,exports){
-'use strict';
-
-var toString = Object.prototype.toString,
-    hasOwnProperty = Object.prototype.hasOwnProperty;
-
-module.exports = function(object) {
-    if(!object) return console.warn('bindAll requires at least one argument.');
-
-    var functions = Array.prototype.slice.call(arguments, 1);
-
-    if (functions.length === 0) {
-
-        for (var method in object) {
-            if(hasOwnProperty.call(object, method)) {
-                if(typeof object[method] == 'function' && toString.call(object[method]) == "[object Function]") {
-                    functions.push(method);
-                }
-            }
-        }
-    }
-
-    for(var i = 0; i < functions.length; i++) {
-        var f = functions[i];
-        object[f] = bind(object[f], object);
-    }
-};
-
-/*
-    Faster bind without specific-case checking. (see https://coderwall.com/p/oi3j3w).
-    bindAll is only needed for events binding so no need to make slow fixes for constructor
-    or partial application.
-*/
-function bind(func, context) {
-  return function() {
-    return func.apply(context, arguments);
-  };
-}
-},{}],5:[function(require,module,exports){
-(function (Buffer){
-var clone = (function() {
-'use strict';
-
-/**
- * Clones (copies) an Object using deep copying.
- *
- * This function supports circular references by default, but if you are certain
- * there are no circular references in your object, you can save some CPU time
- * by calling clone(obj, false).
- *
- * Caution: if `circular` is false and `parent` contains circular references,
- * your program may enter an infinite loop and crash.
- *
- * @param `parent` - the object to be cloned
- * @param `circular` - set to true if the object to be cloned may contain
- *    circular references. (optional - true by default)
- * @param `depth` - set to a number if the object is only to be cloned to
- *    a particular depth. (optional - defaults to Infinity)
- * @param `prototype` - sets the prototype to be used when cloning an object.
- *    (optional - defaults to parent prototype).
-*/
-function clone(parent, circular, depth, prototype) {
-  var filter;
-  if (typeof circular === 'object') {
-    depth = circular.depth;
-    prototype = circular.prototype;
-    filter = circular.filter;
-    circular = circular.circular
-  }
-  // maintain two arrays for circular references, where corresponding parents
-  // and children have the same index
-  var allParents = [];
-  var allChildren = [];
-
-  var useBuffer = typeof Buffer != 'undefined';
-
-  if (typeof circular == 'undefined')
-    circular = true;
-
-  if (typeof depth == 'undefined')
-    depth = Infinity;
-
-  // recurse this function so we don't reset allParents and allChildren
-  function _clone(parent, depth) {
-    // cloning null always returns null
-    if (parent === null)
-      return null;
-
-    if (depth == 0)
-      return parent;
-
-    var child;
-    var proto;
-    if (typeof parent != 'object') {
-      return parent;
-    }
-
-    if (clone.__isArray(parent)) {
-      child = [];
-    } else if (clone.__isRegExp(parent)) {
-      child = new RegExp(parent.source, __getRegExpFlags(parent));
-      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.__isDate(parent)) {
-      child = new Date(parent.getTime());
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
-      parent.copy(child);
-      return child;
-    } else {
-      if (typeof prototype == 'undefined') {
-        proto = Object.getPrototypeOf(parent);
-        child = Object.create(proto);
-      }
-      else {
-        child = Object.create(prototype);
-        proto = prototype;
-      }
-    }
-
-    if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
-      allParents.push(parent);
-      allChildren.push(child);
-    }
-
-    for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
-      }
-
-      if (attrs && attrs.set == null) {
-        continue;
-      }
-      child[i] = _clone(parent[i], depth - 1);
-    }
-
-    return child;
-  }
-
-  return _clone(parent, depth);
-}
-
-/**
- * Simple flat clone using prototype, accepts only objects, usefull for property
- * override on FLAT configuration object (no nested props).
- *
- * USE WITH CAUTION! This may not behave as you wish if you do not know how this
- * works.
- */
-clone.clonePrototype = function clonePrototype(parent) {
-  if (parent === null)
-    return null;
-
-  var c = function () {};
-  c.prototype = parent;
-  return new c();
-};
-
-// private utility functions
-
-function __objToStr(o) {
-  return Object.prototype.toString.call(o);
-};
-clone.__objToStr = __objToStr;
-
-function __isDate(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
-clone.__isDate = __isDate;
-
-function __isArray(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
-clone.__isArray = __isArray;
-
-function __isRegExp(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
-clone.__isRegExp = __isRegExp;
-
-function __getRegExpFlags(re) {
-  var flags = '';
-  if (re.global) flags += 'g';
-  if (re.ignoreCase) flags += 'i';
-  if (re.multiline) flags += 'm';
-  return flags;
-};
-clone.__getRegExpFlags = __getRegExpFlags;
-
-return clone;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = clone;
-}
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":25}],6:[function(require,module,exports){
-var clone = require('clone');
-
-module.exports = function(options, defaults) {
-  options = options || {};
-
-  Object.keys(defaults).forEach(function(key) {
-    if (typeof options[key] === 'undefined') {
-      options[key] = clone(defaults[key]);
-    }
-  });
-
-  return options;
-};
-},{"clone":5}],7:[function(require,module,exports){
-/**
- * Module dependencies.
- */
-
-var index = require('indexof');
-
-/**
- * Whitespace regexp.
- */
-
-var whitespaceRe = /\s+/;
-
-/**
- * toString reference.
- */
-
-var toString = Object.prototype.toString;
-
-module.exports = classes;
-module.exports.add = add;
-module.exports.contains = has;
-module.exports.has = has;
-module.exports.toggle = toggle;
-module.exports.remove = remove;
-module.exports.removeMatching = removeMatching;
-
-function classes (el) {
-  if (el.classList) {
-    return el.classList;
-  }
-
-  var str = el.className.replace(/^\s+|\s+$/g, '');
-  var arr = str.split(whitespaceRe);
-  if ('' === arr[0]) arr.shift();
-  return arr;
-}
-
-function add (el, name) {
-  // classList
-  if (el.classList) {
-    el.classList.add(name);
-    return;
-  }
-
-  // fallback
-  var arr = classes(el);
-  var i = index(arr, name);
-  if (!~i) arr.push(name);
-  el.className = arr.join(' ');
-}
-
-function has (el, name) {
-  return el.classList
-    ? el.classList.contains(name)
-    : !! ~index(classes(el), name);
-}
-
-function remove (el, name) {
-  if ('[object RegExp]' == toString.call(name)) {
-    return removeMatching(el, name);
-  }
-
-  // classList
-  if (el.classList) {
-    el.classList.remove(name);
-    return;
-  }
-
-  // fallback
-  var arr = classes(el);
-  var i = index(arr, name);
-  if (~i) arr.splice(i, 1);
-  el.className = arr.join(' ');
-}
-
-function removeMatching (el, re, ref) {
-  var arr = Array.prototype.slice.call(classes(el));
-  for (var i = 0; i < arr.length; i++) {
-    if (re.test(arr[i])) {
-      remove(el, arr[i]);
-    }
-  }
-}
-
-function toggle (el, name) {
-  // classList
-  if (el.classList) {
-    return el.classList.toggle(name);
-  }
-
-  // fallback
-  if (has(el, name)) {
-    remove(el, name);
-  } else {
-    add(el, name);
-  }
-}
-
-},{"indexof":12}],8:[function(require,module,exports){
-/*
-`dom-create-element`
-
-var create = require('dom-create-element');
-
-var el = create({
-  selector: 'div',
-  styles: 'preloader',
-  html: '<span>Text</span>'
-});
-*/
-
-module.exports = create;
-
-function create(opt) {
-
-	opt = opt || {};
-	
-	var el = document.createElement(opt.selector);
-	
-	if(opt.attr) for(var index in opt.attr)
-		opt.attr.hasOwnProperty(index) && el.setAttribute(index, opt.attr[index]);
-	
-	"a" == opt.selector && opt.link && (
-		el.href = opt.link,
-		opt.target && el.setAttribute("target", opt.target)
-	);
-
-	"img" == opt.selector && opt.src && (
-		el.src = opt.src,
-		opt.lazyload && (
-			el.style.opacity = 0,
-			el.onload = function(){
-				el.style.opacity = 1;
-			}
-		)
-	);
-
-	opt.id && (el.id = opt.id);
-	opt.styles && (el.className = opt.styles);
-
-	opt.html && (el.innerHTML = opt.html);
-	opt.children && (el.appendChild(opt.children));
-	
-	return el;
-};
-},{}],9:[function(require,module,exports){
-var prefix = require('prefix-style')
-var toCamelCase = require('to-camel-case')
-var cache = { 'float': 'cssFloat' }
-
-var suffixMap = {}
-;['top','right','bottom','left',
-    'width','height','fontSize',
-    'paddingLeft','paddingRight',
-    'paddingTop','paddingBottom',
-    'marginLeft','marginRight',
-    'marginTop','marginBottom',
-    'padding','margin','perspective'
-].forEach(function(prop) {
-    suffixMap[prop] = 'px'
-})
-
-function style(element, property, value) {
-    var camel = cache[property]
-    if (typeof camel === 'undefined')
-        camel = detect(property)
-
-    //may be false if CSS prop is unsupported
-    if (camel) {
-        if (value === undefined)
-            return element.style[camel]
-
-        if (typeof value === 'number')
-            value = value + (suffixMap[camel]||'')
-        element.style[camel] = value
-    }
-}
-
-function each(element, properties) {
-    for (var k in properties) {
-        if (properties.hasOwnProperty(k)) {
-            style(element, k, properties[k])
-        }
-    }
-}
-
-function detect(cssProp) {
-    var camel = toCamelCase(cssProp)
-    var result = prefix(camel)
-    cache[camel] = cache[cssProp] = cache[result] = result
-    return result
-}
-
-function set() {
-    if (arguments.length === 2) {
-        each(arguments[0], arguments[1])
-    } else
-        style(arguments[0], arguments[1], arguments[2])
-}
-
-module.exports = set
-module.exports.set = set
-
-module.exports.get = function(element, properties) {
-    if (Array.isArray(properties))
-        return properties.reduce(function(obj, prop) {
-            obj[prop] = style(element, prop||'')
-            return obj
-        }, {})
-    else
-        return style(element, properties||'')
-}
-
-},{"prefix-style":15,"to-camel-case":18}],10:[function(require,module,exports){
-module.exports = on;
-module.exports.on = on;
-module.exports.off = off;
-
-function on (element, event, callback, capture) {
-  !element.addEventListener && (event = 'on' + event);
-  (element.addEventListener || element.attachEvent).call(element, event, callback, capture);
-  return callback;
-}
-
-function off (element, event, callback, capture) {
-  !element.removeEventListener && (event = 'on' + event);
-  (element.removeEventListener || element.detachEvent).call(element, event, callback, capture);
-  return callback;
-}
-
-},{}],11:[function(require,module,exports){
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},{}],12:[function(require,module,exports){
-
-var indexOf = [].indexOf;
-
-module.exports = function(arr, obj){
-  if (indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
-    if (arr[i] === obj) return i;
-  }
-  return -1;
-};
-},{}],13:[function(require,module,exports){
-// Generated by CoffeeScript 1.9.2
-(function() {
-  var root;
-
-  root = typeof exports !== "undefined" && exports !== null ? exports : this;
-
-  root.Lethargy = (function() {
-    function Lethargy(stability, sensitivity, tolerance, delay) {
-      this.stability = stability != null ? Math.abs(stability) : 8;
-      this.sensitivity = sensitivity != null ? 1 + Math.abs(sensitivity) : 100;
-      this.tolerance = tolerance != null ? 1 + Math.abs(tolerance) : 1.1;
-      this.delay = delay != null ? delay : 150;
-      this.lastUpDeltas = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
-        }
-        return results;
-      }).call(this);
-      this.lastDownDeltas = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
-        }
-        return results;
-      }).call(this);
-      this.deltasTimestamp = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
-        }
-        return results;
-      }).call(this);
-    }
-
-    Lethargy.prototype.check = function(e) {
-      var lastDelta;
-      e = e.originalEvent || e;
-      if (e.wheelDelta != null) {
-        lastDelta = e.wheelDelta;
-      } else if (e.deltaY != null) {
-        lastDelta = e.deltaY * -40;
-      } else if ((e.detail != null) || e.detail === 0) {
-        lastDelta = e.detail * -40;
-      }
-      this.deltasTimestamp.push(Date.now());
-      this.deltasTimestamp.shift();
-      if (lastDelta > 0) {
-        this.lastUpDeltas.push(lastDelta);
-        this.lastUpDeltas.shift();
-        return this.isInertia(1);
-      } else {
-        this.lastDownDeltas.push(lastDelta);
-        this.lastDownDeltas.shift();
-        return this.isInertia(-1);
-      }
-      return false;
-    };
-
-    Lethargy.prototype.isInertia = function(direction) {
-      var lastDeltas, lastDeltasNew, lastDeltasOld, newAverage, newSum, oldAverage, oldSum;
-      lastDeltas = direction === -1 ? this.lastDownDeltas : this.lastUpDeltas;
-      if (lastDeltas[0] === null) {
-        return direction;
-      }
-      if (this.deltasTimestamp[(this.stability * 2) - 2] + this.delay > Date.now() && lastDeltas[0] === lastDeltas[(this.stability * 2) - 1]) {
-        return false;
-      }
-      lastDeltasOld = lastDeltas.slice(0, this.stability);
-      lastDeltasNew = lastDeltas.slice(this.stability, this.stability * 2);
-      oldSum = lastDeltasOld.reduce(function(t, s) {
-        return t + s;
-      });
-      newSum = lastDeltasNew.reduce(function(t, s) {
-        return t + s;
-      });
-      oldAverage = oldSum / lastDeltasOld.length;
-      newAverage = newSum / lastDeltasNew.length;
-      if (Math.abs(oldAverage) < Math.abs(newAverage * this.tolerance) && (this.sensitivity < Math.abs(newAverage))) {
-        return direction;
-      } else {
-        return false;
-      }
-    };
-
-    Lethargy.prototype.showLastUpDeltas = function() {
-      return this.lastUpDeltas;
-    };
-
-    Lethargy.prototype.showLastDownDeltas = function() {
-      return this.lastDownDeltas;
-    };
-
-    return Lethargy;
-
-  })();
-
-}).call(this);
-
-},{}],14:[function(require,module,exports){
-/**
- * @file perfnow is a 0.14 kb window.performance.now high resolution timer polyfill with Date fallback
- * @author Daniel Lamb <dlamb.open.source@gmail.com>
- */
-
-function perfnow(window){
-  // make sure we have an object to work with
-  if(!('performance' in window)) {
-    window.performance = {};
-  }
-  var perf = window.performance;
-  // handle vendor prefixing
-  window.performance.now = perf.now ||
-    perf.mozNow ||
-    perf.msNow ||
-    perf.oNow ||
-    perf.webkitNow ||
-    // fallback to Date
-    Date.now || function () {
-      return new Date().getTime();
-  };
-}
-perfnow(window);
-},{}],15:[function(require,module,exports){
-var elem = null
-
-//https://gist.github.com/paulirish/523692
-module.exports = function prefix(prop) {
-    var prefixes = ['Moz', 'Khtml', 'Webkit', 'O', 'ms'],
-        upper = prop.charAt(0).toUpperCase() + prop.slice(1)
-    
-    if (!elem)
-        elem = document.createElement('div')
-
-    if (prop in elem.style)
-        return prop
-
-    for (var len = prefixes.length; len--;) {
-        if ((prefixes[len] + upper) in elem.style)
-            return (prefixes[len] + upper)
-    }
-    return false
-}
-},{}],16:[function(require,module,exports){
-function identity(x) { return x; }
-
-module.exports = identity;
-module.exports.dash = identity;
-module.exports.dash = identity;
-
-},{}],17:[function(require,module,exports){
-function E () {
-	// Keep this empty so it's easier to inherit from
-  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
-}
-
-E.prototype = {
-	on: function (name, callback, ctx) {
-    var e = this.e || (this.e = {});
-
-    (e[name] || (e[name] = [])).push({
-      fn: callback,
-      ctx: ctx
-    });
-
-    return this;
-  },
-
-  once: function (name, callback, ctx) {
-    var self = this;
-    function listener () {
-      self.off(name, listener);
-      callback.apply(ctx, arguments);
-    };
-
-    listener._ = callback
-    return this.on(name, listener, ctx);
-  },
-
-  emit: function (name) {
-    var data = [].slice.call(arguments, 1);
-    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
-    var i = 0;
-    var len = evtArr.length;
-
-    for (i; i < len; i++) {
-      evtArr[i].fn.apply(evtArr[i].ctx, data);
-    }
-
-    return this;
-  },
-
-  off: function (name, callback) {
-    var e = this.e || (this.e = {});
-    var evts = e[name];
-    var liveEvents = [];
-
-    if (evts && callback) {
-      for (var i = 0, len = evts.length; i < len; i++) {
-        if (evts[i].fn !== callback && evts[i].fn._ !== callback)
-          liveEvents.push(evts[i]);
-      }
-    }
-
-    // Remove event from queue to prevent memory leak
-    // Suggested by https://github.com/lazd
-    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
-
-    (liveEvents.length)
-      ? e[name] = liveEvents
-      : delete e[name];
-
-    return this;
-  }
-};
-
-module.exports = E;
-
-},{}],18:[function(require,module,exports){
-
-var toSpace = require('to-space-case');
-
-
-/**
- * Expose `toCamelCase`.
- */
-
-module.exports = toCamelCase;
-
-
-/**
- * Convert a `string` to camel case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
-}
-},{"to-space-case":20}],19:[function(require,module,exports){
-
-/**
- * Expose `toNoCase`.
- */
-
-module.exports = toNoCase;
-
-
-/**
- * Test whether a string is camel-case.
- */
-
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
-
-/**
- * Remove any starting case from a `string`, like camel or snake, but keep
- * spaces and punctuation that may be important otherwise.
- *
- * @param {String} string
- * @return {String}
- */
-
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
-}
-
-
-/**
- * Separator splitter.
- */
-
-var separatorSplitter = /[\W_]+(.|$)/g;
-
-
-/**
- * Un-separate a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function unseparate (string) {
-  return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
-}
-
-
-/**
- * Camelcase splitter.
- */
-
-var camelSplitter = /(.)([A-Z]+)/g;
-
-
-/**
- * Un-camelcase a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function uncamelize (string) {
-  return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
-}
-},{}],20:[function(require,module,exports){
-
-var clean = require('to-no-case');
-
-
-/**
- * Expose `toSpaceCase`.
- */
-
-module.exports = toSpaceCase;
-
-
-/**
- * Convert a `string` to space case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toSpaceCase (string) {
-  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
-}
-},{"to-no-case":19}],21:[function(require,module,exports){
-'use strict';
-
-module.exports = function(source) {
-    return JSON.parse(JSON.stringify(source));
-};
-},{}],22:[function(require,module,exports){
-'use strict';
-
-var defaults = require('defaults');
-var Emitter = require('tiny-emitter');
-var Lethargy = require('lethargy').Lethargy;
-var support = require('./support');
-var clone = require('./clone');
-var bindAll = require('bindall-standalone');
-var EVT_ID = 'virtualscroll';
-
-module.exports = VirtualScroll;
-
-var keyCodes = {
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40
-};
-
-function VirtualScroll(options) {
-    bindAll(this, '_onWheel', '_onMouseWheel', '_onTouchStart', '_onTouchMove', '_onKeyDown');
-
-    this.options = defaults(options || {}, {
-        mouseMultiplier: 1,
-        touchMultiplier: 2,
-        firefoxMultiplier: 15,
-        keyStep: 120,
-        preventTouch: false,
-        unpreventTouchClass: 'vs-touchmove-allowed',
-        limitInertia: false
-    });
-
-    if (this.options.limitInertia) this._lethargy = new Lethargy();
-
-    this._emitter = new Emitter();
-    this._event = {
-        y: 0,
-        x: 0,
-        deltaX: 0,
-        deltaY: 0
-    };
-
-    this.touchStartX = null;
-    this.touchStartY = null;
-    this.bodyTouchAction = null;
-}
-
-VirtualScroll.prototype._notify = function(e) {
-    var evt = this._event;
-    evt.x += evt.deltaX;
-    evt.y += evt.deltaY;
-
-   this._emitter.emit(EVT_ID, {
-        x: evt.x,
-        y: evt.y,
-        deltaX: evt.deltaX,
-        deltaY: evt.deltaY,
-        originalEvent: e
-   });
-};
-
-VirtualScroll.prototype._onWheel = function(e) {
-    var options = this.options;
-    if (this._lethargy && this._lethargy.check(e) === false) return;
-
-    var evt = this._event;
-
-    // In Chrome and in Firefox (at least the new one)
-    evt.deltaX = e.wheelDeltaX || e.deltaX * -1;
-    evt.deltaY = e.wheelDeltaY || e.deltaY * -1;
-
-    // for our purpose deltamode = 1 means user is on a wheel mouse, not touch pad
-    // real meaning: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent#Delta_modes
-    if(support.isFirefox && e.deltaMode == 1) {
-        evt.deltaX *= options.firefoxMultiplier;
-        evt.deltaY *= options.firefoxMultiplier;
-    }
-
-    evt.deltaX *= options.mouseMultiplier;
-    evt.deltaY *= options.mouseMultiplier;
-
-    this._notify(e);
-};
-
-VirtualScroll.prototype._onMouseWheel = function(e) {
-    if (this.options.limitInertia && this._lethargy.check(e) === false) return;
-
-    var evt = this._event;
-
-    // In Safari, IE and in Chrome if 'wheel' isn't defined
-    evt.deltaX = (e.wheelDeltaX) ? e.wheelDeltaX : 0;
-    evt.deltaY = (e.wheelDeltaY) ? e.wheelDeltaY : e.wheelDelta;
-
-    this._notify(e);
-};
-
-VirtualScroll.prototype._onTouchStart = function(e) {
-    var t = (e.targetTouches) ? e.targetTouches[0] : e;
-    this.touchStartX = t.pageX;
-    this.touchStartY = t.pageY;
-};
-
-VirtualScroll.prototype._onTouchMove = function(e) {
-    var options = this.options;
-    if(options.preventTouch
-        && !e.target.classList.contains(options.unpreventTouchClass)) {
-        e.preventDefault();
-    }
-
-    var evt = this._event;
-
-    var t = (e.targetTouches) ? e.targetTouches[0] : e;
-
-    evt.deltaX = (t.pageX - this.touchStartX) * options.touchMultiplier;
-    evt.deltaY = (t.pageY - this.touchStartY) * options.touchMultiplier;
-
-    this.touchStartX = t.pageX;
-    this.touchStartY = t.pageY;
-
-    this._notify(e);
-};
-
-VirtualScroll.prototype._onKeyDown = function(e) {
-    var evt = this._event;
-    evt.deltaX = evt.deltaY = 0;
-
-    switch(e.keyCode) {
-        case keyCodes.LEFT:
-        case keyCodes.UP:
-            evt.deltaY = this.options.keyStep;
-            break;
-
-        case keyCodes.RIGHT:
-        case keyCodes.DOWN:
-            evt.deltaY = - this.options.keyStep;
-            break;
-
-        default:
-            return;
-    }
-
-    this._notify(e);
-};
-
-VirtualScroll.prototype._bind = function() {
-    if(support.hasWheelEvent) document.addEventListener('wheel', this._onWheel);
-    if(support.hasMouseWheelEvent) document.addEventListener('mousewheel', this._onMouseWheel);
-
-    if(support.hasTouch) {
-        document.addEventListener('touchstart', this._onTouchStart);
-        document.addEventListener('touchmove', this._onTouchMove);
-    }
-
-    if(support.hasPointer && support.hasTouchWin) {
-        this.bodyTouchAction = document.body.style.msTouchAction;
-        document.body.style.msTouchAction = 'none';
-        document.addEventListener('MSPointerDown', this._onTouchStart, true);
-        document.addEventListener('MSPointerMove', this._onTouchMove, true);
-    }
-
-    if(support.hasKeyDown) document.addEventListener('keydown', this._onKeyDown);
-};
-
-VirtualScroll.prototype._unbind = function() {
-    if(support.hasWheelEvent) document.removeEventListener('wheel', this._onWheel);
-    if(support.hasMouseWheelEvent) document.removeEventListener('mousewheel', this._onMouseWheel);
-
-    if(support.hasTouch) {
-        document.removeEventListener('touchstart', this._onTouchStart);
-        document.removeEventListener('touchmove', this._onTouchMove);
-    }
-
-    if(support.hasPointer && support.hasTouchWin) {
-        document.body.style.msTouchAction = this.bodyTouchAction;
-        document.removeEventListener('MSPointerDown', this._onTouchStart, true);
-        document.removeEventListener('MSPointerMove', this._onTouchMove, true);
-    }
-
-    if(support.hasKeyDown) document.removeEventListener('keydown', this._onKeyDown);
-};
-
-VirtualScroll.prototype.on = function(cb, ctx) {
-  this._emitter.on(EVT_ID, cb, ctx);
-
-  var events = this._emitter.e;
-  if (events && events[EVT_ID] && events[EVT_ID].length === 1) this._bind();
-};
-
-VirtualScroll.prototype.off = function(cb, ctx) {
-  this._emitter.off(EVT_ID, cb, ctx);
-
-  var events = this._emitter.e;
-  if (!events[EVT_ID] || events[EVT_ID].length <= 0) this._unbind();
-};
-
-VirtualScroll.prototype.reset = function() {
-    var evt = this._event;
-    evt.x = 0;
-    evt.y = 0;
-};
-
-VirtualScroll.prototype.destroy = function() {
-    this._emitter.off();
-    this._unbind();
-};
-
-},{"./clone":21,"./support":23,"bindall-standalone":4,"defaults":6,"lethargy":13,"tiny-emitter":17}],23:[function(require,module,exports){
-'use strict';
-
-module.exports = (function getSupport() {
-    return {
-        hasWheelEvent: 'onwheel' in document,
-        hasMouseWheelEvent: 'onmousewheel' in document,
-        hasTouch: 'ontouchstart' in document,
-        hasTouchWin: navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1,
-        hasPointer: !!window.navigator.msPointerEnabled,
-        hasKeyDown: 'onkeydown' in document,
-        isFirefox: navigator.userAgent.indexOf('Firefox') > -1
-    };
-})();
-},{}],24:[function(require,module,exports){
+},{"dom-classes":10,"dom-create-element":11,"dom-css":12,"dom-event":13,"perfnow":17,"prefix":19,"virtual-scroll":25}],4:[function(require,module,exports){
 ;(function (exports) {
   'use strict'
 
@@ -1734,7 +624,45 @@ module.exports = (function getSupport() {
   exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],25:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+'use strict';
+
+var toString = Object.prototype.toString,
+    hasOwnProperty = Object.prototype.hasOwnProperty;
+
+module.exports = function(object) {
+    if(!object) return console.warn('bindAll requires at least one argument.');
+
+    var functions = Array.prototype.slice.call(arguments, 1);
+
+    if (functions.length === 0) {
+
+        for (var method in object) {
+            if(hasOwnProperty.call(object, method)) {
+                if(typeof object[method] == 'function' && toString.call(object[method]) == "[object Function]") {
+                    functions.push(method);
+                }
+            }
+        }
+    }
+
+    for(var i = 0; i < functions.length; i++) {
+        var f = functions[i];
+        object[f] = bind(object[f], object);
+    }
+};
+
+/*
+    Faster bind without specific-case checking. (see https://coderwall.com/p/oi3j3w).
+    bindAll is only needed for events binding so no need to make slow fixes for constructor
+    or partial application.
+*/
+function bind(func, context) {
+  return function() {
+    return func.apply(context, arguments);
+  };
+}
+},{}],6:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3192,11 +2120,1091 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":24,"ieee754":11,"isarray":26}],26:[function(require,module,exports){
+},{"base64-js":4,"ieee754":14,"isarray":7}],7:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
+},{}],8:[function(require,module,exports){
+(function (Buffer){
+var clone = (function() {
+'use strict';
+
+/**
+ * Clones (copies) an Object using deep copying.
+ *
+ * This function supports circular references by default, but if you are certain
+ * there are no circular references in your object, you can save some CPU time
+ * by calling clone(obj, false).
+ *
+ * Caution: if `circular` is false and `parent` contains circular references,
+ * your program may enter an infinite loop and crash.
+ *
+ * @param `parent` - the object to be cloned
+ * @param `circular` - set to true if the object to be cloned may contain
+ *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
+*/
+function clone(parent, circular, depth, prototype) {
+  var filter;
+  if (typeof circular === 'object') {
+    depth = circular.depth;
+    prototype = circular.prototype;
+    filter = circular.filter;
+    circular = circular.circular
+  }
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
+
+  var useBuffer = typeof Buffer != 'undefined';
+
+  if (typeof circular == 'undefined')
+    circular = true;
+
+  if (typeof depth == 'undefined')
+    depth = Infinity;
+
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      return null;
+
+    if (depth == 0)
+      return parent;
+
+    var child;
+    var proto;
+    if (typeof parent != 'object') {
+      return parent;
+    }
+
+    if (clone.__isArray(parent)) {
+      child = [];
+    } else if (clone.__isRegExp(parent)) {
+      child = new RegExp(parent.source, __getRegExpFlags(parent));
+      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+    } else if (clone.__isDate(parent)) {
+      child = new Date(parent.getTime());
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+      return child;
+    } else {
+      if (typeof prototype == 'undefined') {
+        proto = Object.getPrototypeOf(parent);
+        child = Object.create(proto);
+      }
+      else {
+        child = Object.create(prototype);
+        proto = prototype;
+      }
+    }
+
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+
+    for (var i in parent) {
+      var attrs;
+      if (proto) {
+        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      }
+
+      if (attrs && attrs.set == null) {
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
+    }
+
+    return child;
+  }
+
+  return _clone(parent, depth);
+}
+
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function clonePrototype(parent) {
+  if (parent === null)
+    return null;
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
+
+// private utility functions
+
+function __objToStr(o) {
+  return Object.prototype.toString.call(o);
+};
+clone.__objToStr = __objToStr;
+
+function __isDate(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+};
+clone.__isDate = __isDate;
+
+function __isArray(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+};
+clone.__isArray = __isArray;
+
+function __isRegExp(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+};
+clone.__isRegExp = __isRegExp;
+
+function __getRegExpFlags(re) {
+  var flags = '';
+  if (re.global) flags += 'g';
+  if (re.ignoreCase) flags += 'i';
+  if (re.multiline) flags += 'm';
+  return flags;
+};
+clone.__getRegExpFlags = __getRegExpFlags;
+
+return clone;
+})();
+
+if (typeof module === 'object' && module.exports) {
+  module.exports = clone;
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":6}],9:[function(require,module,exports){
+var clone = require('clone');
+
+module.exports = function(options, defaults) {
+  options = options || {};
+
+  Object.keys(defaults).forEach(function(key) {
+    if (typeof options[key] === 'undefined') {
+      options[key] = clone(defaults[key]);
+    }
+  });
+
+  return options;
+};
+},{"clone":8}],10:[function(require,module,exports){
+/**
+ * Module dependencies.
+ */
+
+var index = require('indexof');
+
+/**
+ * Whitespace regexp.
+ */
+
+var whitespaceRe = /\s+/;
+
+/**
+ * toString reference.
+ */
+
+var toString = Object.prototype.toString;
+
+module.exports = classes;
+module.exports.add = add;
+module.exports.contains = has;
+module.exports.has = has;
+module.exports.toggle = toggle;
+module.exports.remove = remove;
+module.exports.removeMatching = removeMatching;
+
+function classes (el) {
+  if (el.classList) {
+    return el.classList;
+  }
+
+  var str = el.className.replace(/^\s+|\s+$/g, '');
+  var arr = str.split(whitespaceRe);
+  if ('' === arr[0]) arr.shift();
+  return arr;
+}
+
+function add (el, name) {
+  // classList
+  if (el.classList) {
+    el.classList.add(name);
+    return;
+  }
+
+  // fallback
+  var arr = classes(el);
+  var i = index(arr, name);
+  if (!~i) arr.push(name);
+  el.className = arr.join(' ');
+}
+
+function has (el, name) {
+  return el.classList
+    ? el.classList.contains(name)
+    : !! ~index(classes(el), name);
+}
+
+function remove (el, name) {
+  if ('[object RegExp]' == toString.call(name)) {
+    return removeMatching(el, name);
+  }
+
+  // classList
+  if (el.classList) {
+    el.classList.remove(name);
+    return;
+  }
+
+  // fallback
+  var arr = classes(el);
+  var i = index(arr, name);
+  if (~i) arr.splice(i, 1);
+  el.className = arr.join(' ');
+}
+
+function removeMatching (el, re, ref) {
+  var arr = Array.prototype.slice.call(classes(el));
+  for (var i = 0; i < arr.length; i++) {
+    if (re.test(arr[i])) {
+      remove(el, arr[i]);
+    }
+  }
+}
+
+function toggle (el, name) {
+  // classList
+  if (el.classList) {
+    return el.classList.toggle(name);
+  }
+
+  // fallback
+  if (has(el, name)) {
+    remove(el, name);
+  } else {
+    add(el, name);
+  }
+}
+
+},{"indexof":15}],11:[function(require,module,exports){
+/*
+`dom-create-element`
+
+var create = require('dom-create-element');
+
+var el = create({
+  selector: 'div',
+  styles: 'preloader',
+  html: '<span>Text</span>'
+});
+*/
+
+module.exports = create;
+
+function create(opt) {
+
+	opt = opt || {};
+	
+	var el = document.createElement(opt.selector);
+	
+	if(opt.attr) for(var index in opt.attr)
+		opt.attr.hasOwnProperty(index) && el.setAttribute(index, opt.attr[index]);
+	
+	"a" == opt.selector && opt.link && (
+		el.href = opt.link,
+		opt.target && el.setAttribute("target", opt.target)
+	);
+
+	"img" == opt.selector && opt.src && (
+		el.src = opt.src,
+		opt.lazyload && (
+			el.style.opacity = 0,
+			el.onload = function(){
+				el.style.opacity = 1;
+			}
+		)
+	);
+
+	opt.id && (el.id = opt.id);
+	opt.styles && (el.className = opt.styles);
+
+	opt.html && (el.innerHTML = opt.html);
+	opt.children && (el.appendChild(opt.children));
+	
+	return el;
+};
+},{}],12:[function(require,module,exports){
+var prefix = require('prefix-style')
+var toCamelCase = require('to-camel-case')
+var cache = { 'float': 'cssFloat' }
+
+var suffixMap = {}
+;['top','right','bottom','left',
+    'width','height','fontSize',
+    'paddingLeft','paddingRight',
+    'paddingTop','paddingBottom',
+    'marginLeft','marginRight',
+    'marginTop','marginBottom',
+    'padding','margin','perspective'
+].forEach(function(prop) {
+    suffixMap[prop] = 'px'
+})
+
+function style(element, property, value) {
+    var camel = cache[property]
+    if (typeof camel === 'undefined')
+        camel = detect(property)
+
+    //may be false if CSS prop is unsupported
+    if (camel) {
+        if (value === undefined)
+            return element.style[camel]
+
+        if (typeof value === 'number')
+            value = value + (suffixMap[camel]||'')
+        element.style[camel] = value
+    }
+}
+
+function each(element, properties) {
+    for (var k in properties) {
+        if (properties.hasOwnProperty(k)) {
+            style(element, k, properties[k])
+        }
+    }
+}
+
+function detect(cssProp) {
+    var camel = toCamelCase(cssProp)
+    var result = prefix(camel)
+    cache[camel] = cache[cssProp] = cache[result] = result
+    return result
+}
+
+function set() {
+    if (arguments.length === 2) {
+        each(arguments[0], arguments[1])
+    } else
+        style(arguments[0], arguments[1], arguments[2])
+}
+
+module.exports = set
+module.exports.set = set
+
+module.exports.get = function(element, properties) {
+    if (Array.isArray(properties))
+        return properties.reduce(function(obj, prop) {
+            obj[prop] = style(element, prop||'')
+            return obj
+        }, {})
+    else
+        return style(element, properties||'')
+}
+
+},{"prefix-style":18,"to-camel-case":21}],13:[function(require,module,exports){
+module.exports = on;
+module.exports.on = on;
+module.exports.off = off;
+
+function on (element, event, callback, capture) {
+  !element.addEventListener && (event = 'on' + event);
+  (element.addEventListener || element.attachEvent).call(element, event, callback, capture);
+  return callback;
+}
+
+function off (element, event, callback, capture) {
+  !element.removeEventListener && (event = 'on' + event);
+  (element.removeEventListener || element.detachEvent).call(element, event, callback, capture);
+  return callback;
+}
+
+},{}],14:[function(require,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],15:[function(require,module,exports){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],16:[function(require,module,exports){
+// Generated by CoffeeScript 1.9.2
+(function() {
+  var root;
+
+  root = typeof exports !== "undefined" && exports !== null ? exports : this;
+
+  root.Lethargy = (function() {
+    function Lethargy(stability, sensitivity, tolerance, delay) {
+      this.stability = stability != null ? Math.abs(stability) : 8;
+      this.sensitivity = sensitivity != null ? 1 + Math.abs(sensitivity) : 100;
+      this.tolerance = tolerance != null ? 1 + Math.abs(tolerance) : 1.1;
+      this.delay = delay != null ? delay : 150;
+      this.lastUpDeltas = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+      this.lastDownDeltas = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+      this.deltasTimestamp = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+    }
+
+    Lethargy.prototype.check = function(e) {
+      var lastDelta;
+      e = e.originalEvent || e;
+      if (e.wheelDelta != null) {
+        lastDelta = e.wheelDelta;
+      } else if (e.deltaY != null) {
+        lastDelta = e.deltaY * -40;
+      } else if ((e.detail != null) || e.detail === 0) {
+        lastDelta = e.detail * -40;
+      }
+      this.deltasTimestamp.push(Date.now());
+      this.deltasTimestamp.shift();
+      if (lastDelta > 0) {
+        this.lastUpDeltas.push(lastDelta);
+        this.lastUpDeltas.shift();
+        return this.isInertia(1);
+      } else {
+        this.lastDownDeltas.push(lastDelta);
+        this.lastDownDeltas.shift();
+        return this.isInertia(-1);
+      }
+      return false;
+    };
+
+    Lethargy.prototype.isInertia = function(direction) {
+      var lastDeltas, lastDeltasNew, lastDeltasOld, newAverage, newSum, oldAverage, oldSum;
+      lastDeltas = direction === -1 ? this.lastDownDeltas : this.lastUpDeltas;
+      if (lastDeltas[0] === null) {
+        return direction;
+      }
+      if (this.deltasTimestamp[(this.stability * 2) - 2] + this.delay > Date.now() && lastDeltas[0] === lastDeltas[(this.stability * 2) - 1]) {
+        return false;
+      }
+      lastDeltasOld = lastDeltas.slice(0, this.stability);
+      lastDeltasNew = lastDeltas.slice(this.stability, this.stability * 2);
+      oldSum = lastDeltasOld.reduce(function(t, s) {
+        return t + s;
+      });
+      newSum = lastDeltasNew.reduce(function(t, s) {
+        return t + s;
+      });
+      oldAverage = oldSum / lastDeltasOld.length;
+      newAverage = newSum / lastDeltasNew.length;
+      if (Math.abs(oldAverage) < Math.abs(newAverage * this.tolerance) && (this.sensitivity < Math.abs(newAverage))) {
+        return direction;
+      } else {
+        return false;
+      }
+    };
+
+    Lethargy.prototype.showLastUpDeltas = function() {
+      return this.lastUpDeltas;
+    };
+
+    Lethargy.prototype.showLastDownDeltas = function() {
+      return this.lastDownDeltas;
+    };
+
+    return Lethargy;
+
+  })();
+
+}).call(this);
+
+},{}],17:[function(require,module,exports){
+/**
+ * @file perfnow is a 0.14 kb window.performance.now high resolution timer polyfill with Date fallback
+ * @author Daniel Lamb <dlamb.open.source@gmail.com>
+ */
+
+function perfnow(window){
+  // make sure we have an object to work with
+  if(!('performance' in window)) {
+    window.performance = {};
+  }
+  var perf = window.performance;
+  // handle vendor prefixing
+  window.performance.now = perf.now ||
+    perf.mozNow ||
+    perf.msNow ||
+    perf.oNow ||
+    perf.webkitNow ||
+    // fallback to Date
+    Date.now || function () {
+      return new Date().getTime();
+  };
+}
+perfnow(window);
+},{}],18:[function(require,module,exports){
+var elem = null
+
+//https://gist.github.com/paulirish/523692
+module.exports = function prefix(prop) {
+    var prefixes = ['Moz', 'Khtml', 'Webkit', 'O', 'ms'],
+        upper = prop.charAt(0).toUpperCase() + prop.slice(1)
+    
+    if (!elem)
+        elem = document.createElement('div')
+
+    if (prop in elem.style)
+        return prop
+
+    for (var len = prefixes.length; len--;) {
+        if ((prefixes[len] + upper) in elem.style)
+            return (prefixes[len] + upper)
+    }
+    return false
+}
+},{}],19:[function(require,module,exports){
+function identity(x) { return x; }
+
+module.exports = identity;
+module.exports.dash = identity;
+module.exports.dash = identity;
+
+},{}],20:[function(require,module,exports){
+function E () {
+	// Keep this empty so it's easier to inherit from
+  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
+}
+
+E.prototype = {
+	on: function (name, callback, ctx) {
+    var e = this.e || (this.e = {});
+
+    (e[name] || (e[name] = [])).push({
+      fn: callback,
+      ctx: ctx
+    });
+
+    return this;
+  },
+
+  once: function (name, callback, ctx) {
+    var self = this;
+    function listener () {
+      self.off(name, listener);
+      callback.apply(ctx, arguments);
+    };
+
+    listener._ = callback
+    return this.on(name, listener, ctx);
+  },
+
+  emit: function (name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i = 0;
+    var len = evtArr.length;
+
+    for (i; i < len; i++) {
+      evtArr[i].fn.apply(evtArr[i].ctx, data);
+    }
+
+    return this;
+  },
+
+  off: function (name, callback) {
+    var e = this.e || (this.e = {});
+    var evts = e[name];
+    var liveEvents = [];
+
+    if (evts && callback) {
+      for (var i = 0, len = evts.length; i < len; i++) {
+        if (evts[i].fn !== callback && evts[i].fn._ !== callback)
+          liveEvents.push(evts[i]);
+      }
+    }
+
+    // Remove event from queue to prevent memory leak
+    // Suggested by https://github.com/lazd
+    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
+
+    (liveEvents.length)
+      ? e[name] = liveEvents
+      : delete e[name];
+
+    return this;
+  }
+};
+
+module.exports = E;
+
+},{}],21:[function(require,module,exports){
+
+var toSpace = require('to-space-case');
+
+
+/**
+ * Expose `toCamelCase`.
+ */
+
+module.exports = toCamelCase;
+
+
+/**
+ * Convert a `string` to camel case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toCamelCase (string) {
+  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
+    return letter.toUpperCase();
+  });
+}
+},{"to-space-case":23}],22:[function(require,module,exports){
+
+/**
+ * Expose `toNoCase`.
+ */
+
+module.exports = toNoCase;
+
+
+/**
+ * Test whether a string is camel-case.
+ */
+
+var hasSpace = /\s/;
+var hasCamel = /[a-z][A-Z]/;
+var hasSeparator = /[\W_]/;
+
+
+/**
+ * Remove any starting case from a `string`, like camel or snake, but keep
+ * spaces and punctuation that may be important otherwise.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function toNoCase (string) {
+  if (hasSpace.test(string)) return string.toLowerCase();
+
+  if (hasSeparator.test(string)) string = unseparate(string);
+  if (hasCamel.test(string)) string = uncamelize(string);
+  return string.toLowerCase();
+}
+
+
+/**
+ * Separator splitter.
+ */
+
+var separatorSplitter = /[\W_]+(.|$)/g;
+
+
+/**
+ * Un-separate a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function unseparate (string) {
+  return string.replace(separatorSplitter, function (m, next) {
+    return next ? ' ' + next : '';
+  });
+}
+
+
+/**
+ * Camelcase splitter.
+ */
+
+var camelSplitter = /(.)([A-Z]+)/g;
+
+
+/**
+ * Un-camelcase a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function uncamelize (string) {
+  return string.replace(camelSplitter, function (m, previous, uppers) {
+    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
+  });
+}
+},{}],23:[function(require,module,exports){
+
+var clean = require('to-no-case');
+
+
+/**
+ * Expose `toSpaceCase`.
+ */
+
+module.exports = toSpaceCase;
+
+
+/**
+ * Convert a `string` to space case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toSpaceCase (string) {
+  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
+    return match ? ' ' + match : '';
+  });
+}
+},{"to-no-case":22}],24:[function(require,module,exports){
+'use strict';
+
+module.exports = function(source) {
+    return JSON.parse(JSON.stringify(source));
+};
+},{}],25:[function(require,module,exports){
+'use strict';
+
+var defaults = require('defaults');
+var Emitter = require('tiny-emitter');
+var Lethargy = require('lethargy').Lethargy;
+var support = require('./support');
+var clone = require('./clone');
+var bindAll = require('bindall-standalone');
+var EVT_ID = 'virtualscroll';
+
+module.exports = VirtualScroll;
+
+var keyCodes = {
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40
+};
+
+function VirtualScroll(options) {
+    bindAll(this, '_onWheel', '_onMouseWheel', '_onTouchStart', '_onTouchMove', '_onKeyDown');
+
+    this.options = defaults(options || {}, {
+        mouseMultiplier: 1,
+        touchMultiplier: 2,
+        firefoxMultiplier: 15,
+        keyStep: 120,
+        preventTouch: false,
+        unpreventTouchClass: 'vs-touchmove-allowed',
+        limitInertia: false
+    });
+
+    if (this.options.limitInertia) this._lethargy = new Lethargy();
+
+    this._emitter = new Emitter();
+    this._event = {
+        y: 0,
+        x: 0,
+        deltaX: 0,
+        deltaY: 0
+    };
+
+    this.touchStartX = null;
+    this.touchStartY = null;
+    this.bodyTouchAction = null;
+}
+
+VirtualScroll.prototype._notify = function(e) {
+    var evt = this._event;
+    evt.x += evt.deltaX;
+    evt.y += evt.deltaY;
+
+   this._emitter.emit(EVT_ID, {
+        x: evt.x,
+        y: evt.y,
+        deltaX: evt.deltaX,
+        deltaY: evt.deltaY,
+        originalEvent: e
+   });
+};
+
+VirtualScroll.prototype._onWheel = function(e) {
+    var options = this.options;
+    if (this._lethargy && this._lethargy.check(e) === false) return;
+
+    var evt = this._event;
+
+    // In Chrome and in Firefox (at least the new one)
+    evt.deltaX = e.wheelDeltaX || e.deltaX * -1;
+    evt.deltaY = e.wheelDeltaY || e.deltaY * -1;
+
+    // for our purpose deltamode = 1 means user is on a wheel mouse, not touch pad
+    // real meaning: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent#Delta_modes
+    if(support.isFirefox && e.deltaMode == 1) {
+        evt.deltaX *= options.firefoxMultiplier;
+        evt.deltaY *= options.firefoxMultiplier;
+    }
+
+    evt.deltaX *= options.mouseMultiplier;
+    evt.deltaY *= options.mouseMultiplier;
+
+    this._notify(e);
+};
+
+VirtualScroll.prototype._onMouseWheel = function(e) {
+    if (this.options.limitInertia && this._lethargy.check(e) === false) return;
+
+    var evt = this._event;
+
+    // In Safari, IE and in Chrome if 'wheel' isn't defined
+    evt.deltaX = (e.wheelDeltaX) ? e.wheelDeltaX : 0;
+    evt.deltaY = (e.wheelDeltaY) ? e.wheelDeltaY : e.wheelDelta;
+
+    this._notify(e);
+};
+
+VirtualScroll.prototype._onTouchStart = function(e) {
+    var t = (e.targetTouches) ? e.targetTouches[0] : e;
+    this.touchStartX = t.pageX;
+    this.touchStartY = t.pageY;
+};
+
+VirtualScroll.prototype._onTouchMove = function(e) {
+    var options = this.options;
+    if(options.preventTouch
+        && !e.target.classList.contains(options.unpreventTouchClass)) {
+        e.preventDefault();
+    }
+
+    var evt = this._event;
+
+    var t = (e.targetTouches) ? e.targetTouches[0] : e;
+
+    evt.deltaX = (t.pageX - this.touchStartX) * options.touchMultiplier;
+    evt.deltaY = (t.pageY - this.touchStartY) * options.touchMultiplier;
+
+    this.touchStartX = t.pageX;
+    this.touchStartY = t.pageY;
+
+    this._notify(e);
+};
+
+VirtualScroll.prototype._onKeyDown = function(e) {
+    var evt = this._event;
+    evt.deltaX = evt.deltaY = 0;
+
+    switch(e.keyCode) {
+        case keyCodes.LEFT:
+        case keyCodes.UP:
+            evt.deltaY = this.options.keyStep;
+            break;
+
+        case keyCodes.RIGHT:
+        case keyCodes.DOWN:
+            evt.deltaY = - this.options.keyStep;
+            break;
+
+        default:
+            return;
+    }
+
+    this._notify(e);
+};
+
+VirtualScroll.prototype._bind = function() {
+    if(support.hasWheelEvent) document.addEventListener('wheel', this._onWheel);
+    if(support.hasMouseWheelEvent) document.addEventListener('mousewheel', this._onMouseWheel);
+
+    if(support.hasTouch) {
+        document.addEventListener('touchstart', this._onTouchStart);
+        document.addEventListener('touchmove', this._onTouchMove);
+    }
+
+    if(support.hasPointer && support.hasTouchWin) {
+        this.bodyTouchAction = document.body.style.msTouchAction;
+        document.body.style.msTouchAction = 'none';
+        document.addEventListener('MSPointerDown', this._onTouchStart, true);
+        document.addEventListener('MSPointerMove', this._onTouchMove, true);
+    }
+
+    if(support.hasKeyDown) document.addEventListener('keydown', this._onKeyDown);
+};
+
+VirtualScroll.prototype._unbind = function() {
+    if(support.hasWheelEvent) document.removeEventListener('wheel', this._onWheel);
+    if(support.hasMouseWheelEvent) document.removeEventListener('mousewheel', this._onMouseWheel);
+
+    if(support.hasTouch) {
+        document.removeEventListener('touchstart', this._onTouchStart);
+        document.removeEventListener('touchmove', this._onTouchMove);
+    }
+
+    if(support.hasPointer && support.hasTouchWin) {
+        document.body.style.msTouchAction = this.bodyTouchAction;
+        document.removeEventListener('MSPointerDown', this._onTouchStart, true);
+        document.removeEventListener('MSPointerMove', this._onTouchMove, true);
+    }
+
+    if(support.hasKeyDown) document.removeEventListener('keydown', this._onKeyDown);
+};
+
+VirtualScroll.prototype.on = function(cb, ctx) {
+  this._emitter.on(EVT_ID, cb, ctx);
+
+  var events = this._emitter.e;
+  if (events && events[EVT_ID] && events[EVT_ID].length === 1) this._bind();
+};
+
+VirtualScroll.prototype.off = function(cb, ctx) {
+  this._emitter.off(EVT_ID, cb, ctx);
+
+  var events = this._emitter.e;
+  if (!events[EVT_ID] || events[EVT_ID].length <= 0) this._unbind();
+};
+
+VirtualScroll.prototype.reset = function() {
+    var evt = this._event;
+    evt.x = 0;
+    evt.y = 0;
+};
+
+VirtualScroll.prototype.destroy = function() {
+    this._emitter.off();
+    this._unbind();
+};
+
+},{"./clone":24,"./support":26,"bindall-standalone":5,"defaults":9,"lethargy":16,"tiny-emitter":20}],26:[function(require,module,exports){
+'use strict';
+
+module.exports = (function getSupport() {
+    return {
+        hasWheelEvent: 'onwheel' in document,
+        hasMouseWheelEvent: 'onmousewheel' in document,
+        hasTouch: 'ontouchstart' in document,
+        hasTouchWin: navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1,
+        hasPointer: !!window.navigator.msPointerEnabled,
+        hasKeyDown: 'onkeydown' in document,
+        isFirefox: navigator.userAgent.indexOf('Firefox') > -1
+    };
+})();
 },{}]},{},[2]);

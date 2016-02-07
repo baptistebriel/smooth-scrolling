@@ -52,6 +52,8 @@ class Split extends Smooth {
             
             const bounding = el.getBoundingClientRect();
             const bounds = {
+                el: el,
+                state: true,
                 top: bounding.top,
                 bottom: bounding.bottom,
                 speed: '-1'
@@ -70,6 +72,8 @@ class Split extends Smooth {
     
     inViewport(el, index) {
         
+        if(!this.sections) return
+
         const cache = this.sections[index]
         const current = this.vars.current
         const transform = current * cache.speed
@@ -79,6 +83,8 @@ class Split extends Smooth {
         
         if(inview) {
             
+            // !cache.state && (this.dom.section.appendChild(cache.el), cache.state = true);
+
             el.style.display = 'block'
             el.style[this.prefix] = this.getTransform(transform)
             
@@ -86,6 +92,8 @@ class Split extends Smooth {
             
             el.style.display = 'none'
             el.style[this.prefix] = 'none'
+            
+            // cache.state && cache.el.parentNode && (cache.el.parentNode.removeChild(cache.el), cache.state = false);
         }
     }
 }
