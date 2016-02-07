@@ -1,147 +1,100 @@
-# smoooth
+# smooth
+
 Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/) to create smooth scrolling and parallax effects on scroll.
 
 ### Usage
 
 `npm install smooth-scrolling`
 
-### Setup
-
-First, you'll need some simple HTML:
-
-```html
-<div class="section vs-section">
-  <div class="vs-transform" data-speed="0.2"></div>
-  <div class="vs-transform" data-speed="0.4"></div>
-  <div class="vs-transform" data-speed="0.6"></div>
-  <div class="vs-transform" data-speed="0.8"></div>
-  <div class="vs-transform" data-speed="1"></div>
-</div>
-```
-
-And some basic CSS:
-
-```css
-body{
-  overflow: hidden;
-}
-
-.section{
-  position: absolute;
-  
-  /* if it's a vertical scrolling */
-  width: 100%; 
-  height: auto;
-  
-  /* if it's a horizontal scrolling */
-  width: auto; 
-  height: 100%;
-}
-```
-
-If you need the default `body` scrollbar then check out this [CodePen](http://codepen.io/BaptisteBriel/pen/EVaQBe) demo. If you want a custom one, you'll need some additional CSS:
-
-```css
-.vs-scrollbar{
-  display: block;
-  position: absolute;
-}
-.vs-scrollbar.vs-vertical{
-  top: 0; right: 0; bottom: 0;
-  width: 5px; height: 100%;
-}
-.vs-scrollbar.vs-horizontal{
-  bottom: 0; left: 0; right: 0;
-  width: 100%; height: 5px;
-}
-.vs-scrollbar .vs-scrolldrag{
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-}
-```
-
-### Usage
-
-If you're not using the `npm` version of `smooth-scrolling`, `smooth.js` is located under `/src/`.
-
-VirtualScroll (`vs.js`) and the requestAnimationFrame polyfill (`rAF.js`) are located under `/lib/`
-
-*This is the standard source code. If you're using the npm version, you'll just need the requestAnimationFrame [polyfill](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/).*
-
-```html
-<script src="lib/rAF.js"></script>
-<script src="lib/vs.js"></script>
-<script src="src/smooth.js"></script>
-```
-
-Now to the JavaScript part;  
-To launch a new smooth scroll, just use the Smooth object like this:
-
 ```javascript
-// get our section
-var section = document.querySelector('.vs-section');
-// get our extra divs
-var divs = document.querySelectorAll('.vs-transform');
+import Smooth from 'smooth-scrolling'
 
-// initialize the object w/ some parameters
-var smooth = new Smooth({
-  direction: 'vertical',
+const section = document.querySelector('.vs-section')
+const smooth = new Smooth({
+  native: true,
   section: section,
-  ease: 0.1,
-  scrollbar: { 
-    active: true,
-    bg: '#FFF',
-    main: '#c5c5c5'
-  },
-  els: divs // optional
+  ease: 0.1
 });
-// kickoff the smooth scroll
+
 smooth.init();
 ```
 
-As you can see, there's a bunch of parameters:
+### Options
 
-- `direction` : 'vertical' or 'horizontal' scrolling.
-- `section` : the global container of your page; will have CSS transform by default on scroll.
-- `ease` : the easing value (generally between 0 and 1) - 1 will be faster.
-- `scrollbar` : the scrollbar settings
-- `els` : DOM list. If it's not specified (no parallax), the transform is applied to the section
-
-Later, you might want to stop the events and requestAnimationFrame by doing:
-
-```javascript
-smooth.destroy();
-```
+- `listener`: on-scroll events listener & parent container for all elements
+- `direction` : vertical or horizontal scrolling behavior
+- `native`: use the default scrollbar
+- `section` : the element to transform
+- `ease` : the easing value (usually between 0 and 1)
+- `vs` : you can pass some option for virtuall-scroll: limitInertia, mouseMultiplier, etc
+- `preload` : if set to false, there will be no resize function called after all images loaded
 
 ### Methods
 
-There's two 'scrollTo' methods:  
+### `smooth.init();`
 
-With HTML:  
+Will add all event listeners and DOM elements.
 
-```html
-<!-- this is a default box -->
-<div class="vs-transform js-referer" data-speed="0.2"></div>
+### `smooth.destroy();`
 
-<!-- now we create an anchor (could be a nav menu) -->
-<span class="vs-scrollto" data-scroll="js-referer">text</span>
-<!-- note that the 'data-scroll' has to contains -->
-<!-- one of the same classes as the box you want to scroll to -->
-```
+Will remove all event listeners and DOM elements.
 
-Or JavaScript:  
+### `smooth.scrollTo(offset)`
+
+Basic scrollTo function.
+
+### Extends Smooth
 
 ```javascript
-// scrollTo with a fixed value (usefull for simple scrollTop)
-smooth.scrollTo(0);
+import Smooth from 'smooth-scrolling'
 
-// scrollTo a specific div
-var div = document.querySelector('.js-referer');
-var offset = div.getBoundingClientRect().top;
+class Custom extends Smooth {
+    
+    constructor(opt = {}) {
+        
+        super(opt)
 
-// this should work :)
-smooth.scrollTo(offset);
+        this.dom.section = opt.section
+        this.dom.opacity = opt.opacity
+    }
+    
+    run() {
+        
+        super.run()
+        
+        const current = Math.round(Math.abs(this.vars.current))
+        const opacity = Math.max(0, Math.min(1 - current / (this.vars.height * .5), 1))
+        
+        this.dom.opacity.style.opacity = opacity.toFixed(2)
+        this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
+    }
+
+    resize() {
+        
+        super.resize();
+
+        this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
+    }
+}
+
+export default Custom
+```
+
+```javascript
+// ...and later on
+import Custom from './custom-smooth-scrolling'
+
+const section = document.querySelector('.vs-section')
+const opacity = document.querySelector('.vs-opacity')
+
+const smooth = new Custom({
+  native: true,
+  section: section,
+  opacity: opacity,
+  ease: 0.1
+});
+
+smooth.init();
 ```
 
 ## Further understanding
