@@ -4,10 +4,10 @@ class Custom extends Smooth {
     
     constructor(opt) {
         
-        super(opt);
+        super(opt)
 
-        this.dom.section = opt.section;
-        this.dom.opacity = opt.opacity;
+        this.dom.section = opt.section
+        this.dom.opacity = opt.opacity
     }
     
     init() {

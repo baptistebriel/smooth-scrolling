@@ -70,18 +70,18 @@ class Smooth {
 
     init() {
 
-        this.vars.preload && this.preloadImages();
+        this.vars.preload && this.preloadImages()
         this.vars.native && this.addFakeScrollHeight()
         
         this.addEvents();
         
-        !this.vars.preload && this.resize();
-        !this.vars.native && this.addFakeScrollBar();
+        !this.vars.preload && this.resize()
+        !this.vars.native && this.addFakeScrollBar()
     }
 
     preloadImages() {
 
-        const images = Array.prototype.slice.call(this.dom.listener.querySelectorAll('img'), 0);
+        const images = Array.prototype.slice.call(this.dom.listener.querySelectorAll('img'), 0)
 
         images.forEach((image) => {
             
@@ -89,126 +89,126 @@ class Smooth {
             
             img.onload = (el) => {
 
-                images.splice(images.indexOf(image), 1);
-                images.length === 0 && this.resize();
+                images.splice(images.indexOf(image), 1)
+                images.length === 0 && this.resize()
             }
 
-            img.src = image.getAttribute('src');
-        });
+            img.src = image.getAttribute('src')
+        })
     }
     
     calc(e) {
         
-        const delta = this.direction == 'horizontal' ? e.deltaX : e.deltaY;
+        const delta = this.direction == 'horizontal' ? e.deltaX : e.deltaY
         
-        this.vars.target += delta * -1;
-        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
+        this.vars.target += delta * -1
+        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding))
     }
     
     debounce() {
 
-        this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
+        this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset
         
-        this.addScrollingClass();
+        this.addScrollingClass()
     }
     
     addScrollingClass() {
 
-        clearTimeout(this.vars.timer);
+        clearTimeout(this.vars.timer)
         
         if(!this.vars.ticking) {
             this.vars.ticking = true;
-            classes.add(this.dom.listener, 'is-scrolling');
+            classes.add(this.dom.listener, 'is-scrolling')
         }
         
         this.vars.timer = setTimeout(() => {
-            this.vars.ticking = false;
-            classes.remove(this.dom.listener, 'is-scrolling');
-        }, 200);
+            this.vars.ticking = false
+            classes.remove(this.dom.listener, 'is-scrolling')
+        }, 200)
     }
     
     run() {
         
-        this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
-        this.vars.current < .1 && (this.vars.current = 0);
-
-        !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
-        !this.vars.native && this.transformScrollbar();
+        this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease
+        this.vars.current < .1 && (this.vars.current = 0)
         
-        this.rAF = requestAnimationFrame(this.run);
+        !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)))
+        !this.vars.native && this.transformScrollbar()
+        
+        this.rAF = requestAnimationFrame(this.run)
     }
     
     transformScrollbar() {
 
-        const size = this.dom.scrollbar.drag.height;
-        const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
-        const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size;
-        const clamp = Math.max(0, Math.min(value-size, value+size));
+        const size = this.dom.scrollbar.drag.height
+        const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
+        const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size
+        const clamp = Math.max(0, Math.min(value-size, value+size))
         
-        this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+        this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
     }
     
     getTransform(value) {
         
-        return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)';
+        return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)'
     }
 
     addEvents() {
 
-        this.vars.native ? on(window, 'scroll', this.debounce) : this.vs.on(this.calc);
+        this.vars.native ? on(window, 'scroll', this.debounce) : this.vs.on(this.calc)
 
-        on(window, 'resize', this.resize);
+        on(window, 'resize', this.resize)
         
-        this.rAF = requestAnimationFrame(this.run);
+        this.rAF = requestAnimationFrame(this.run)
     }
     
     removeEvents() {
         
-        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
 
-        off(window, 'resize', this.resize);
+        off(window, 'resize', this.resize)
         
-        cancelAnimationFrame(this.rAF);
+        cancelAnimationFrame(this.rAF)
     }
 
     addFakeScrollBar() {
         
-        this.dom.listener.appendChild(this.dom.scrollbar.el);
-        this.dom.scrollbar.el.appendChild(this.dom.scrollbar.drag.el);
+        this.dom.listener.appendChild(this.dom.scrollbar.el)
+        this.dom.scrollbar.el.appendChild(this.dom.scrollbar.drag.el)
 
-        on(this.dom.scrollbar.el, 'click', this.calcScroll);
-        on(this.dom.scrollbar.el, 'mousedown', this.mouseDown);
+        on(this.dom.scrollbar.el, 'click', this.calcScroll)
+        on(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
         
-        on(document, 'mousemove', this.mouseMove);
-        on(document, 'mouseup', this.mouseUp);
+        on(document, 'mousemove', this.mouseMove)
+        on(document, 'mouseup', this.mouseUp)
     }
 
     removeFakeScrollBar() {
 
-        off(this.dom.scrollbar.el, 'click', this.calcScroll);
-        off(this.dom.scrollbar.el, 'mousedown', this.mouseDown);
+        off(this.dom.scrollbar.el, 'click', this.calcScroll)
+        off(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
 
-        off(document, 'mousemove', this.mouseMove);
-        off(document, 'mouseup', this.mouseUp);
+        off(document, 'mousemove', this.mouseMove)
+        off(document, 'mouseup', this.mouseUp)
 
-        this.dom.listener.removeChild(this.dom.scrollbar.el);
+        this.dom.listener.removeChild(this.dom.scrollbar.el)
     }
 
     mouseDown(e) {
         
-        e.which == 1 && (this.dom.scrollbar.state.clicked = true);
+        e.which == 1 && (this.dom.scrollbar.state.clicked = true)
     }
 
     mouseUp(e) {
 
-        this.dom.scrollbar.state.clicked = false;
+        this.dom.scrollbar.state.clicked = false
 
-        classes.remove(this.dom.listener, 'is-dragging');
+        classes.remove(this.dom.listener, 'is-dragging')
     }
 
     mouseMove(e) {
 
-        this.dom.scrollbar.state.clicked && this.calcScroll(e);
+        this.dom.scrollbar.state.clicked && this.calcScroll(e)
     }
 
     addFakeScrollHeight() {
@@ -216,62 +216,62 @@ class Smooth {
         this.dom.scroll = create({
             selector: 'div',
             styles: 'vs-scroll-view'
-        });
+        })
         
-        this.dom.listener.appendChild(this.dom.scroll);
+        this.dom.listener.appendChild(this.dom.scroll)
     }
     
     removeFakeScrollHeight() {
 
-        this.dom.listener.removeChild(this.dom.scroll);
+        this.dom.listener.removeChild(this.dom.scroll)
     }
 
     calcScroll(e) {
 
-        const client = this.vars.direction == 'vertical' ? e.clientY : e.clientX;
-        const bounds = this.vars.direction == 'vertical' ? this.vars.height : this.vars.width;
-        const delta = client * (this.vars.bounding / bounds);
+        const client = this.vars.direction == 'vertical' ? e.clientY : e.clientX
+        const bounds = this.vars.direction == 'vertical' ? this.vars.height : this.vars.width
+        const delta = client * (this.vars.bounding / bounds)
         
-        classes.add(this.dom.listener, 'is-dragging');
+        classes.add(this.dom.listener, 'is-dragging')
 
-        this.vars.target = delta;
-        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
+        this.vars.target = delta
+        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding))
         
-        this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target);
+        this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target)
     }
     
     scrollTo(offset) {
         
         if(this.vars.native) {
             
-            this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0);
+            this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0)
             
         } else {
 
-            this.pos.target = offset;
+            this.pos.target = offset
         }
     }
 
     resize() {
         
-        this.vars.height = document.documentElement.clientHeight || window.innerHeight;
-        this.vars.width = document.documentElement.clientWidth || window.innerWidth;
+        this.vars.height = document.documentElement.clientHeight || window.innerHeight
+        this.vars.width = document.documentElement.clientWidth || window.innerWidth
         
-        !this.extends && (this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.native ? 0 : this.vars.height));
+        !this.extends && (this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.native ? 0 : this.vars.height))
 
         if(!this.vars.native) {
-            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding);
-            css(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height);
+            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding)
+            css(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height)
         } else {
-            css(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding);
+            css(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding)
         }
     }
     
     destroy() {
         
-        this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
+        this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar()
 
-        this.removeEvents();
+        this.removeEvents()
     }
 }
 
