@@ -446,7 +446,13 @@ var Smooth = function () {
         key: 'scrollTo',
         value: function scrollTo(offset) {
 
-            this.pos.target = offset;
+            if (this.vars.native) {
+
+                this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0);
+            } else {
+
+                this.pos.target = offset;
+            }
         }
     }, {
         key: 'resize',

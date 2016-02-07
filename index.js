@@ -239,10 +239,17 @@ class Smooth {
         
         this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target);
     }
-
+    
     scrollTo(offset) {
+        
+        if(this.vars.native) {
+            
+            this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0);
+            
+        } else {
 
-        this.pos.target = offset;
+            this.pos.target = offset;
+        }
     }
 
     resize() {

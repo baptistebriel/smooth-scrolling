@@ -69,9 +69,16 @@ var Custom = function (_Smooth) {
 
 exports.default = Custom;
 
-// later on...
+},{"../../index":3}],2:[function(require,module,exports){
+'use strict';
 
-var scroll = new Custom({
+var _custom = require('./custom');
+
+var _custom2 = _interopRequireDefault(_custom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var scroll = new _custom2.default({
     extends: true,
     section: document.querySelector('.vs-section'),
     opacity: document.querySelector('h1')
@@ -79,7 +86,7 @@ var scroll = new Custom({
 
 scroll.init();
 
-},{"../../index":2}],2:[function(require,module,exports){
+},{"./custom":1}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -88,7 +95,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _domEvent = require('dom-event');
+var _perfnow = require('perfnow');
+
+var _perfnow2 = _interopRequireDefault(_perfnow);
 
 var _domClasses = require('dom-classes');
 
@@ -110,18 +119,11 @@ var _virtualScroll = require('virtual-scroll');
 
 var _virtualScroll2 = _interopRequireDefault(_virtualScroll);
 
+var _domEvent = require('dom-event');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-window.performance = function () {
-    return window.performance && window.performance.now ? window.performance : Date;
-}();
-
-var config = {
-    height: window.innerHeight,
-    width: window.innerWidth
-};
 
 var Smooth = function () {
     function Smooth() {
@@ -133,38 +135,40 @@ var Smooth = function () {
 
         this.prefix = (0, _prefix2.default)('transform');
 
+        // TODO: detect if is an extension of Smooth
+        // return false if is a direct instance of Smooth
+        this.extends = opt.extends || false;
+
         this.perfs = {
             now: null,
             last: null
         };
 
         this.vars = {
-            extends: opt.extends || false,
             direction: opt.direction || 'vertical',
-            useNativeScroll: opt.useNativeScroll || false,
-            updateAfterImagesLoaded: opt.updateAfterImagesLoaded || true,
-            current: 0,
-            lastCurrent: 0,
-            target: 0,
+            native: opt.native || false,
             ease: opt.ease || 0.075,
-            height: config.height,
+            preload: opt.preload || true,
+            current: 0,
+            target: 0,
+            height: 0,
             bounding: 0,
             timer: null,
             ticking: false
         };
 
-        this.vs = this.vars.useNativeScroll ? null : new _virtualScroll2.default({
-            limitInertia: opt.vsOptions && opt.vsOptions.limitInertia || false,
-            mouseMultiplier: opt.vsOptions && opt.vsOptions.mouseMultiplier || 1,
-            touchMultiplier: opt.vsOptions && opt.vsOptions.touchMultiplier || 1.5,
-            firefoxMultiplier: opt.vsOptions && opt.vsOptions.firefoxMultiplier || 30,
-            preventTouch: opt.vsOptions && opt.vsOptions.preventTouch || true
+        this.vs = this.vars.native ? null : new _virtualScroll2.default({
+            limitInertia: opt.vs && opt.vs.limitInertia || false,
+            mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
+            touchMultiplier: opt.vs && opt.vs.touchMultiplier || 1.5,
+            firefoxMultiplier: opt.vs && opt.vs.firefoxMultiplier || 30,
+            preventTouch: opt.vs && opt.vs.preventTouch || true
         });
 
         this.dom = {
             listener: opt.listener || document.body,
             section: opt.section || document.querySelector('.vs-section') || null,
-            scrollbar: this.vars.useNativeScroll ? null : {
+            scrollbar: this.vars.native ? null : {
                 state: {
                     clicked: false,
                     x: 0
@@ -192,14 +196,13 @@ var Smooth = function () {
         key: 'init',
         value: function init() {
 
-            this.vars.updateAfterImagesLoaded && this.preloadImages();
-            this.vars.useNativeScroll && this.addFakeScrollHeight();
+            this.vars.preload && this.preloadImages();
+            this.vars.native && this.addFakeScrollHeight();
 
             this.addEvents();
 
-            !this.vars.updateAfterImagesLoaded && this.resize();
-
-            !this.vars.useNativeScroll && this.addFakeScrollBar();
+            !this.vars.preload && this.resize();
+            !this.vars.native && this.addFakeScrollBar();
         }
     }, {
         key: 'preloadImages',
@@ -262,21 +265,21 @@ var Smooth = function () {
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
 
-            if (!this.extends) {
-                this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
-            }
-
-            if (this.dom.scrollbar !== null) {
-
-                var size = this.dom.scrollbar.drag.height;
-                var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
-                var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
-                var clamp = Math.max(0, Math.min(value - size, value + size));
-
-                this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
-            }
+            !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
+            !this.vars.native && this.transformScrollbar();
 
             this.rAF = requestAnimationFrame(this.run);
+        }
+    }, {
+        key: 'transformScrollbar',
+        value: function transformScrollbar() {
+
+            var size = this.dom.scrollbar.drag.height;
+            var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
+            var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
+            var clamp = Math.max(0, Math.min(value - size, value + size));
+
+            this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
         }
     }, {
         key: 'getTransform',
@@ -288,7 +291,7 @@ var Smooth = function () {
         key: 'addEvents',
         value: function addEvents() {
 
-            this.vars.useNativeScroll ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs.on(this.calc);
+            this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs.on(this.calc);
 
             (0, _domEvent.on)(window, 'resize', this.resize);
 
@@ -298,7 +301,7 @@ var Smooth = function () {
         key: 'removeEvents',
         value: function removeEvents() {
 
-            this.vars.useNativeScroll ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
 
             (0, _domEvent.off)(window, 'resize', this.resize);
 
@@ -307,11 +310,6 @@ var Smooth = function () {
     }, {
         key: 'addFakeScrollBar',
         value: function addFakeScrollBar() {
-
-            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding);
-
-            (0, _domCss2.default)(this.dom.listener, 'user-select', 'none');
-            (0, _domCss2.default)(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height);
 
             this.dom.listener.appendChild(this.dom.scrollbar.el);
             this.dom.scrollbar.el.appendChild(this.dom.scrollbar.drag.el);
@@ -325,8 +323,6 @@ var Smooth = function () {
     }, {
         key: 'removeFakeScrollBar',
         value: function removeFakeScrollBar() {
-
-            (0, _domCss2.default)(this.dom.listener, 'user-select', 'auto');
 
             (0, _domEvent.off)(this.dom.scrollbar.el, 'click', this.calcScroll);
             (0, _domEvent.off)(this.dom.scrollbar.el, 'mousedown', this.mouseDown);
@@ -392,28 +388,35 @@ var Smooth = function () {
         key: 'scrollTo',
         value: function scrollTo(offset) {
 
-            this.pos.target = offset;
+            if (this.vars.native) {
+
+                this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0);
+            } else {
+
+                this.pos.target = offset;
+            }
         }
     }, {
         key: 'resize',
         value: function resize() {
 
-            console.log('resize');
+            this.vars.height = document.documentElement.clientHeight || window.innerHeight;
+            this.vars.width = document.documentElement.clientWidth || window.innerWidth;
 
-            this.vars.height = config.height;
-            this.vars.width = config.width;
+            !this.extends && (this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.native ? 0 : this.vars.height));
 
-            if (!this.extends) {
-
-                this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.useNativeScroll ? 0 : this.vars.height);
-                this.vars.useNativeScroll && (0, _domCss2.default)(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding);
+            if (!this.vars.native) {
+                this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding);
+                (0, _domCss2.default)(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height);
+            } else {
+                (0, _domCss2.default)(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding);
             }
         }
     }, {
         key: 'destroy',
         value: function destroy() {
 
-            this.vars.useNativeScroll ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
+            this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
 
             this.removeEvents();
         }
@@ -422,9 +425,11 @@ var Smooth = function () {
     return Smooth;
 }();
 
+window.Smooth = Smooth;
+
 exports.default = Smooth;
 
-},{"dom-classes":6,"dom-create-element":7,"dom-css":8,"dom-event":9,"prefix":14,"virtual-scroll":20}],3:[function(require,module,exports){
+},{"dom-classes":7,"dom-create-element":8,"dom-css":9,"dom-event":10,"perfnow":14,"prefix":16,"virtual-scroll":22}],4:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString,
@@ -462,7 +467,7 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
@@ -626,7 +631,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":23}],5:[function(require,module,exports){
+},{"buffer":25}],6:[function(require,module,exports){
 var clone = require('clone');
 
 module.exports = function(options, defaults) {
@@ -640,7 +645,7 @@ module.exports = function(options, defaults) {
 
   return options;
 };
-},{"clone":4}],6:[function(require,module,exports){
+},{"clone":5}],7:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -739,7 +744,7 @@ function toggle (el, name) {
   }
 }
 
-},{"indexof":11}],7:[function(require,module,exports){
+},{"indexof":12}],8:[function(require,module,exports){
 /*
 `dom-create-element`
 
@@ -786,7 +791,7 @@ function create(opt) {
 	
 	return el;
 };
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var prefix = require('prefix-style')
 var toCamelCase = require('to-camel-case')
 var cache = { 'float': 'cssFloat' }
@@ -854,7 +859,7 @@ module.exports.get = function(element, properties) {
         return style(element, properties||'')
 }
 
-},{"prefix-style":13,"to-camel-case":16}],9:[function(require,module,exports){
+},{"prefix-style":15,"to-camel-case":18}],10:[function(require,module,exports){
 module.exports = on;
 module.exports.on = on;
 module.exports.off = off;
@@ -871,7 +876,7 @@ function off (element, event, callback, capture) {
   return callback;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -957,7 +962,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -968,7 +973,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.2
 (function() {
   var root;
@@ -1071,7 +1076,31 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
+/**
+ * @file perfnow is a 0.14 kb window.performance.now high resolution timer polyfill with Date fallback
+ * @author Daniel Lamb <dlamb.open.source@gmail.com>
+ */
+
+function perfnow(window){
+  // make sure we have an object to work with
+  if(!('performance' in window)) {
+    window.performance = {};
+  }
+  var perf = window.performance;
+  // handle vendor prefixing
+  window.performance.now = perf.now ||
+    perf.mozNow ||
+    perf.msNow ||
+    perf.oNow ||
+    perf.webkitNow ||
+    // fallback to Date
+    Date.now || function () {
+      return new Date().getTime();
+  };
+}
+perfnow(window);
+},{}],15:[function(require,module,exports){
 var elem = null
 
 //https://gist.github.com/paulirish/523692
@@ -1091,14 +1120,14 @@ module.exports = function prefix(prop) {
     }
     return false
 }
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 function identity(x) { return x; }
 
 module.exports = identity;
 module.exports.dash = identity;
 module.exports.dash = identity;
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 function E () {
 	// Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -1166,7 +1195,7 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -1191,7 +1220,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":18}],17:[function(require,module,exports){
+},{"to-space-case":20}],19:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -1266,7 +1295,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -1291,13 +1320,13 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":17}],19:[function(require,module,exports){
+},{"to-no-case":19}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var defaults = require('defaults');
@@ -1504,7 +1533,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":19,"./support":21,"bindall-standalone":3,"defaults":5,"lethargy":12,"tiny-emitter":15}],21:[function(require,module,exports){
+},{"./clone":21,"./support":23,"bindall-standalone":4,"defaults":6,"lethargy":13,"tiny-emitter":17}],23:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {
@@ -1518,7 +1547,7 @@ module.exports = (function getSupport() {
         isFirefox: navigator.userAgent.indexOf('Firefox') > -1
     };
 })();
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 ;(function (exports) {
   'use strict'
 
@@ -1638,7 +1667,7 @@ module.exports = (function getSupport() {
   exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3096,11 +3125,11 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":22,"ieee754":10,"isarray":24}],24:[function(require,module,exports){
+},{"base64-js":24,"ieee754":11,"isarray":26}],26:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}]},{},[1]);
+},{}]},{},[2]);

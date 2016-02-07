@@ -1,8 +1,8 @@
 {
   "name": "smooth-scrolling",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Smooth is a small JavaScript module based on VirtualScroll to create smooth scrolling and parallax effects on scroll.",
-  "main": "gulpfile.js",
+  "main": "index.js",
   "dependencies": {
     "dom-classes": "0.0.1",
     "dom-create-element": "^1.0.2",
