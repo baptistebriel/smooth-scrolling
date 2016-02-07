@@ -156,7 +156,7 @@ class Smooth {
     addEvents() {
 
         this.vars.native ? on(window, 'scroll', this.debounce) : this.vs.on(this.calc)
-
+        
         on(window, 'resize', this.resize)
         
         this.rAF = requestAnimationFrame(this.run)
@@ -165,7 +165,7 @@ class Smooth {
     removeEvents() {
         
         this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
-
+        
         off(window, 'resize', this.resize)
         
         cancelAnimationFrame(this.rAF)
