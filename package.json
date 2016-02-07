@@ -1,25 +1,33 @@
 {
-  "name": "smooth",
-  "version": "0.0.0",
+  "name": "smooth-scrolling",
+  "version": "1.0.0",
   "description": "Smooth is a small JavaScript module based on VirtualScroll to create smooth scrolling and parallax effects on scroll.",
   "main": "gulpfile.js",
   "dependencies": {
-    "classie": "1.0.0",
+    "dom-classes": "0.0.1",
+    "dom-create-element": "^1.0.2",
     "dom-css": "1.1.2",
-    "dom-event": "0.0.5"
+    "dom-event": "0.0.5",
+    "perfnow": "^0.1.0",
+    "prefix": "^0.2.4",
+    "virtual-scroll": "^1.0.2"
   },
   "devDependencies": {
-    "gulp": "3.9.0",
-    "gulp-autoprefixer": "3.1.0",
-    "gulp-browserify": "0.5.1",
-    "gulp-concat": "2.3.5",
-    "gulp-jshint": "1.12.0",
-    "gulp-notify": "2.2.0",
-    "gulp-rename": "1.2.2",
-    "gulp-uglify": "1.4.2",
-    "gulp-util": "3.0.7"
+    "babelify": "^7.2.0",
+    "babel-preset-es2015": "^6.3.13",
+    "watchify": "^3.7.0"
   },
-  "scripts": {},
+  "scripts": {
+    "dev": "watchify -v -t babelify index.js -o smooth-scrolling.js",
+    "demo-native-scrollbar": "watchify -v -t babelify demos/native-scrollbar/index.js -o demos/native-scrollbar/build.js",
+    "demo-parallax": "watchify -v -t babelify demos/parallax/index.js -o demos/parallax/build.js",
+    "demo-opacity": "watchify -v -t babelify demos/opacity/index.js -o demos/opacity/build.js",
+    "demo-split": "watchify -v -t babelify demos/split/index.js -o demos/split/build.js",
+    "demo-performances": "watchify -v -t babelify demos/performances/index.js -o demos/performances/build.js"
+  },
+  "browserify": {
+    "transform": [[ "babelify", { "presets": ["es2015"] } ]]
+  },
   "author": "Baptiste Briel",
   "license": "ISC"
 }

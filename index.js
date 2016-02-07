@@ -1,278 +1,273 @@
-var vs = require('./lib/vs');
-var classie = require('classie');
-var css = require('dom-css');
-var on = require('dom-event');
-var off = on.off;
+import performance from 'perfnow'
+import classes from 'dom-classes'
+import create from 'dom-create-element'
+import css from 'dom-css'
+import prefix from 'prefix'
+import vs from 'virtual-scroll'
+import {on, off} from 'dom-event'
 
-var Smooth = window.Smooth = module.exports = function(opt) {
-	
-	if (!(this instanceof Smooth))
-		return new Smooth(opt)
-
-	this.createBound();
-	
-	opt = opt || {}
-
-	this.rAF = undefined;
-
-	this.pos = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
-	
-	this.direction = opt.direction || 'vertical';
-	
-	this.prop = (this.direction == 'vertical') ? 'height' : 'width';
-	
-	this.section = opt.section || document.querySelector('.vs-section');
-	
-	this.ease = opt.ease || 0.1;
-	
-	this.els = (typeof opt.els != 'undefined') ? Array.prototype.slice.call(opt.els, 0) : [this.section];
-	
-	this.to = Array.prototype.slice.call(document.querySelectorAll('.vs-scrollto'), 0);
-
-	this.bounding = (this.direction == 'vertical')
-		? this.section.getBoundingClientRect().height - window.innerHeight
-		: this.section.getBoundingClientRect().left + this.section.getBoundingClientRect().right - window.innerHeight;
-	
-	this.scrollbar = {
-		active: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.active : 'false',
-		el: document.createElement('div'),
-		drag: {
-			el: document.createElement('div'),
-			clicked: false,
-			deltaY: 0, deltaX: 0,
-			speed: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.speed || 3 : 3,
-			height: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.height || 50 : 50,
-		},
-		bg: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.bg : 'false',
-		main: (typeof opt.scrollbar != 'undefined') ? opt.scrollbar.main : 'false'
-	}
-};
-
-Smooth.prototype.constructor = Smooth;
-
-Smooth.prototype.init = function(){
-
-	var self = this;
-
-	this.build();
-
-	vs.on(this.calc);
-
-	this.els.forEach(function(el){
-		el.speed = (self.els.length >= 2) ? el.getAttribute('data-speed') : 1;
-	});
-	
-	this.to.forEach(function(el){
-		var data = el.getAttribute('data-scroll');
-
-		el.targetPos = (!isNaN(data))
-			? data
-			: (self.direction == 'vertical')
-				? document.querySelector('.'+data).getBoundingClientRect().top
-				: document.querySelector('.'+data).getBoundingClientRect().left
-
-		on(el, 'click', self.getTo)
-	});
-
-	on(document, 'touchmove', this.prevent);
-	on(window, 'resize', this.resize);
-
-	this.run();
-
-};
-
-Smooth.prototype.createBound = function(){
-	
-	['down', 'move', 'up', 'calcScroll', 'calc', 'getTo', 'prevent', 'resize']
-	.forEach(function(fn) {
-		this[fn] = this[fn].bind(this);
-	}, this);
+class Smooth {
     
-};
+    constructor(opt = {}) {
+        
+        this.createBound()
 
-Smooth.prototype.prevent = function(e){
+        this.prefix = prefix('transform')
+        
+        // TODO: detect if is an extension of Smooth
+        // return false if is a direct instance of Smooth
+        this.extends = opt.extends || false
+        
+        this.perfs = {
+            now: null,
+            last: null
+        }
+        
+        this.vars = {
+            direction: opt.direction || 'vertical',
+            native: opt.native || false,
+            ease: opt.ease || 0.075,
+            preload: opt.preload || true,
+            current: 0,
+            target: 0,
+            height: 0,
+            bounding: 0,
+            timer: null,
+            ticking: false
+        }
+        
+        this.vs = this.vars.native ? null : new vs({
+            limitInertia: opt.vs && opt.vs.limitInertia || false,
+            mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
+            touchMultiplier: opt.vs && opt.vs.touchMultiplier || 1.5,
+            firefoxMultiplier: opt.vs && opt.vs.firefoxMultiplier || 30,
+            preventTouch: opt.vs && opt.vs.preventTouch || true
+        })
+        
+        this.dom = {
+            listener: opt.listener || document.body,
+            section: opt.section || document.querySelector('.vs-section') || null,
+            scrollbar: this.vars.native ? null : {
+                state: {
+                    clicked: false,
+                    x: 0
+                },
+                el: create({ selector: 'div', styles: `vs-scrollbar vs-${this.vars.direction}` }),
+                drag: {
+                    el: create({ selector: 'div', styles: 'vs-scrolldrag' }),
+                    delta: 0,
+                    height: 50
+                }
+            }
+        }
+    }
+    
+    createBound() {
 
-	e.preventDefault();
+        ['run', 'calc', 'debounce', 'resize', 'mouseUp', 'mouseDown', 'mouseMove', 'calcScroll', 'scrollTo']
+        .forEach((fn) => this[fn] = this[fn].bind(this));
+    }
 
-};
+    init() {
 
-Smooth.prototype.calc = function(e){
-	
-	this.pos.targetY += e.deltaY;
-	this.pos.targetX += e.deltaX;
-	
-	this.pos.targetY = Math.max(this.bounding * -1, this.pos.targetY);
-	this.pos.targetY = Math.min(0, this.pos.targetY);
-	
-	this.pos.targetX = Math.max(this.bounding * -1, this.pos.targetX);
-	this.pos.targetX = Math.min(0, this.pos.targetX);
+        this.vars.preload && this.preloadImages();
+        this.vars.native && this.addFakeScrollHeight()
+        
+        this.addEvents();
+        
+        !this.vars.preload && this.resize();
+        !this.vars.native && this.addFakeScrollBar();
+    }
 
-};
+    preloadImages() {
 
-Smooth.prototype.build = function(){
- 	
- 	var self = this;
-	var prop = (this.direction == 'vertical')
-		? "height"
-		: "width"
+        const images = Array.prototype.slice.call(this.dom.listener.querySelectorAll('img'), 0);
 
-	if(this.scrollbar.active){
-		var body = document.body;
-		var parent = this.scrollbar.el;
-		var el = this.scrollbar.drag.el;
-		var style = {'background-color': this.scrollbar.main};
-		style[prop] = this.scrollbar.drag.height;
-		
-		// classes
-		classie.add(parent, 'vs-scrollbar');
-		classie.add(parent, 'vs-'+this.direction);
-		classie.add(el, 'vs-scrolldrag');
+        images.forEach((image) => {
+            
+            const img = new Image();
+            
+            img.onload = (el) => {
 
-		// style
-		css(body, 'user-select', 'none');
-		css(parent, 'background-color', this.scrollbar.bg);
-		css(el, style);
+                images.splice(images.indexOf(image), 1);
+                images.length === 0 && this.resize();
+            }
 
-		// append to DOM
-		this.section.parentNode.insertBefore(parent, this.section.nextSibling);
-		parent.appendChild(el);
+            img.src = image.getAttribute('src');
+        });
+    }
+    
+    calc(e) {
+        
+        const delta = this.direction == 'horizontal' ? e.deltaX : e.deltaY;
+        
+        this.vars.target += delta * -1;
+        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
+    }
+    
+    debounce() {
 
-		// events
-		on(el, 'mousedown', this.down);
-		on(parent, 'click', this.calcScroll);
-		on(document, 'mousemove', this.move);
+        this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
+        
+        this.addScrollingClass();
+    }
+    
+    addScrollingClass() {
 
-	}
+        clearTimeout(this.vars.timer);
+        
+        if(!this.vars.ticking) {
+            this.vars.ticking = true;
+            classes.add(this.dom.listener, 'is-scrolling');
+        }
+        
+        this.vars.timer = setTimeout(() => {
+            this.vars.ticking = false;
+            classes.remove(this.dom.listener, 'is-scrolling');
+        }, 200);
+    }
+    
+    run() {
+        
+        this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
+        this.vars.current < .1 && (this.vars.current = 0);
 
-};
+        !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
+        !this.vars.native && this.transformScrollbar();
+        
+        this.rAF = requestAnimationFrame(this.run);
+    }
+    
+    transformScrollbar() {
 
-Smooth.prototype.down = function(e){
+        const size = this.dom.scrollbar.drag.height;
+        const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
+        const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size;
+        const clamp = Math.max(0, Math.min(value-size, value+size));
+        
+        this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+    }
+    
+    getTransform(value) {
+        
+        return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)';
+    }
 
-	var self = this;
+    addEvents() {
 
-	this.scrollbar.drag.clicked = true;
+        this.vars.native ? on(window, 'scroll', this.debounce) : this.vs.on(this.calc);
 
-	on(document, 'mouseup', this.up);
+        on(window, 'resize', this.resize);
+        
+        this.rAF = requestAnimationFrame(this.run);
+    }
+    
+    removeEvents() {
+        
+        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
 
-};
+        off(window, 'resize', this.resize);
+        
+        cancelAnimationFrame(this.rAF);
+    }
 
-Smooth.prototype.up = function(){
+    addFakeScrollBar() {
+        
+        this.dom.listener.appendChild(this.dom.scrollbar.el);
+        this.dom.scrollbar.el.appendChild(this.dom.scrollbar.drag.el);
 
-	this.scrollbar.drag.clicked = false;
+        on(this.dom.scrollbar.el, 'click', this.calcScroll);
+        on(this.dom.scrollbar.el, 'mousedown', this.mouseDown);
+        
+        on(document, 'mousemove', this.mouseMove);
+        on(document, 'mouseup', this.mouseUp);
+    }
 
-};
+    removeFakeScrollBar() {
 
-Smooth.prototype.move = function(e){
+        off(this.dom.scrollbar.el, 'click', this.calcScroll);
+        off(this.dom.scrollbar.el, 'mousedown', this.mouseDown);
 
-	this.scrollbar.drag.clicked && this.calcScroll(e);
+        off(document, 'mousemove', this.mouseMove);
+        off(document, 'mouseup', this.mouseUp);
 
-};
+        this.dom.listener.removeChild(this.dom.scrollbar.el);
+    }
 
-Smooth.prototype.calcScroll = function(e){
+    mouseDown(e) {
+        
+        e.which == 1 && (this.dom.scrollbar.state.clicked = true);
+    }
 
-	var self = this;
+    mouseUp(e) {
 
-	if(self.direction == 'vertical'){
-		self.scrollbar.drag.deltaY = e.clientY * self.scrollbar.drag.speed;
+        this.dom.scrollbar.state.clicked = false;
 
-		self.pos.targetY = -self.scrollbar.drag.deltaY;
-		self.pos.targetY = Math.max(self.bounding * -1, self.pos.targetY);
-		self.pos.targetY = Math.min(0, self.pos.targetY);
-	}
-	else{
-		// strange...
-		self.scrollbar.drag.deltaX = e.clientX / (self.scrollbar.drag.speed + 2);
+        classes.remove(this.dom.listener, 'is-dragging');
+    }
 
-		self.pos.targetX = -self.scrollbar.drag.deltaX;
-		self.pos.targetX = Math.max(self.bounding * -1, self.pos.targetX);
-		self.pos.targetX = Math.min(0, self.pos.targetX);
-	}
+    mouseMove(e) {
 
+        this.dom.scrollbar.state.clicked && this.calcScroll(e);
+    }
+
+    addFakeScrollHeight() {
+
+        this.dom.scroll = create({
+            selector: 'div',
+            styles: 'vs-scroll-view'
+        });
+        
+        this.dom.listener.appendChild(this.dom.scroll);
+    }
+    
+    removeFakeScrollHeight() {
+
+        this.dom.listener.removeChild(this.dom.scroll);
+    }
+
+    calcScroll(e) {
+
+        const client = this.vars.direction == 'vertical' ? e.clientY : e.clientX;
+        const bounds = this.vars.direction == 'vertical' ? this.vars.height : this.vars.width;
+        const delta = client * (this.vars.bounding / bounds);
+        
+        classes.add(this.dom.listener, 'is-dragging');
+
+        this.vars.target = delta;
+        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
+        
+        this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target);
+    }
+
+    scrollTo(offset) {
+
+        this.pos.target = offset;
+    }
+
+    resize() {
+        
+        this.vars.height = document.documentElement.clientHeight || window.innerHeight;
+        this.vars.width = document.documentElement.clientWidth || window.innerWidth;
+        
+        !this.extends && (this.vars.bounding = this.dom.section.getBoundingClientRect().height - (this.vars.native ? 0 : this.vars.height));
+
+        if(!this.vars.native) {
+            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding);
+            css(this.dom.scrollbar.drag.el, this.vars.direction === 'vertical' ? 'height' : 'width', this.dom.scrollbar.drag.height);
+        } else {
+            css(this.dom.scroll, this.vars.direction === 'vertical' ? 'height' : 'width', this.vars.bounding);
+        }
+    }
+    
+    destroy() {
+        
+        this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
+
+        this.removeEvents();
+    }
 }
 
-Smooth.prototype.run = function(){
+window.Smooth = Smooth
 
-	var self = this;
-	var t, r, v, h;
-
-	this.pos.currentY += (this.pos.targetY - this.pos.currentY) * this.ease;
-	this.pos.currentX += (this.pos.targetX - this.pos.currentX) * this.ease;
-
-	this.els.forEach(function(el) {
-
-		t = (self.direction == 'vertical')
-			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + (self.pos.currentY * el.speed).toFixed(2) + ',0,1)'
-			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + (self.pos.currentX * el.speed).toFixed(2) + ',0,0,1)'
-		
-		css(el, 'transform', t);
-
-	});
-
-	if(this.scrollbar.active){
-
-		h = self.scrollbar.drag.height;
-
-		r = (self.direction == 'vertical')
-			? (Math.abs(self.pos.currentY) / (self.bounding / (window.innerHeight - h))) + (h / .5) - h
-			: (Math.abs(self.pos.currentX) / (self.bounding / (window.innerWidth - h))) + (h / .5) - h
-
-		r = Math.max(0, r-h);
-		r = Math.min(r, r+h);
-
-		v = (self.direction == 'vertical')
-			? 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,' + r.toFixed(2) + ',0,1)'
-			: 'matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,' + r.toFixed(2) + ',0,0,1)'
-			
-		css(self.scrollbar.drag.el, 'transform', v);
-
-	}
-
-	this.rAF = requestAnimationFrame(this.run.bind(this));
-
-};
-
-Smooth.prototype.getTo = function(event){
-    
-	var el = event.target;
-	"vertical" == this.direction ? this.pos.targetY = -el.targetPos : this.pos.targetX = -el.targetPos;
-
-};
-
-Smooth.prototype.scrollTo = function(offset){
-	
-	"vertical" == this.direction ? this.pos.targetY = -offset : this.pos.targetX = -offset;
-
-};
-
-Smooth.prototype.resize = function(){
-
-	this.bounding = (this.direction == 'vertical')
-		? this.section.getBoundingClientRect().height - window.innerHeight
-		: this.section.getBoundingClientRect().left + this.section.getBoundingClientRect().right - window.innerHeight;
-
-};
-
-Smooth.prototype.destroy = function(){
-
-	vs.off(this.calc);
-
-	cancelAnimationFrame(this.rAF);
-	this.rAF = undefined;
-
-	this.to.forEach(function(el){
-		off(el, 'click', self.getTo)
-	});
-
-	off(document, 'touchmove', this.prevent);
-	off(window, 'resize', this.resize);
-
-	if(this.scrollbar.active){
-
-		off(this.scrollbar.el, 'click', this.calcScroll);
-		off(this.scrollbar.drag.el, 'mousedown', this.down);
-
-		off(document, 'mousemove', this.move);
-		off(document, 'mouseup', this.up);
-	}
-
-};
+export default Smooth
