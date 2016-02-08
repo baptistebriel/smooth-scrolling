@@ -31,15 +31,15 @@ smooth.init()
 
 ### Methods
 
-### `smooth.init()`
+#### `smooth.init()`
 
 Will add all event listeners and DOM elements.
 
-### `smooth.destroy()`
+#### `smooth.destroy()`
 
 Will remove all event listeners and DOM elements.
 
-### `smooth.scrollTo(offset)`
+#### `smooth.scrollTo(offset)`
 
 Basic scrollTo function.
 
@@ -96,6 +96,20 @@ const smooth = new Custom({
 
 smooth.init()
 ```
+
+### Development
+
+`npm run dev`
+
+### Demos
+
+`npm run demo-parallax`
+
+`npm run demo-opacity`
+
+`npm run demo-split`
+
+`npm run demo-performances`
 
 ## Further understanding
 

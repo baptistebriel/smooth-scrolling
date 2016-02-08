@@ -432,7 +432,49 @@ window.Smooth = Smooth;
 
 exports.default = Smooth;
 
-},{"dom-classes":10,"dom-create-element":11,"dom-css":12,"dom-event":13,"perfnow":17,"prefix":19,"virtual-scroll":25}],4:[function(require,module,exports){
+},{"dom-classes":11,"dom-create-element":12,"dom-css":13,"dom-event":15,"perfnow":19,"prefix":20,"virtual-scroll":26}],4:[function(require,module,exports){
+/* The following list is defined in React's core */
+var IS_UNITLESS = {
+  animationIterationCount: true,
+  boxFlex: true,
+  boxFlexGroup: true,
+  boxOrdinalGroup: true,
+  columnCount: true,
+  flex: true,
+  flexGrow: true,
+  flexPositive: true,
+  flexShrink: true,
+  flexNegative: true,
+  flexOrder: true,
+  gridRow: true,
+  gridColumn: true,
+  fontWeight: true,
+  lineClamp: true,
+  lineHeight: true,
+  opacity: true,
+  order: true,
+  orphans: true,
+  tabSize: true,
+  widows: true,
+  zIndex: true,
+  zoom: true,
+
+  // SVG-related properties
+  fillOpacity: true,
+  stopOpacity: true,
+  strokeDashoffset: true,
+  strokeOpacity: true,
+  strokeWidth: true
+};
+
+module.exports = function(name, value) {
+  if(typeof value === 'number' && !IS_UNITLESS[ name ]) {
+    return value + 'px';
+  } else {
+    return value;
+  }
+};
+},{}],5:[function(require,module,exports){
 ;(function (exports) {
   'use strict'
 
@@ -552,7 +594,7 @@ exports.default = Smooth;
   exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString,
@@ -590,7 +632,7 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -2048,14 +2090,14 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":4,"ieee754":14,"isarray":7}],7:[function(require,module,exports){
+},{"base64-js":5,"ieee754":16,"isarray":8}],8:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
@@ -2219,7 +2261,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":6}],9:[function(require,module,exports){
+},{"buffer":7}],10:[function(require,module,exports){
 var clone = require('clone');
 
 module.exports = function(options, defaults) {
@@ -2233,7 +2275,7 @@ module.exports = function(options, defaults) {
 
   return options;
 };
-},{"clone":8}],10:[function(require,module,exports){
+},{"clone":9}],11:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -2332,7 +2374,7 @@ function toggle (el, name) {
   }
 }
 
-},{"indexof":15}],11:[function(require,module,exports){
+},{"indexof":17}],12:[function(require,module,exports){
 /*
 `dom-create-element`
 
@@ -2379,75 +2421,98 @@ function create(opt) {
 	
 	return el;
 };
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var prefix = require('prefix-style')
 var toCamelCase = require('to-camel-case')
 var cache = { 'float': 'cssFloat' }
+var addPxToStyle = require('add-px-to-style')
 
-var suffixMap = {}
-;['top','right','bottom','left',
-    'width','height','fontSize',
-    'paddingLeft','paddingRight',
-    'paddingTop','paddingBottom',
-    'marginLeft','marginRight',
-    'marginTop','marginBottom',
-    'padding','margin','perspective'
-].forEach(function(prop) {
-    suffixMap[prop] = 'px'
-})
+function style (element, property, value) {
+  var camel = cache[property]
+  if (typeof camel === 'undefined') {
+    camel = detect(property)
+  }
 
-function style(element, property, value) {
-    var camel = cache[property]
-    if (typeof camel === 'undefined')
-        camel = detect(property)
-
-    //may be false if CSS prop is unsupported
-    if (camel) {
-        if (value === undefined)
-            return element.style[camel]
-
-        if (typeof value === 'number')
-            value = value + (suffixMap[camel]||'')
-        element.style[camel] = value
+  // may be false if CSS prop is unsupported
+  if (camel) {
+    if (value === undefined) {
+      return element.style[camel]
     }
+
+    element.style[camel] = addPxToStyle(camel, value)
+  }
 }
 
-function each(element, properties) {
-    for (var k in properties) {
-        if (properties.hasOwnProperty(k)) {
-            style(element, k, properties[k])
-        }
+function each (element, properties) {
+  for (var k in properties) {
+    if (properties.hasOwnProperty(k)) {
+      style(element, k, properties[k])
     }
+  }
 }
 
-function detect(cssProp) {
-    var camel = toCamelCase(cssProp)
-    var result = prefix(camel)
-    cache[camel] = cache[cssProp] = cache[result] = result
-    return result
+function detect (cssProp) {
+  var camel = toCamelCase(cssProp)
+  var result = prefix(camel)
+  cache[camel] = cache[cssProp] = cache[result] = result
+  return result
 }
 
-function set() {
-    if (arguments.length === 2) {
-        each(arguments[0], arguments[1])
-    } else
-        style(arguments[0], arguments[1], arguments[2])
+function set () {
+  if (arguments.length === 2) {
+    each(arguments[0], arguments[1])
+  } else {
+    style(arguments[0], arguments[1], arguments[2])
+  }
 }
 
 module.exports = set
 module.exports.set = set
 
-module.exports.get = function(element, properties) {
-    if (Array.isArray(properties))
-        return properties.reduce(function(obj, prop) {
-            obj[prop] = style(element, prop||'')
-            return obj
-        }, {})
-    else
-        return style(element, properties||'')
+module.exports.get = function (element, properties) {
+  if (Array.isArray(properties)) {
+    return properties.reduce(function (obj, prop) {
+      obj[prop] = style(element, prop || '')
+      return obj
+    }, {})
+  } else {
+    return style(element, properties || '')
+  }
 }
 
-},{"prefix-style":18,"to-camel-case":21}],13:[function(require,module,exports){
+},{"add-px-to-style":4,"prefix-style":14,"to-camel-case":22}],14:[function(require,module,exports){
+var div = null
+var prefixes = [ 'Webkit', 'Moz', 'O', 'ms' ]
+
+module.exports = function prefixStyle (prop) {
+  // re-use a dummy div
+  if (!div) {
+    div = document.createElement('div')
+  }
+
+  var style = div.style
+
+  // prop exists without prefix
+  if (prop in style) {
+    return prop
+  }
+
+  // borderRadius -> BorderRadius
+  var titleCase = prop.charAt(0).toUpperCase() + prop.slice(1)
+
+  // find the vendor-prefixed prop
+  for (var i = prefixes.length; i >= 0; i--) {
+    var name = prefixes[i] + titleCase
+    // e.g. WebkitBorderRadius or webkitBorderRadius
+    if (name in style) {
+      return name
+    }
+  }
+
+  return false
+}
+
+},{}],15:[function(require,module,exports){
 module.exports = on;
 module.exports.on = on;
 module.exports.off = off;
@@ -2464,7 +2529,7 @@ function off (element, event, callback, capture) {
   return callback;
 }
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2550,7 +2615,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -2561,7 +2626,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.2
 (function() {
   var root;
@@ -2664,7 +2729,7 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * @file perfnow is a 0.14 kb window.performance.now high resolution timer polyfill with Date fallback
  * @author Daniel Lamb <dlamb.open.source@gmail.com>
@@ -2688,34 +2753,14 @@ function perfnow(window){
   };
 }
 perfnow(window);
-},{}],18:[function(require,module,exports){
-var elem = null
-
-//https://gist.github.com/paulirish/523692
-module.exports = function prefix(prop) {
-    var prefixes = ['Moz', 'Khtml', 'Webkit', 'O', 'ms'],
-        upper = prop.charAt(0).toUpperCase() + prop.slice(1)
-    
-    if (!elem)
-        elem = document.createElement('div')
-
-    if (prop in elem.style)
-        return prop
-
-    for (var len = prefixes.length; len--;) {
-        if ((prefixes[len] + upper) in elem.style)
-            return (prefixes[len] + upper)
-    }
-    return false
-}
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 function identity(x) { return x; }
 
 module.exports = identity;
 module.exports.dash = identity;
 module.exports.dash = identity;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 function E () {
 	// Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -2783,7 +2828,7 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -2808,7 +2853,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":23}],22:[function(require,module,exports){
+},{"to-space-case":24}],23:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -2883,7 +2928,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -2908,13 +2953,13 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":22}],24:[function(require,module,exports){
+},{"to-no-case":23}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var defaults = require('defaults');
@@ -3121,7 +3166,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":24,"./support":26,"bindall-standalone":5,"defaults":9,"lethargy":16,"tiny-emitter":20}],26:[function(require,module,exports){
+},{"./clone":25,"./support":27,"bindall-standalone":6,"defaults":10,"lethargy":18,"tiny-emitter":21}],27:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {
