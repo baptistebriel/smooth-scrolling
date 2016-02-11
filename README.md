@@ -71,7 +71,7 @@ class Custom extends Smooth {
 
     resize() {
         
-        super.resize();
+        super.resize()
 
         this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
     }
@@ -99,13 +99,17 @@ smooth.init()
 
 ### Development
 
-`npm run dev`
+`git clone git@github.com:baptistebriel/smooth-scrolling.git`
+
+`cd smooth-scrolling/ && npm i && npm run dev`
 
 ### Demos
 
 `npm run demo-parallax`
 
 `npm run demo-opacity`
+
+`npm run demo-scale`
 
 `npm run demo-split`
 
