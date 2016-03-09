@@ -73,9 +73,9 @@ class Smooth {
         this.vars.preload && this.preloadImages()
         this.vars.native && this.addFakeScrollHeight()
         
-        this.addEvents();
-        
-        !this.vars.preload && this.resize()
+        this.addEvents()
+        this.resize()
+
         !this.vars.native && this.addFakeScrollBar()
     }
 
@@ -255,7 +255,7 @@ class Smooth {
     resize() {
         
         const prop = this.vars.direction === 'vertical' ? 'height' : 'width';
-
+        
         this.vars.height = document.documentElement.clientHeight || window.innerHeight
         this.vars.width = document.documentElement.clientWidth || window.innerWidth
         
@@ -265,7 +265,7 @@ class Smooth {
         }
         
         if(!this.vars.native) {
-            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / this.vars.bounding)
+            this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height))
             css(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height)
         } else {
             css(this.dom.scroll, prop, this.vars.bounding)
