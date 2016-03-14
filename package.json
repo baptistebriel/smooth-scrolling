@@ -8,7 +8,7 @@
     "dom-create-element": "^1.0.2",
     "dom-css": "^2.0.0",
     "dom-event": "0.0.5",
-    "perfnow": "^0.1.0",
+    "perfnow": "^0.2.0",
     "prefix": "^0.2.4",
     "virtual-scroll": "^1.0.2"
   },
