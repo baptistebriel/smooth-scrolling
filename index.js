@@ -164,7 +164,7 @@ class Smooth {
     
     removeEvents() {
         
-        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
+        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
         
         off(window, 'resize', this.resize)
         

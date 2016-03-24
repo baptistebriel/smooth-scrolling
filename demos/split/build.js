@@ -376,7 +376,7 @@ var Smooth = function () {
         key: 'removeEvents',
         value: function removeEvents() {
 
-            this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
 
             (0, _domEvent.off)(window, 'resize', this.resize);
 
@@ -562,17 +562,12 @@ var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
 function init () {
-  var i
   var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  var len = code.length
-
-  for (i = 0; i < len; i++) {
+  for (var i = 0, len = code.length; i < len; ++i) {
     lookup[i] = code[i]
-  }
-
-  for (i = 0; i < len; ++i) {
     revLookup[code.charCodeAt(i)] = i
   }
+
   revLookup['-'.charCodeAt(0)] = 62
   revLookup['_'.charCodeAt(0)] = 63
 }
@@ -604,8 +599,8 @@ function toByteArray (b64) {
 
   for (i = 0, j = 0; i < l; i += 4, j += 3) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp & 0xFF0000) >> 16
-    arr[L++] = (tmp & 0xFF00) >> 8
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
     arr[L++] = tmp & 0xFF
   }
 
@@ -994,17 +989,12 @@ Buffer.compare = function compare (a, b) {
   var x = a.length
   var y = b.length
 
-  var i = 0
-  var len = Math.min(x, y)
-  while (i < len) {
-    if (a[i] !== b[i]) break
-
-    ++i
-  }
-
-  if (i !== len) {
-    x = a[i]
-    y = b[i]
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
   }
 
   if (x < y) return -1
@@ -1165,7 +1155,6 @@ Buffer.prototype.inspect = function inspect () {
 
 Buffer.prototype.compare = function compare (b) {
   if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return 0
   return Buffer.compare(this, b)
 }
 
@@ -2780,18 +2769,18 @@ module.exports = function(arr, obj){
 
 },{}],18:[function(require,module,exports){
 /**
- * @file perfnow is a 0.14 kb window.performance.now high resolution timer polyfill with Date fallback
+ * @file perfnow is a 0.1 kb performance.now high resolution timer polyfill with Date fallback
  * @author Daniel Lamb <dlamb.open.source@gmail.com>
  */
 
-function perfnow(window){
+function perfnow(global) {
   // make sure we have an object to work with
-  if(!('performance' in window)) {
-    window.performance = {};
+  if (!('performance' in global)) {
+    global.performance = {};
   }
-  var perf = window.performance;
+  var perf = global.performance;
   // handle vendor prefixing
-  window.performance.now = perf.now ||
+  global.performance.now = perf.now ||
     perf.mozNow ||
     perf.msNow ||
     perf.oNow ||
@@ -2799,9 +2788,10 @@ function perfnow(window){
     // fallback to Date
     Date.now || function () {
       return new Date().getTime();
-  };
+    };
 }
-perfnow(window);
+perfnow(self);
+
 },{}],19:[function(require,module,exports){
 var div = null
 var prefixes = [ 'Webkit', 'Moz', 'O', 'ms' ]
