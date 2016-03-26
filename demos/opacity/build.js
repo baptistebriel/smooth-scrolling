@@ -286,10 +286,22 @@ var Smooth = function () {
             return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)';
         }
     }, {
+        key: 'on',
+        value: function on() {
+
+            this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs.on(this.calc);
+        }
+    }, {
+        key: 'off',
+        value: function off() {
+
+            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+        }
+    }, {
         key: 'addEvents',
         value: function addEvents() {
 
-            this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs.on(this.calc);
+            this.on();
 
             (0, _domEvent.on)(window, 'resize', this.resize);
 
@@ -299,7 +311,7 @@ var Smooth = function () {
         key: 'removeEvents',
         value: function removeEvents() {
 
-            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.off();
 
             (0, _domEvent.off)(window, 'resize', this.resize);
 

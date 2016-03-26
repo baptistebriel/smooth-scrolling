@@ -152,10 +152,20 @@ class Smooth {
         
         return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)'
     }
-
-    addEvents() {
+    
+    on() {
 
         this.vars.native ? on(window, 'scroll', this.debounce) : this.vs.on(this.calc)
+    }
+    
+    off() {
+
+        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
+    }
+    
+    addEvents() {
+
+        this.on()
         
         on(window, 'resize', this.resize)
         
@@ -164,7 +174,7 @@ class Smooth {
     
     removeEvents() {
         
-        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
+        this.off()
         
         off(window, 'resize', this.resize)
         

@@ -35,6 +35,14 @@ smooth.init()
 
 Will add all event listeners and DOM elements.
 
+#### `smooth.on()`
+
+Will listen to either window scroll event (if native), otherwise VirtualScroll
+
+#### `smooth.off()`
+
+Will stop listening to onscroll/wheel events.
+
 #### `smooth.destroy()`
 
 Will remove all event listeners and DOM elements.
