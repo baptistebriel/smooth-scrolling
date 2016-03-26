@@ -287,13 +287,13 @@ var Smooth = function () {
         key: 'on',
         value: function on() {
 
-            this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs.on(this.calc);
+            this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
         }
     }, {
         key: 'off',
         value: function off() {
 
-            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
         }
     }, {
         key: 'addEvents',
