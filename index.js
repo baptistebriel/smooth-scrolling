@@ -154,13 +154,13 @@ class Smooth {
     }
     
     on() {
-        
+
         this.vars.native ? on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
     }
     
     off() {
-        
-        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc), this.vs.destroy(), this.vs = null)
+
+        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && (this.vs.off(this.calc), this.vs.destroy(), this.vs = null))
     }
     
     addEvents() {

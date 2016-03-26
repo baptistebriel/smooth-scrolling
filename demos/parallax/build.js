@@ -355,7 +355,7 @@ var Smooth = function () {
         key: 'off',
         value: function off() {
 
-            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : this.vs && (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
         }
     }, {
         key: 'addEvents',
