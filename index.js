@@ -258,7 +258,7 @@ class Smooth {
             
         } else {
 
-            this.pos.target = offset
+            this.vars.target = offset
         }
     }
 

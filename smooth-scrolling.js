@@ -317,7 +317,7 @@ var Smooth = function () {
                 this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0);
             } else {
 
-                this.pos.target = offset;
+                this.vars.target = offset;
             }
         }
     }, {
