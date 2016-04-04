@@ -1,4 +1,3 @@
-import performance from 'perfnow'
 import classes from 'dom-classes'
 import create from 'dom-create-element'
 import css from 'dom-css'
@@ -14,8 +13,7 @@ class Smooth {
 
         this.prefix = prefix('transform')
         
-        // TODO: detect if is an extension of Smooth
-        // return false if is a direct instance of Smooth
+        // TODO: detect if is an extension of Smooth (return false if is a direct instance of Smooth)
         this.extends = opt.extends || false
         
         this.vars = {

@@ -170,10 +170,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _perfnow = require('perfnow');
-
-var _perfnow2 = _interopRequireDefault(_perfnow);
-
 var _domClasses = require('dom-classes');
 
 var _domClasses2 = _interopRequireDefault(_domClasses);
@@ -210,8 +206,7 @@ var Smooth = function () {
 
         this.prefix = (0, _prefix2.default)('transform');
 
-        // TODO: detect if is an extension of Smooth
-        // return false if is a direct instance of Smooth
+        // TODO: detect if is an extension of Smooth (return false if is a direct instance of Smooth)
         this.extends = opt.extends || false;
 
         this.vars = {
@@ -516,7 +511,7 @@ window.Smooth = Smooth;
 
 exports.default = Smooth;
 
-},{"dom-classes":11,"dom-create-element":12,"dom-css":13,"dom-event":14,"perfnow":18,"prefix":20,"virtual-scroll":26}],4:[function(require,module,exports){
+},{"dom-classes":11,"dom-create-element":12,"dom-css":13,"dom-event":14,"prefix":19,"virtual-scroll":25}],4:[function(require,module,exports){
 /* The following list is defined in React's core */
 var IS_UNITLESS = {
   animationIterationCount: true,
@@ -2557,7 +2552,7 @@ module.exports.get = function (element, properties) {
   }
 }
 
-},{"add-px-to-style":4,"prefix-style":19,"to-camel-case":22}],14:[function(require,module,exports){
+},{"add-px-to-style":4,"prefix-style":18,"to-camel-case":21}],14:[function(require,module,exports){
 module.exports = on;
 module.exports.on = on;
 module.exports.off = off;
@@ -2775,31 +2770,6 @@ module.exports = function(arr, obj){
 }).call(this);
 
 },{}],18:[function(require,module,exports){
-/**
- * @file perfnow is a 0.1 kb performance.now high resolution timer polyfill with Date fallback
- * @author Daniel Lamb <dlamb.open.source@gmail.com>
- */
-
-function perfnow(global) {
-  // make sure we have an object to work with
-  if (!('performance' in global)) {
-    global.performance = {};
-  }
-  var perf = global.performance;
-  // handle vendor prefixing
-  global.performance.now = perf.now ||
-    perf.mozNow ||
-    perf.msNow ||
-    perf.oNow ||
-    perf.webkitNow ||
-    // fallback to Date
-    Date.now || function () {
-      return new Date().getTime();
-    };
-}
-perfnow(self);
-
-},{}],19:[function(require,module,exports){
 var div = null
 var prefixes = [ 'Webkit', 'Moz', 'O', 'ms' ]
 
@@ -2831,14 +2801,14 @@ module.exports = function prefixStyle (prop) {
   return false
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 function identity(x) { return x; }
 
 module.exports = identity;
 module.exports.dash = identity;
 module.exports.dash = identity;
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 function E () {
 	// Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -2906,7 +2876,7 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -2931,7 +2901,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":24}],23:[function(require,module,exports){
+},{"to-space-case":23}],22:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -3006,7 +2976,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -3031,13 +3001,13 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":23}],25:[function(require,module,exports){
+},{"to-no-case":22}],24:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var defaults = require('defaults');
@@ -3244,7 +3214,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":25,"./support":27,"bindall-standalone":6,"defaults":10,"lethargy":17,"tiny-emitter":21}],27:[function(require,module,exports){
+},{"./clone":24,"./support":26,"bindall-standalone":6,"defaults":10,"lethargy":17,"tiny-emitter":20}],26:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {
