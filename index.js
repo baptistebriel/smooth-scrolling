@@ -27,7 +27,7 @@ class Smooth {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
             ease: opt.ease || 0.075,
-            preload: opt.preload || true,
+            preload: opt.preload || false,
             current: 0,
             target: 0,
             height: 0,
@@ -35,7 +35,7 @@ class Smooth {
             timer: null,
             ticking: false
         }
-        
+              
         this.vs = this.vars.native ? null : new vs({
             limitInertia: opt.vs && opt.vs.limitInertia || false,
             mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
@@ -74,8 +74,8 @@ class Smooth {
         this.vars.native && this.addFakeScrollHeight()
         
         this.addEvents()
-        this.resize()
 
+        !this.vars.preload && this.resize()
         !this.vars.native && this.addFakeScrollBar()
     }
 

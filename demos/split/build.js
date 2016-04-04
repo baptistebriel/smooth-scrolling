@@ -223,7 +223,7 @@ var Smooth = function () {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
             ease: opt.ease || 0.075,
-            preload: opt.preload || true,
+            preload: opt.preload || false,
             current: 0,
             target: 0,
             height: 0,
@@ -275,8 +275,8 @@ var Smooth = function () {
             this.vars.native && this.addFakeScrollHeight();
 
             this.addEvents();
-            this.resize();
 
+            !this.vars.preload && this.resize();
             !this.vars.native && this.addFakeScrollBar();
         }
     }, {

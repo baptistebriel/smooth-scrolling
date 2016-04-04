@@ -25,7 +25,7 @@ class Parallax extends Smooth {
     }
     
     resize() {
-        
+                
         this.getCache()
         super.resize()
     }

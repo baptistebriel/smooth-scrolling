@@ -81,6 +81,8 @@ var Parallax = function (_Smooth) {
                     speed: el.getAttribute('data-speed') || '-1'
                 };
 
+                console.log(bounding.top);
+
                 _this3.vars.bounding = bounding.bottom > _this3.vars.bounding ? bounding.bottom - window.innerHeight : _this3.vars.bounding;
                 _this3.cache.push(bounds);
             });
@@ -137,7 +139,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var scroll = new _custom2.default({
     extends: true,
-    preload: false,
+    preload: true,
     section: document.querySelector('.vs-section'),
     divs: document.querySelectorAll('.vs-div')
 });
@@ -206,7 +208,7 @@ var Smooth = function () {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
             ease: opt.ease || 0.075,
-            preload: opt.preload || true,
+            preload: opt.preload ? opt.preload : false,
             current: 0,
             target: 0,
             height: 0,
@@ -258,8 +260,8 @@ var Smooth = function () {
             this.vars.native && this.addFakeScrollHeight();
 
             this.addEvents();
-            this.resize();
 
+            !this.vars.preload && this.resize();
             !this.vars.native && this.addFakeScrollBar();
         }
     }, {

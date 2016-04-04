@@ -21,7 +21,7 @@ class Split extends Smooth {
     }
     
     resize() {
-        
+                
         this.dom.sections.forEach((el, index) => css(el, {
             'display': 'block',
             'position': 'relative',
