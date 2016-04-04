@@ -214,11 +214,6 @@ var Smooth = function () {
         // return false if is a direct instance of Smooth
         this.extends = opt.extends || false;
 
-        this.perfs = {
-            now: null,
-            last: null
-        };
-
         this.vars = {
             direction: opt.direction || 'vertical',
             native: opt.native || false,

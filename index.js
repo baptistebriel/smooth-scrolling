@@ -18,11 +18,6 @@ class Smooth {
         // return false if is a direct instance of Smooth
         this.extends = opt.extends || false
         
-        this.perfs = {
-            now: null,
-            last: null
-        }
-        
         this.vars = {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
@@ -35,7 +30,7 @@ class Smooth {
             timer: null,
             ticking: false
         }
-              
+
         this.vs = this.vars.native ? null : new vs({
             limitInertia: opt.vs && opt.vs.limitInertia || false,
             mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,

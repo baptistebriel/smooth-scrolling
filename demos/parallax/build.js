@@ -81,8 +81,6 @@ var Parallax = function (_Smooth) {
                     speed: el.getAttribute('data-speed') || '-1'
                 };
 
-                console.log(bounding.top);
-
                 _this3.vars.bounding = bounding.bottom > _this3.vars.bounding ? bounding.bottom - window.innerHeight : _this3.vars.bounding;
                 _this3.cache.push(bounds);
             });
@@ -199,16 +197,11 @@ var Smooth = function () {
         // return false if is a direct instance of Smooth
         this.extends = opt.extends || false;
 
-        this.perfs = {
-            now: null,
-            last: null
-        };
-
         this.vars = {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
             ease: opt.ease || 0.075,
-            preload: opt.preload ? opt.preload : false,
+            preload: opt.preload || false,
             current: 0,
             target: 0,
             height: 0,

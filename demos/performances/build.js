@@ -29,6 +29,11 @@ var Custom = function (_Smooth) {
 
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Custom).call(this, opt));
 
+        _this.perfs = {
+            now: null,
+            last: null
+        };
+
         _this.dom.section = opt.section;
         return _this;
     }
@@ -137,16 +142,11 @@ var Smooth = function () {
         // return false if is a direct instance of Smooth
         this.extends = opt.extends || false;
 
-        this.perfs = {
-            now: null,
-            last: null
-        };
-
         this.vars = {
             direction: opt.direction || 'vertical',
             native: opt.native || false,
             ease: opt.ease || 0.075,
-            preload: opt.preload || true,
+            preload: opt.preload || false,
             current: 0,
             target: 0,
             height: 0,
@@ -198,8 +198,8 @@ var Smooth = function () {
             this.vars.native && this.addFakeScrollHeight();
 
             this.addEvents();
-            this.resize();
 
+            !this.vars.preload && this.resize();
             !this.vars.native && this.addFakeScrollBar();
         }
     }, {

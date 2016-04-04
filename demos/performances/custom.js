@@ -6,6 +6,11 @@ class Custom extends Smooth {
         
         super(opt);
 
+        this.perfs = {
+            now: null,
+            last: null
+        }
+        
         this.dom.section = opt.section;
     }
     
