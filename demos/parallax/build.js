@@ -35,6 +35,7 @@ var Parallax = function (_Smooth) {
 
         _this.createExtraBound();
 
+        _this.resizing = false;
         _this.cache = null;
         _this.dom.divs = Array.prototype.slice.call(opt.divs, 0);
         return _this;
@@ -59,17 +60,40 @@ var Parallax = function (_Smooth) {
         key: 'resize',
         value: function resize() {
 
+            this.resizing = true;
+
+            this.reset();
             this.getCache();
             _get(Object.getPrototypeOf(Parallax.prototype), 'resize', this).call(this);
+
+            this.resizing = false;
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            var _this3 = this;
+
+            if (!this.cache) return;
+
+            this.dom.divs.forEach(function (el, index) {
+
+                var cache = _this3.cache[index];
+
+                !cache.state && (document.body.appendChild(cache.el), cache.state = true);
+                el.style.display = 'block';
+            });
         }
     }, {
         key: 'getCache',
         value: function getCache() {
-            var _this3 = this;
+            var _this4 = this;
 
             this.cache = [];
 
             this.dom.divs.forEach(function (el, index) {
+
+                el.style.display = 'block';
+                el.style.transform = 'none';
 
                 var bounding = el.getBoundingClientRect();
                 var bounds = {
@@ -81,8 +105,8 @@ var Parallax = function (_Smooth) {
                     speed: el.getAttribute('data-speed') || '-1'
                 };
 
-                _this3.vars.bounding = bounding.bottom > _this3.vars.bounding ? bounding.bottom - window.innerHeight : _this3.vars.bounding;
-                _this3.cache.push(bounds);
+                _this4.vars.bounding = bounding.bottom > _this4.vars.bounding ? bounding.bottom - window.innerHeight : _this4.vars.bounding;
+                _this4.cache.push(bounds);
             });
         }
     }, {
@@ -97,7 +121,7 @@ var Parallax = function (_Smooth) {
         key: 'inViewport',
         value: function inViewport(el, index) {
 
-            if (!this.cache) return;
+            if (!this.cache || this.resizing) return;
 
             var cache = this.cache[index];
             var current = this.vars.current;

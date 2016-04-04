@@ -1,6 +1,6 @@
 {
   "name": "smooth-scrolling",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Smooth is a small JavaScript module based on VirtualScroll to create smooth scrolling and parallax effects on scroll.",
   "main": "index.js",
   "dependencies": {
@@ -19,6 +19,7 @@
   },
   "scripts": {
     "dev": "watchify -v -t babelify index.js -o smooth-scrolling.js",
+    "uglify": "uglifyjs smooth-scrolling.js -cm > smooth-scrolling.min.js",
     "demo-parallax": "watchify -v -t babelify demos/parallax/index.js -o demos/parallax/build.js",
     "demo-opacity": "watchify -v -t babelify demos/opacity/index.js -o demos/opacity/build.js",
     "demo-scale": "watchify -v -t babelify demos/scale/index.js -o demos/scale/build.js",

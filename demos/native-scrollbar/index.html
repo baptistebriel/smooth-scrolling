@@ -6,6 +6,9 @@
     <title>native scrollbar demo | smooth-scrolling</title>
     <link rel="stylesheet" type="text/css" href="demos/main.css">
     <style>
+        body{
+            overflow: scroll;
+        }
         img {
             display: inline-block;
         }
@@ -44,7 +47,7 @@
     </div>
     <script src="smooth-scrolling.min.js"></script>
     <script>
-    var scroll = new Smooth({ native: true });
+    var scroll = new Smooth({ native: true, preload: true });
     scroll.init();
     </script>
 </body>

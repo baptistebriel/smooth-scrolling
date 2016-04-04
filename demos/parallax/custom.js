@@ -9,6 +9,7 @@ class Parallax extends Smooth {
 
         this.createExtraBound()
         
+        this.resizing = false
         this.cache = null
         this.dom.divs = Array.prototype.slice.call(opt.divs, 0)
     }
@@ -25,9 +26,27 @@ class Parallax extends Smooth {
     }
     
     resize() {
-                
+
+        this.resizing = true
+
+        this.reset() 
         this.getCache()
         super.resize()
+        
+        this.resizing = false
+    }
+
+    reset() {
+
+        if(!this.cache) return
+        
+        this.dom.divs.forEach((el, index) => {
+
+            const cache = this.cache[index]
+
+            !cache.state && (document.body.appendChild(cache.el), cache.state = true);
+            el.style.display = 'block'
+        })
     }
 
     getCache() {
@@ -35,7 +54,10 @@ class Parallax extends Smooth {
         this.cache = []
 
         this.dom.divs.forEach((el, index) => {
-            
+
+            el.style.display = 'block'
+            el.style.transform = 'none'
+
             const bounding = el.getBoundingClientRect()
             const bounds = {
                 el: el,
@@ -60,7 +82,7 @@ class Parallax extends Smooth {
     
     inViewport(el, index) {
 
-        if(!this.cache) return;
+        if(!this.cache || this.resizing) return;
         
         const cache = this.cache[index]
         const current = this.vars.current
