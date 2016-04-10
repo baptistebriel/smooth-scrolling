@@ -9,7 +9,7 @@
     "dom-classes": "npm-dom/dom-classes",
     "dom-event": "npm-dom/dom-event",
     "perfnow": "^0.2.0",
-    "prefix": "^0.2.4",
+    "prefix": "^0.2.5",
     "virtual-scroll": "^1.0.2"
   },
   "devDependencies": {
