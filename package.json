@@ -10,7 +10,7 @@
     "dom-css": "^2.0.0",
     "dom-event": "npm-dom/dom-event",
     "perfnow": "^0.2.0",
-    "prefix": "^0.2.6",
+    "prefix": "^1.0.0",
     "virtual-scroll": "^1.0.2"
   },
   "devDependencies": {
