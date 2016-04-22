@@ -153,7 +153,7 @@ class Smooth {
     
     off() {
 
-        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && (this.vs.off(this.calc), this.vs.destroy(), this.vs = null))
+        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
     }
     
     addEvents() {
@@ -278,7 +278,9 @@ class Smooth {
     destroy() {
         
         this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar()
-
+        
+        this.vs && (this.vs.destroy(), this.vs = null)
+        
         this.removeEvents()
     }
 }

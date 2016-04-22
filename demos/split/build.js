@@ -362,7 +362,7 @@ var Smooth = function () {
         key: 'off',
         value: function off() {
 
-            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : this.vs && (this.vs.off(this.calc), this.vs.destroy(), this.vs = null);
+            this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
         }
     }, {
         key: 'addEvents',
@@ -499,6 +499,8 @@ var Smooth = function () {
         value: function destroy() {
 
             this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
+
+            this.vs && (this.vs.destroy(), this.vs = null);
 
             this.removeEvents();
         }
