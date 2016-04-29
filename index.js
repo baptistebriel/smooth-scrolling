@@ -12,7 +12,8 @@ class Smooth {
         this.createBound()
 
         this.prefix = prefix('transform')
-        
+        this.rAF = undefined
+
         // TODO: detect if is an extension of Smooth (return false if is a direct instance of Smooth)
         this.extends = opt.extends || false
         
@@ -28,7 +29,7 @@ class Smooth {
             timer: null,
             ticking: false
         }
-
+        
         this.vs = this.vars.native ? null : new vs({
             limitInertia: opt.vs && opt.vs.limitInertia || false,
             mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
@@ -73,9 +74,9 @@ class Smooth {
     }
 
     preloadImages() {
-
+        
         const images = Array.prototype.slice.call(this.dom.listener.querySelectorAll('img'), 0)
-
+        
         images.forEach((image) => {
             
             const img = new Image();
@@ -147,22 +148,24 @@ class Smooth {
     }
     
     on() {
-
+        
         this.vars.native ? on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
+        
+        this.rAF = requestAnimationFrame(this.run)
     }
     
     off() {
 
         this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
+
+        cancelAnimationFrame(this.rAF)
     }
     
     addEvents() {
-
+        
         this.on()
         
         on(window, 'resize', this.resize)
-        
-        this.rAF = requestAnimationFrame(this.run)
     }
     
     removeEvents() {
@@ -170,8 +173,6 @@ class Smooth {
         this.off()
         
         off(window, 'resize', this.resize)
-        
-        cancelAnimationFrame(this.rAF)
     }
 
     addFakeScrollBar() {
@@ -285,6 +286,4 @@ class Smooth {
     }
 }
 
-window.Smooth = Smooth
-
-export default Smooth
+module && module.exports ? (module.exports = Smooth) : (window.Smooth = Smooth)

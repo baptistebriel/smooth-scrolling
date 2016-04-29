@@ -1,10 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _domClasses = require('dom-classes');
@@ -42,6 +38,7 @@ var Smooth = function () {
         this.createBound();
 
         this.prefix = (0, _prefix2.default)('transform');
+        this.rAF = undefined;
 
         // TODO: detect if is an extension of Smooth (return false if is a direct instance of Smooth)
         this.extends = opt.extends || false;
@@ -194,12 +191,16 @@ var Smooth = function () {
         value: function on() {
 
             this.vars.native ? (0, _domEvent.on)(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
+
+            this.rAF = requestAnimationFrame(this.run);
         }
     }, {
         key: 'off',
         value: function off() {
 
             this.vars.native ? (0, _domEvent.off)(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+
+            cancelAnimationFrame(this.rAF);
         }
     }, {
         key: 'addEvents',
@@ -208,8 +209,6 @@ var Smooth = function () {
             this.on();
 
             (0, _domEvent.on)(window, 'resize', this.resize);
-
-            this.rAF = requestAnimationFrame(this.run);
         }
     }, {
         key: 'removeEvents',
@@ -218,8 +217,6 @@ var Smooth = function () {
             this.off();
 
             (0, _domEvent.off)(window, 'resize', this.resize);
-
-            cancelAnimationFrame(this.rAF);
         }
     }, {
         key: 'addFakeScrollBar',
@@ -346,9 +343,7 @@ var Smooth = function () {
     return Smooth;
 }();
 
-window.Smooth = Smooth;
-
-exports.default = Smooth;
+module && module.exports ? module.exports = Smooth : window.Smooth = Smooth;
 
 },{"dom-classes":9,"dom-create-element":10,"dom-css":11,"dom-event":12,"prefix":17,"virtual-scroll":23}],2:[function(require,module,exports){
 /* The following list is defined in React's core */
