@@ -184,7 +184,7 @@ var Smooth = function () {
         key: 'getTransform',
         value: function getTransform(value) {
 
-            return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)';
+            return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(' + value + 'px,0,0)';
         }
     }, {
         key: 'on',
