@@ -93,7 +93,7 @@ class Smooth {
     
     calc(e) {
         
-        const delta = this.direction == 'horizontal' ? e.deltaX : e.deltaY
+        const delta = this.vars.direction == 'horizontal' ? e.deltaX : e.deltaY
         
         this.vars.target += delta * -1
         this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding))
