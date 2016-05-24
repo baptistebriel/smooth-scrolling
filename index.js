@@ -144,7 +144,7 @@ class Smooth {
     
     getTransform(value) {
         
-        return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(' + value + 'px,0,0)'
+        return this.vars.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(' + value + 'px,0,0)'
     }
     
     on() {
