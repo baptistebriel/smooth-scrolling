@@ -343,7 +343,7 @@ var Smooth = function () {
     return Smooth;
 }();
 
-module && module.exports ? module.exports = Smooth : window.Smooth = Smooth;
+module.exports = window.Smooth = Smooth;
 
 },{"dom-classes":9,"dom-create-element":10,"dom-css":11,"dom-event":12,"prefix":17,"virtual-scroll":23}],2:[function(require,module,exports){
 /* The following list is defined in React's core */

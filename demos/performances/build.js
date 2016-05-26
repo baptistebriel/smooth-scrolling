@@ -218,7 +218,7 @@ var Smooth = function () {
         key: 'calc',
         value: function calc(e) {
 
-            var delta = this.direction == 'horizontal' ? e.deltaX : e.deltaY;
+            var delta = this.vars.direction == 'horizontal' ? e.deltaX : e.deltaY;
 
             this.vars.target += delta * -1;
             this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
@@ -275,7 +275,7 @@ var Smooth = function () {
         key: 'getTransform',
         value: function getTransform(value) {
 
-            return this.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(0,' + value + 'px,0)';
+            return this.vars.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(' + value + 'px,0,0)';
         }
     }, {
         key: 'on',
@@ -434,7 +434,7 @@ var Smooth = function () {
     return Smooth;
 }();
 
-module && module.exports ? module.exports = Smooth : window.Smooth = Smooth;
+module.exports = window.Smooth = Smooth;
 
 },{"dom-classes":11,"dom-create-element":12,"dom-css":13,"dom-event":14,"prefix":19,"virtual-scroll":25}],4:[function(require,module,exports){
 /* The following list is defined in React's core */

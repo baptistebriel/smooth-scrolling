@@ -286,4 +286,4 @@ class Smooth {
     }
 }
 
-module && module.exports ? (module.exports = Smooth) : (window.Smooth = Smooth)
+module.exports = window.Smooth = Smooth
