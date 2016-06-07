@@ -3,7 +3,7 @@ import create from 'dom-create-element'
 import css from 'dom-css'
 import prefix from 'prefix'
 import vs from 'virtual-scroll'
-import {on, off} from 'dom-event'
+import event from 'dom-events'
 
 class Smooth {
     
@@ -79,14 +79,14 @@ class Smooth {
         
         images.forEach((image) => {
             
-            const img = new Image();
+            const img = document.createElement('img')
             
-            img.onload = (el) => {
-
+            event.once(img, 'load', () => {
+                
                 images.splice(images.indexOf(image), 1)
                 images.length === 0 && this.resize()
-            }
-
+            })
+            
             img.src = image.getAttribute('src')
         })
     }
@@ -149,7 +149,7 @@ class Smooth {
     
     on() {
         
-        this.vars.native ? on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
+        this.vars.native ? event.on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
         
         this.rAF = requestAnimationFrame(this.run)
     }
@@ -165,14 +165,14 @@ class Smooth {
         
         this.on()
         
-        on(window, 'resize', this.resize)
+        event.on(window, 'resize', this.resize)
     }
     
     removeEvents() {
         
         this.off()
         
-        off(window, 'resize', this.resize)
+        event.off(window, 'resize', this.resize)
     }
 
     addFakeScrollBar() {
@@ -180,20 +180,20 @@ class Smooth {
         this.dom.listener.appendChild(this.dom.scrollbar.el)
         this.dom.scrollbar.el.appendChild(this.dom.scrollbar.drag.el)
 
-        on(this.dom.scrollbar.el, 'click', this.calcScroll)
-        on(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
+        event.on(this.dom.scrollbar.el, 'click', this.calcScroll)
+        event.on(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
         
-        on(document, 'mousemove', this.mouseMove)
-        on(document, 'mouseup', this.mouseUp)
+        event.on(document, 'mousemove', this.mouseMove)
+        event.on(document, 'mouseup', this.mouseUp)
     }
 
     removeFakeScrollBar() {
 
-        off(this.dom.scrollbar.el, 'click', this.calcScroll)
-        off(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
+        event.off(this.dom.scrollbar.el, 'click', this.calcScroll)
+        event.off(this.dom.scrollbar.el, 'mousedown', this.mouseDown)
 
-        off(document, 'mousemove', this.mouseMove)
-        off(document, 'mouseup', this.mouseUp)
+        event.off(document, 'mousemove', this.mouseMove)
+        event.off(document, 'mouseup', this.mouseUp)
 
         this.dom.listener.removeChild(this.dom.scrollbar.el)
     }
@@ -260,8 +260,8 @@ class Smooth {
         
         const prop = this.vars.direction === 'vertical' ? 'height' : 'width';
         
-        this.vars.height = document.documentElement.clientHeight || window.innerHeight
-        this.vars.width = document.documentElement.clientWidth || window.innerWidth
+        this.vars.height = window.innerHeight
+        this.vars.width = window.innerWidth
         
         if(!this.extends) {
             const bounding = this.dom.section.getBoundingClientRect()
