@@ -12,7 +12,7 @@
     "dom-event": "github:npm-dom/dom-event",
     "perfnow": "^0.2.0",
     "prefix": "^1.0.0",
-    "virtual-scroll": "^1.0.2"
+    "virtual-scroll": "^1.1.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.5.0",
