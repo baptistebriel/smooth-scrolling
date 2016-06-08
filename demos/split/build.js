@@ -174,10 +174,6 @@ var _domCreateElement = require('dom-create-element');
 
 var _domCreateElement2 = _interopRequireDefault(_domCreateElement);
 
-var _domCss = require('dom-css');
-
-var _domCss2 = _interopRequireDefault(_domCss);
-
 var _prefix = require('prefix');
 
 var _prefix2 = _interopRequireDefault(_prefix);
@@ -300,15 +296,9 @@ var Smooth = function () {
     }, {
         key: 'debounce',
         value: function debounce() {
+            var _this3 = this;
 
             this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
-
-            this.addScrollingClass();
-        }
-    }, {
-        key: 'addScrollingClass',
-        value: function addScrollingClass() {
-            var _this3 = this;
 
             clearTimeout(this.vars.timer);
 
@@ -329,21 +319,21 @@ var Smooth = function () {
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
 
-            !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
-            !this.vars.native && this.transformScrollbar();
-
             this.rAF = requestAnimationFrame(this.run);
-        }
-    }, {
-        key: 'transformScrollbar',
-        value: function transformScrollbar() {
 
-            var size = this.dom.scrollbar.drag.height;
-            var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
-            var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
-            var clamp = Math.max(0, Math.min(value - size, value + size));
+            if (!this.extends) {
+                this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
+            }
 
-            this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            if (!this.vars.native) {
+
+                var size = this.dom.scrollbar.drag.height;
+                var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
+                var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
+                var clamp = Math.max(0, Math.min(value - size, value + size));
+
+                this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            }
         }
     }, {
         key: 'getTransform',
@@ -354,26 +344,52 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
+            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
 
             this.vars.native ? _domEvents2.default.on(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
 
-            this.rAF = requestAnimationFrame(this.run);
+            requestAnimationFrame && this.requestAnimationFrame();
         }
     }, {
         key: 'off',
-        value: function (_off) {
-            function off() {
-                return _off.apply(this, arguments);
+        value: function off() {
+            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+
+            this.vars.native ? _domEvents2.default.off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+
+            cancelAnimationFrame && this.cancelAnimationFrame();
+        }
+    }, {
+        key: 'requestAnimationFrame',
+        value: function (_requestAnimationFrame) {
+            function requestAnimationFrame() {
+                return _requestAnimationFrame.apply(this, arguments);
             }
 
-            off.toString = function () {
-                return _off.toString();
+            requestAnimationFrame.toString = function () {
+                return _requestAnimationFrame.toString();
             };
 
-            return off;
+            return requestAnimationFrame;
         }(function () {
 
-            this.vars.native ? off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+            this.rAF = requestAnimationFrame(this.run);
+        })
+    }, {
+        key: 'cancelAnimationFrame',
+        value: function (_cancelAnimationFrame) {
+            function cancelAnimationFrame() {
+                return _cancelAnimationFrame.apply(this, arguments);
+            }
+
+            cancelAnimationFrame.toString = function () {
+                return _cancelAnimationFrame.toString();
+            };
+
+            return cancelAnimationFrame;
+        }(function () {
 
             cancelAnimationFrame(this.rAF);
         })
@@ -498,9 +514,9 @@ var Smooth = function () {
 
             if (!this.vars.native) {
                 this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height));
-                (0, _domCss2.default)(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height);
+                this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else {
-                (0, _domCss2.default)(this.dom.scroll, prop, this.vars.bounding);
+                this.dom.scroll.style[prop] = this.vars.bounding + 'px';
             }
         }
     }, {
@@ -520,7 +536,7 @@ var Smooth = function () {
 
 module.exports = window.Smooth = Smooth;
 
-},{"dom-classes":6,"dom-create-element":7,"dom-css":8,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
+},{"dom-classes":6,"dom-create-element":7,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
 /* The following list is defined in React's core */
 var IS_UNITLESS = {
   animationIterationCount: true,

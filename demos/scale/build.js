@@ -95,10 +95,6 @@ var _domCreateElement = require('dom-create-element');
 
 var _domCreateElement2 = _interopRequireDefault(_domCreateElement);
 
-var _domCss = require('dom-css');
-
-var _domCss2 = _interopRequireDefault(_domCss);
-
 var _prefix = require('prefix');
 
 var _prefix2 = _interopRequireDefault(_prefix);
@@ -221,15 +217,9 @@ var Smooth = function () {
     }, {
         key: 'debounce',
         value: function debounce() {
+            var _this3 = this;
 
             this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
-
-            this.addScrollingClass();
-        }
-    }, {
-        key: 'addScrollingClass',
-        value: function addScrollingClass() {
-            var _this3 = this;
 
             clearTimeout(this.vars.timer);
 
@@ -250,21 +240,21 @@ var Smooth = function () {
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
 
-            !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
-            !this.vars.native && this.transformScrollbar();
-
             this.rAF = requestAnimationFrame(this.run);
-        }
-    }, {
-        key: 'transformScrollbar',
-        value: function transformScrollbar() {
 
-            var size = this.dom.scrollbar.drag.height;
-            var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
-            var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
-            var clamp = Math.max(0, Math.min(value - size, value + size));
+            if (!this.extends) {
+                this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
+            }
 
-            this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            if (!this.vars.native) {
+
+                var size = this.dom.scrollbar.drag.height;
+                var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
+                var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
+                var clamp = Math.max(0, Math.min(value - size, value + size));
+
+                this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            }
         }
     }, {
         key: 'getTransform',
@@ -275,26 +265,52 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
+            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
 
             this.vars.native ? _domEvents2.default.on(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
 
-            this.rAF = requestAnimationFrame(this.run);
+            requestAnimationFrame && this.requestAnimationFrame();
         }
     }, {
         key: 'off',
-        value: function (_off) {
-            function off() {
-                return _off.apply(this, arguments);
+        value: function off() {
+            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+
+            this.vars.native ? _domEvents2.default.off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+
+            cancelAnimationFrame && this.cancelAnimationFrame();
+        }
+    }, {
+        key: 'requestAnimationFrame',
+        value: function (_requestAnimationFrame) {
+            function requestAnimationFrame() {
+                return _requestAnimationFrame.apply(this, arguments);
             }
 
-            off.toString = function () {
-                return _off.toString();
+            requestAnimationFrame.toString = function () {
+                return _requestAnimationFrame.toString();
             };
 
-            return off;
+            return requestAnimationFrame;
         }(function () {
 
-            this.vars.native ? off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+            this.rAF = requestAnimationFrame(this.run);
+        })
+    }, {
+        key: 'cancelAnimationFrame',
+        value: function (_cancelAnimationFrame) {
+            function cancelAnimationFrame() {
+                return _cancelAnimationFrame.apply(this, arguments);
+            }
+
+            cancelAnimationFrame.toString = function () {
+                return _cancelAnimationFrame.toString();
+            };
+
+            return cancelAnimationFrame;
+        }(function () {
 
             cancelAnimationFrame(this.rAF);
         })
@@ -419,9 +435,9 @@ var Smooth = function () {
 
             if (!this.vars.native) {
                 this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height));
-                (0, _domCss2.default)(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height);
+                this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else {
-                (0, _domCss2.default)(this.dom.scroll, prop, this.vars.bounding);
+                this.dom.scroll.style[prop] = this.vars.bounding + 'px';
             }
         }
     }, {
@@ -441,49 +457,7 @@ var Smooth = function () {
 
 module.exports = window.Smooth = Smooth;
 
-},{"dom-classes":6,"dom-create-element":7,"dom-css":8,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
-/* The following list is defined in React's core */
-var IS_UNITLESS = {
-  animationIterationCount: true,
-  boxFlex: true,
-  boxFlexGroup: true,
-  boxOrdinalGroup: true,
-  columnCount: true,
-  flex: true,
-  flexGrow: true,
-  flexPositive: true,
-  flexShrink: true,
-  flexNegative: true,
-  flexOrder: true,
-  gridRow: true,
-  gridColumn: true,
-  fontWeight: true,
-  lineClamp: true,
-  lineHeight: true,
-  opacity: true,
-  order: true,
-  orphans: true,
-  tabSize: true,
-  widows: true,
-  zIndex: true,
-  zoom: true,
-
-  // SVG-related properties
-  fillOpacity: true,
-  stopOpacity: true,
-  strokeDashoffset: true,
-  strokeOpacity: true,
-  strokeWidth: true
-};
-
-module.exports = function(name, value) {
-  if(typeof value === 'number' && !IS_UNITLESS[ name ]) {
-    return value + 'px';
-  } else {
-    return value;
-  }
-};
-},{}],5:[function(require,module,exports){
+},{"dom-classes":5,"dom-create-element":6,"dom-events":7,"prefix":11,"virtual-scroll":17}],4:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString,
@@ -521,7 +495,7 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -620,7 +594,7 @@ function toggle (el, name) {
   }
 }
 
-},{"indexof":10}],7:[function(require,module,exports){
+},{"indexof":8}],6:[function(require,module,exports){
 /*
 `dom-create-element`
 
@@ -667,66 +641,7 @@ function create(opt) {
 	
 	return el;
 };
-},{}],8:[function(require,module,exports){
-var prefix = require('prefix-style')
-var toCamelCase = require('to-camel-case')
-var cache = { 'float': 'cssFloat' }
-var addPxToStyle = require('add-px-to-style')
-
-function style (element, property, value) {
-  var camel = cache[property]
-  if (typeof camel === 'undefined') {
-    camel = detect(property)
-  }
-
-  // may be false if CSS prop is unsupported
-  if (camel) {
-    if (value === undefined) {
-      return element.style[camel]
-    }
-
-    element.style[camel] = addPxToStyle(camel, value)
-  }
-}
-
-function each (element, properties) {
-  for (var k in properties) {
-    if (properties.hasOwnProperty(k)) {
-      style(element, k, properties[k])
-    }
-  }
-}
-
-function detect (cssProp) {
-  var camel = toCamelCase(cssProp)
-  var result = prefix(camel)
-  cache[camel] = cache[cssProp] = cache[result] = result
-  return result
-}
-
-function set () {
-  if (arguments.length === 2) {
-    each(arguments[0], arguments[1])
-  } else {
-    style(arguments[0], arguments[1], arguments[2])
-  }
-}
-
-module.exports = set
-module.exports.set = set
-
-module.exports.get = function (element, properties) {
-  if (Array.isArray(properties)) {
-    return properties.reduce(function (obj, prop) {
-      obj[prop] = style(element, prop || '')
-      return obj
-    }, {})
-  } else {
-    return style(element, properties || '')
-  }
-}
-
-},{"add-px-to-style":4,"prefix-style":13,"to-camel-case":19}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 var synth = require('synthetic-dom-events');
 
@@ -777,7 +692,7 @@ module.exports = {
     emit: emit
 };
 
-},{"synthetic-dom-events":15}],10:[function(require,module,exports){
+},{"synthetic-dom-events":12}],8:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -788,7 +703,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.2
 (function() {
   var root;
@@ -891,7 +806,7 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 'use strict';
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -932,39 +847,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],13:[function(require,module,exports){
-var div = null
-var prefixes = [ 'Webkit', 'Moz', 'O', 'ms' ]
-
-module.exports = function prefixStyle (prop) {
-  // re-use a dummy div
-  if (!div) {
-    div = document.createElement('div')
-  }
-
-  var style = div.style
-
-  // prop exists without prefix
-  if (prop in style) {
-    return prop
-  }
-
-  // borderRadius -> BorderRadius
-  var titleCase = prop.charAt(0).toUpperCase() + prop.slice(1)
-
-  // find the vendor-prefixed prop
-  for (var i = prefixes.length; i >= 0; i--) {
-    var name = prefixes[i] + titleCase
-    // e.g. WebkitBorderRadius or webkitBorderRadius
-    if (name in style) {
-      return name
-    }
-  }
-
-  return false
-}
-
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // check document first so it doesn't error in node.js
 var style = typeof document != 'undefined'
   ? document.createElement('p').style
@@ -1035,7 +918,7 @@ function prefixDashed(key){
 module.exports = prefixMemozied
 module.exports.dash = prefixDashed
 
-},{}],15:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 // for compression
 var win = window;
@@ -1156,7 +1039,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":16,"./types.json":17}],16:[function(require,module,exports){
+},{"./init.json":13,"./types.json":14}],13:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -1223,7 +1106,7 @@ module.exports={
   ]
 }
 
-},{}],17:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -1268,7 +1151,7 @@ module.exports={
   ]
 }
 
-},{}],18:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 function E () {
 	// Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -1336,138 +1219,13 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],19:[function(require,module,exports){
-
-var toSpace = require('to-space-case');
-
-
-/**
- * Expose `toCamelCase`.
- */
-
-module.exports = toCamelCase;
-
-
-/**
- * Convert a `string` to camel case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
-}
-},{"to-space-case":21}],20:[function(require,module,exports){
-
-/**
- * Expose `toNoCase`.
- */
-
-module.exports = toNoCase;
-
-
-/**
- * Test whether a string is camel-case.
- */
-
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
-
-/**
- * Remove any starting case from a `string`, like camel or snake, but keep
- * spaces and punctuation that may be important otherwise.
- *
- * @param {String} string
- * @return {String}
- */
-
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
-}
-
-
-/**
- * Separator splitter.
- */
-
-var separatorSplitter = /[\W_]+(.|$)/g;
-
-
-/**
- * Un-separate a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function unseparate (string) {
-  return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
-}
-
-
-/**
- * Camelcase splitter.
- */
-
-var camelSplitter = /(.)([A-Z]+)/g;
-
-
-/**
- * Un-camelcase a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function uncamelize (string) {
-  return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
-}
-},{}],21:[function(require,module,exports){
-
-var clean = require('to-no-case');
-
-
-/**
- * Expose `toSpaceCase`.
- */
-
-module.exports = toSpaceCase;
-
-
-/**
- * Convert a `string` to space case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toSpaceCase (string) {
-  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
-}
-},{"to-no-case":20}],22:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],23:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var objectAssign = require('object-assign');
@@ -1679,7 +1437,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":22,"./support":24,"bindall-standalone":5,"lethargy":11,"object-assign":12,"tiny-emitter":18}],24:[function(require,module,exports){
+},{"./clone":16,"./support":18,"bindall-standalone":4,"lethargy":9,"object-assign":10,"tiny-emitter":15}],18:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {
