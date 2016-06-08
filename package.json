@@ -9,7 +9,6 @@
     "dom-classes": "github:npm-dom/dom-classes",
     "dom-create-element": "^1.0.2",
     "dom-css": "^2.0.0",
-    "dom-event": "github:npm-dom/dom-event",
     "dom-events": "^0.1.1",
     "perfnow": "^0.2.0",
     "prefix": "^1.0.0",
