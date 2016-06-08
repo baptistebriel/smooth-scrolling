@@ -103,11 +103,6 @@ class Smooth {
 
         this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset
         
-        this.addScrollingClass()
-    }
-    
-    addScrollingClass() {
-
         clearTimeout(this.vars.timer)
         
         if(!this.vars.ticking) {
@@ -126,20 +121,21 @@ class Smooth {
         this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease
         this.vars.current < .1 && (this.vars.current = 0)
         
-        !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)))
-        !this.vars.native && this.transformScrollbar()
-        
         this.rAF = requestAnimationFrame(this.run)
-    }
-    
-    transformScrollbar() {
 
-        const size = this.dom.scrollbar.drag.height
-        const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
-        const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size
-        const clamp = Math.max(0, Math.min(value-size, value+size))
+        if(!this.extends){
+            this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
+        }
         
-        this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
+        if(!this.vars.native) {
+
+            const size = this.dom.scrollbar.drag.height
+            const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
+            const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size
+            const clamp = Math.max(0, Math.min(value-size, value+size))
+            
+            this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
+        }
     }
     
     getTransform(value) {
@@ -147,16 +143,26 @@ class Smooth {
         return this.vars.direction === 'vertical' ? 'translate3d(0,' + value + 'px,0)' : 'translate3d(' + value + 'px,0,0)'
     }
     
-    on() {
+    on(requestAnimationFrame = true) {
         
         this.vars.native ? event.on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
         
+        requestAnimationFrame && this.requestAnimationFrame()
+    }
+    
+    off(cancelAnimationFrame = true) {
+
+        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
+
+        cancelAnimationFrame && this.cancelAnimationFrame()
+    }
+
+    requestAnimationFrame() {
+
         this.rAF = requestAnimationFrame(this.run)
     }
     
-    off() {
-
-        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
+    cancelAnimationFrame() {
 
         cancelAnimationFrame(this.rAF)
     }
@@ -229,7 +235,7 @@ class Smooth {
 
         this.dom.listener.removeChild(this.dom.scroll)
     }
-
+    
     calcScroll(e) {
 
         const client = this.vars.direction == 'vertical' ? e.clientY : e.clientX
