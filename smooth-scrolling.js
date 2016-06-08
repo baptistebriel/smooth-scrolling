@@ -194,24 +194,14 @@ var Smooth = function () {
         }
     }, {
         key: 'off',
-        value: function (_off) {
-            function off() {
-                return _off.apply(this, arguments);
-            }
-
-            off.toString = function () {
-                return _off.toString();
-            };
-
-            return off;
-        }(function () {
+        value: function off() {
             var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 
-            this.vars.native ? off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+            this.vars.native ? _domEvents2.default.off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
 
             cancelAnimationFrame && this.cancelAnimationFrame();
-        })
+        }
     }, {
         key: 'requestAnimationFrame',
         value: function (_requestAnimationFrame) {

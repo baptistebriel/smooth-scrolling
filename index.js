@@ -152,8 +152,8 @@ class Smooth {
     
     off(cancelAnimationFrame = true) {
 
-        this.vars.native ? off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
-
+        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
+        
         cancelAnimationFrame && this.cancelAnimationFrame()
     }
 
