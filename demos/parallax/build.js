@@ -181,10 +181,6 @@ var _domCreateElement = require('dom-create-element');
 
 var _domCreateElement2 = _interopRequireDefault(_domCreateElement);
 
-var _domCss = require('dom-css');
-
-var _domCss2 = _interopRequireDefault(_domCss);
-
 var _prefix = require('prefix');
 
 var _prefix2 = _interopRequireDefault(_prefix);
@@ -525,9 +521,9 @@ var Smooth = function () {
 
             if (!this.vars.native) {
                 this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height));
-                (0, _domCss2.default)(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height);
+                this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else {
-                (0, _domCss2.default)(this.dom.scroll, prop, this.vars.bounding);
+                this.dom.scroll.style[prop] = this.vars.bounding + 'px';
             }
         }
     }, {
@@ -547,7 +543,7 @@ var Smooth = function () {
 
 module.exports = window.Smooth = Smooth;
 
-},{"dom-classes":6,"dom-create-element":7,"dom-css":8,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
+},{"dom-classes":6,"dom-create-element":7,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
 /* The following list is defined in React's core */
 var IS_UNITLESS = {
   animationIterationCount: true,
