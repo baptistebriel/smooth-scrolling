@@ -223,15 +223,9 @@ var Smooth = function () {
     }, {
         key: 'debounce',
         value: function debounce() {
+            var _this3 = this;
 
             this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
-
-            this.addScrollingClass();
-        }
-    }, {
-        key: 'addScrollingClass',
-        value: function addScrollingClass() {
-            var _this3 = this;
 
             clearTimeout(this.vars.timer);
 
@@ -252,21 +246,21 @@ var Smooth = function () {
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
 
-            !this.extends && (this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2)));
-            !this.vars.native && this.transformScrollbar();
-
             this.rAF = requestAnimationFrame(this.run);
-        }
-    }, {
-        key: 'transformScrollbar',
-        value: function transformScrollbar() {
 
-            var size = this.dom.scrollbar.drag.height;
-            var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
-            var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
-            var clamp = Math.max(0, Math.min(value - size, value + size));
+            if (!this.extends) {
+                this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
+            }
 
-            this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            if (!this.vars.native) {
+
+                var size = this.dom.scrollbar.drag.height;
+                var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
+                var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
+                var clamp = Math.max(0, Math.min(value - size, value + size));
+
+                this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
+            }
         }
     }, {
         key: 'getTransform',
@@ -277,26 +271,52 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
+            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
 
             this.vars.native ? _domEvents2.default.on(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
 
-            this.rAF = requestAnimationFrame(this.run);
+            requestAnimationFrame && this.requestAnimationFrame();
         }
     }, {
         key: 'off',
-        value: function (_off) {
-            function off() {
-                return _off.apply(this, arguments);
+        value: function off() {
+            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+
+            this.vars.native ? _domEvents2.default.off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+
+            cancelAnimationFrame && this.cancelAnimationFrame();
+        }
+    }, {
+        key: 'requestAnimationFrame',
+        value: function (_requestAnimationFrame) {
+            function requestAnimationFrame() {
+                return _requestAnimationFrame.apply(this, arguments);
             }
 
-            off.toString = function () {
-                return _off.toString();
+            requestAnimationFrame.toString = function () {
+                return _requestAnimationFrame.toString();
             };
 
-            return off;
+            return requestAnimationFrame;
         }(function () {
 
-            this.vars.native ? off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+            this.rAF = requestAnimationFrame(this.run);
+        })
+    }, {
+        key: 'cancelAnimationFrame',
+        value: function (_cancelAnimationFrame) {
+            function cancelAnimationFrame() {
+                return _cancelAnimationFrame.apply(this, arguments);
+            }
+
+            cancelAnimationFrame.toString = function () {
+                return _cancelAnimationFrame.toString();
+            };
+
+            return cancelAnimationFrame;
+        }(function () {
 
             cancelAnimationFrame(this.rAF);
         })
