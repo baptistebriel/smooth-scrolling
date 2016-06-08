@@ -4,19 +4,15 @@
   "description": "Smooth is a small JavaScript module based on VirtualScroll to create smooth scrolling and parallax effects on scroll.",
   "main": "index.js",
   "dependencies": {
-    "babel-preset-es2015": "^6.9.0",
-    "babelify": "^7.3.0",
     "dom-classes": "github:npm-dom/dom-classes",
     "dom-create-element": "^1.0.2",
-    "dom-css": "^2.0.0",
     "dom-events": "^0.1.1",
-    "perfnow": "^0.2.0",
     "prefix": "^1.0.0",
     "virtual-scroll": "^1.1.0"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.5.0",
-    "babelify": "^7.2.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
     "watchify": "^3.7.0"
   },
   "scripts": {

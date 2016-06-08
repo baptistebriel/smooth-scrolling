@@ -1,6 +1,5 @@
 import classes from 'dom-classes'
 import create from 'dom-create-element'
-import css from 'dom-css'
 import prefix from 'prefix'
 import vs from 'virtual-scroll'
 import event from 'dom-events'
@@ -276,9 +275,9 @@ class Smooth {
         
         if(!this.vars.native) {
             this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height))
-            css(this.dom.scrollbar.drag.el, prop, this.dom.scrollbar.drag.height)
+            this.dom.scrollbar.drag.el.style[prop] = `${this.dom.scrollbar.drag.height}px`
         } else {
-            css(this.dom.scroll, prop, this.vars.bounding)
+            this.dom.scroll.style[prop] = `${this.vars.bounding}px`
         }
     }
     
