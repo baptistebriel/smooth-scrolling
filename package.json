@@ -8,7 +8,7 @@
     "dom-create-element": "^1.0.2",
     "dom-events": "^0.1.1",
     "prefix": "^1.0.0",
-    "virtual-scroll": "^1.1.0"
+    "virtual-scroll": "^1.1.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
