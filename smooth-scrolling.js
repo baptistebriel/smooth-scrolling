@@ -135,7 +135,9 @@ var Smooth = function () {
         value: function debounce() {
             var _this3 = this;
 
-            this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset;
+            var win = this.dom.listener === document.body;
+
+            this.vars.target = this.vars.direction === 'vertical' ? win ? window.scrollY || window.pageYOffset : this.dom.listener.scrollTop : win ? window.scrollX || window.pageXOffset : this.dom.listener.scrollLeft;
 
             clearTimeout(this.vars.timer);
 

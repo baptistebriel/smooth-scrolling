@@ -100,7 +100,9 @@ class Smooth {
     
     debounce() {
 
-        this.vars.target = this.vars.direction === 'vertical' ? window.scrollY || window.pageYOffset : window.scrollX || window.pageXOffset
+        const win = this.dom.listener === document.body
+        
+        this.vars.target = this.vars.direction === 'vertical' ? win ? window.scrollY || window.pageYOffset : this.dom.listener.scrollTop : win ? window.scrollX || window.pageXOffset : this.dom.listener.scrollLeft
         
         clearTimeout(this.vars.timer)
         
