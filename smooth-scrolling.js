@@ -186,7 +186,9 @@ var Smooth = function () {
             var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 
-            this.vars.native ? _domEvents2.default.on(window, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
+            var node = this.dom.listener === document.body ? window : this.dom.listener;
+
+            this.vars.native ? _domEvents2.default.on(node, 'scroll', this.debounce) : this.vs && this.vs.on(this.calc);
 
             requestAnimationFrame && this.requestAnimationFrame();
         }
@@ -196,7 +198,9 @@ var Smooth = function () {
             var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 
-            this.vars.native ? _domEvents2.default.off(window, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
+            var node = this.dom.listener === document.body ? window : this.dom.listener;
+
+            this.vars.native ? _domEvents2.default.off(node, 'scroll', this.debounce) : this.vs && this.vs.off(this.calc);
 
             cancelAnimationFrame && this.cancelAnimationFrame();
         }

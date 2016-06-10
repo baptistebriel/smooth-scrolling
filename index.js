@@ -101,9 +101,9 @@ class Smooth {
     debounce() {
 
         const win = this.dom.listener === document.body
-        
+
         this.vars.target = this.vars.direction === 'vertical' ? win ? window.scrollY || window.pageYOffset : this.dom.listener.scrollTop : win ? window.scrollX || window.pageXOffset : this.dom.listener.scrollLeft
-        
+
         clearTimeout(this.vars.timer)
         
         if(!this.vars.ticking) {
@@ -146,14 +146,18 @@ class Smooth {
     
     on(requestAnimationFrame = true) {
         
-        this.vars.native ? event.on(window, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
+        const node = this.dom.listener === document.body ? window : this.dom.listener
+
+        this.vars.native ? event.on(node, 'scroll', this.debounce) : (this.vs && this.vs.on(this.calc))
         
         requestAnimationFrame && this.requestAnimationFrame()
     }
     
     off(cancelAnimationFrame = true) {
-
-        this.vars.native ? event.off(window, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
+        
+        const node = this.dom.listener === document.body ? window : this.dom.listener
+        
+        this.vars.native ? event.off(node, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
         
         cancelAnimationFrame && this.cancelAnimationFrame()
     }
