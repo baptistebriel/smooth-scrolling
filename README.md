@@ -1,6 +1,7 @@
 # smooth
 
 Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/) to create smooth scrolling and parallax effects on scroll.
+It works both with fake scrollbars and native scrolling.
 
 ### Usage
 
@@ -28,6 +29,7 @@ smooth.init()
 - `ease` : the easing value (usually between 0 and 1)
 - `vs` : you can pass some option for virtuall-scroll: limitInertia, mouseMultiplier, etc
 - `preload` : if set to false, there will be no resize function called after all images loaded
+- `noscrollbar` : if using virtual-scroll and set to true, it will not build a custom scrollbar
 
 ### Methods
 
