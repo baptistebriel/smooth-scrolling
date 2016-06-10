@@ -154,7 +154,7 @@ class Smooth {
     }
     
     off(cancelAnimationFrame = true) {
-
+        
         const node = this.dom.listener === document.body ? window : this.dom.listener
         
         this.vars.native ? event.off(node, 'scroll', this.debounce) : (this.vs && this.vs.off(this.calc))
