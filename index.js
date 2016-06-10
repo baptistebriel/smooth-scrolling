@@ -10,6 +10,8 @@ class Smooth {
         
         this.createBound()
 
+        this.options = opt
+
         this.prefix = prefix('transform')
         this.rAF = undefined
 
@@ -17,10 +19,10 @@ class Smooth {
         this.extends = opt.extends || false
         
         this.vars = {
-            direction: opt.direction || 'vertical',
-            native: opt.native || false,
-            ease: opt.ease || 0.075,
-            preload: opt.preload || false,
+            direction: this.options.direction || 'vertical',
+            native: this.options.native || false,
+            ease: this.options.ease || 0.075,
+            preload: this.options.preload || false,
             current: 0,
             target: 0,
             height: 0,
@@ -30,17 +32,17 @@ class Smooth {
         }
         
         this.vs = this.vars.native ? null : new vs({
-            limitInertia: opt.vs && opt.vs.limitInertia || false,
-            mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
-            touchMultiplier: opt.vs && opt.vs.touchMultiplier || 1.5,
-            firefoxMultiplier: opt.vs && opt.vs.firefoxMultiplier || 30,
-            preventTouch: opt.vs && opt.vs.preventTouch || true
+            limitInertia: this.options.vs && this.options.vs.limitInertia || false,
+            mouseMultiplier: this.options.vs && this.options.vs.mouseMultiplier || 1,
+            touchMultiplier: this.options.vs && this.options.vs.touchMultiplier || 1.5,
+            firefoxMultiplier: this.options.vs && this.options.vs.firefoxMultiplier || 30,
+            preventTouch: this.options.vs && this.options.vs.preventTouch || true
         })
         
         this.dom = {
-            listener: opt.listener || document.body,
-            section: opt.section || document.querySelector('.vs-section') || null,
-            scrollbar: this.vars.native ? null : {
+            listener: this.options.listener || document.body,
+            section: this.options.section || document.querySelector('.vs-section') || null,
+            scrollbar: this.vars.native || this.options.noscrollbar ? null : {
                 state: {
                     clicked: false,
                     x: 0
@@ -60,7 +62,7 @@ class Smooth {
         ['run', 'calc', 'debounce', 'resize', 'mouseUp', 'mouseDown', 'mouseMove', 'calcScroll', 'scrollTo']
         .forEach((fn) => this[fn] = this[fn].bind(this));
     }
-
+    
     init() {
 
         this.vars.preload && this.preloadImages()
@@ -69,7 +71,7 @@ class Smooth {
         this.addEvents()
 
         !this.vars.preload && this.resize()
-        !this.vars.native && this.addFakeScrollBar()
+        !this.vars.native && !this.options.noscrollbar && this.addFakeScrollBar()
     }
 
     preloadImages() {
@@ -128,7 +130,7 @@ class Smooth {
             this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
         }
         
-        if(!this.vars.native) {
+        if(!this.vars.native && !this.options.noscrollbar) {
 
             const size = this.dom.scrollbar.drag.height
             const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
@@ -279,17 +281,17 @@ class Smooth {
             this.vars.bounding = this.vars.direction === 'vertical' ? bounding.height - (this.vars.native ? 0 : this.vars.height) : bounding.right - (this.vars.native ? 0 : this.vars.width)
         }
         
-        if(!this.vars.native) {
+        if(!this.vars.native && !this.options.noscrollbar) {
             this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height))
             this.dom.scrollbar.drag.el.style[prop] = `${this.dom.scrollbar.drag.height}px`
-        } else {
+        } else if(this.vars.native) {
             this.dom.scroll.style[prop] = `${this.vars.bounding}px`
         }
     }
     
     destroy() {
         
-        this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar()
+        this.vars.native ? this.removeFakeScrollHeight() : !this.options.noscrollbar && this.removeFakeScrollBar()
         
         this.vs && (this.vs.destroy(), this.vs = null)
         

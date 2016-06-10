@@ -162,11 +162,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var scroll = new _custom2.default({
     extends: true,
     preload: true,
+    noscrollbar: true,
     section: document.querySelector('.vs-section'),
     divs: document.querySelectorAll('.vs-div')
 });
 
 scroll.init();
+
+// setTimeout(() => {
+//     scroll.destroy()
+// }, 1500)
 
 },{"./custom":1}],3:[function(require,module,exports){
 'use strict';
@@ -205,6 +210,8 @@ var Smooth = function () {
 
         this.createBound();
 
+        this.options = opt;
+
         this.prefix = (0, _prefix2.default)('transform');
         this.rAF = undefined;
 
@@ -212,10 +219,10 @@ var Smooth = function () {
         this.extends = opt.extends || false;
 
         this.vars = {
-            direction: opt.direction || 'vertical',
-            native: opt.native || false,
-            ease: opt.ease || 0.075,
-            preload: opt.preload || false,
+            direction: this.options.direction || 'vertical',
+            native: this.options.native || false,
+            ease: this.options.ease || 0.075,
+            preload: this.options.preload || false,
             current: 0,
             target: 0,
             height: 0,
@@ -225,17 +232,17 @@ var Smooth = function () {
         };
 
         this.vs = this.vars.native ? null : new _virtualScroll2.default({
-            limitInertia: opt.vs && opt.vs.limitInertia || false,
-            mouseMultiplier: opt.vs && opt.vs.mouseMultiplier || 1,
-            touchMultiplier: opt.vs && opt.vs.touchMultiplier || 1.5,
-            firefoxMultiplier: opt.vs && opt.vs.firefoxMultiplier || 30,
-            preventTouch: opt.vs && opt.vs.preventTouch || true
+            limitInertia: this.options.vs && this.options.vs.limitInertia || false,
+            mouseMultiplier: this.options.vs && this.options.vs.mouseMultiplier || 1,
+            touchMultiplier: this.options.vs && this.options.vs.touchMultiplier || 1.5,
+            firefoxMultiplier: this.options.vs && this.options.vs.firefoxMultiplier || 30,
+            preventTouch: this.options.vs && this.options.vs.preventTouch || true
         });
 
         this.dom = {
-            listener: opt.listener || document.body,
-            section: opt.section || document.querySelector('.vs-section') || null,
-            scrollbar: this.vars.native ? null : {
+            listener: this.options.listener || document.body,
+            section: this.options.section || document.querySelector('.vs-section') || null,
+            scrollbar: this.vars.native || this.options.noscrollbar ? null : {
                 state: {
                     clicked: false,
                     x: 0
@@ -269,7 +276,7 @@ var Smooth = function () {
             this.addEvents();
 
             !this.vars.preload && this.resize();
-            !this.vars.native && this.addFakeScrollBar();
+            !this.vars.native && !this.options.noscrollbar && this.addFakeScrollBar();
         }
     }, {
         key: 'preloadImages',
@@ -334,7 +341,7 @@ var Smooth = function () {
                 this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2));
             }
 
-            if (!this.vars.native) {
+            if (!this.vars.native && !this.options.noscrollbar) {
 
                 var size = this.dom.scrollbar.drag.height;
                 var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
@@ -525,10 +532,10 @@ var Smooth = function () {
                 this.vars.bounding = this.vars.direction === 'vertical' ? bounding.height - (this.vars.native ? 0 : this.vars.height) : bounding.right - (this.vars.native ? 0 : this.vars.width);
             }
 
-            if (!this.vars.native) {
+            if (!this.vars.native && !this.options.noscrollbar) {
                 this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height));
                 this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
-            } else {
+            } else if (this.vars.native) {
                 this.dom.scroll.style[prop] = this.vars.bounding + 'px';
             }
         }
@@ -536,7 +543,7 @@ var Smooth = function () {
         key: 'destroy',
         value: function destroy() {
 
-            this.vars.native ? this.removeFakeScrollHeight() : this.removeFakeScrollBar();
+            this.vars.native ? this.removeFakeScrollHeight() : !this.options.noscrollbar && this.removeFakeScrollBar();
 
             this.vs && (this.vs.destroy(), this.vs = null);
 
