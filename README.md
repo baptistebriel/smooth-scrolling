@@ -125,6 +125,16 @@ smooth.init()
 
 `npm run demo-performances`
 
+### Examples
+
+- [flavinsky.com](http://flavinsky.com)
+- [alisharaf.com](http://alisharaf.com)
+- [bbriel.me](http://bbriel.me)
+- [studiochevojon.com](http://studiochevojon.com)
+- [andeinerseite.video](http://andeinerseite.video)
+- [eginstill.com](http://eginstill.com)
+- & more to come!
+
 ## Further understanding
 
 If you didn't already read [the tutorial](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/), I highly recommend it.
