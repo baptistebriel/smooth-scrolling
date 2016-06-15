@@ -550,7 +550,6 @@ var Smooth = function () {
             this.removeEvents();
 
             this.options = null;
-            this.vars = null;
             this.dom = null;
         }
     }]);
