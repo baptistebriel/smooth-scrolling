@@ -548,9 +548,6 @@ var Smooth = function () {
             this.vs && (this.vs.destroy(), this.vs = null);
 
             this.removeEvents();
-
-            this.options = null;
-            this.dom = null;
         }
     }]);
 
