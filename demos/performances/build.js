@@ -221,7 +221,7 @@ var Smooth = function () {
             var delta = this.vars.direction == 'horizontal' ? e.deltaX : e.deltaY;
 
             this.vars.target += delta * -1;
-            this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
+            this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)));
         }
     }, {
         key: 'debounce',
