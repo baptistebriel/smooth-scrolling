@@ -213,13 +213,14 @@ class Smooth {
 
     mouseDown(e) {
         
+        e.preventDefault()
         e.which == 1 && (this.dom.scrollbar.state.clicked = true)
     }
 
     mouseUp(e) {
 
         this.dom.scrollbar.state.clicked = false
-
+        
         classes.remove(this.dom.listener, 'is-dragging')
     }
 

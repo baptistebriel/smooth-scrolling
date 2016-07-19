@@ -367,6 +367,7 @@ var Smooth = function () {
         key: 'mouseDown',
         value: function mouseDown(e) {
 
+            e.preventDefault();
             e.which == 1 && (this.dom.scrollbar.state.clicked = true);
         }
     }, {
