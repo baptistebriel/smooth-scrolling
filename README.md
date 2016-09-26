@@ -127,6 +127,9 @@ smooth.init()
 
 ### Examples
 
+- [etq.store](http://etq.store)
+- [femmefatale.paris](http://femmefatale.paris)
+- [buildin.amsterdam](http://buildin.amsterdam)
 - [romainpsd.com](https://romainpsd.com)
 - [flavinsky.com](http://flavinsky.com)
 - [alisharaf.com](http://alisharaf.com)
