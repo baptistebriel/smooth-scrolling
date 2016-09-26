@@ -98,7 +98,6 @@ const section = document.querySelector('.vs-section')
 const opacity = document.querySelector('.vs-opacity')
 
 const smooth = new Custom({
-  extends: true,
   section: section,
   opacity: opacity,
   ease: 0.1

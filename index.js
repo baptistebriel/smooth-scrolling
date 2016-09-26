@@ -14,9 +14,8 @@ class Smooth {
 
         this.prefix = prefix('transform')
         this.rAF = undefined
-        
-        // TODO: detect if is an extension of Smooth (return false if is a direct instance of Smooth)
-        this.extends = opt.extends || false
+
+        this.extends = this.constructor.name != 'Smooth'
         
         this.vars = {
             direction: this.options.direction || 'vertical',
