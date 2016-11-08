@@ -99,7 +99,7 @@ class Smooth {
         const delta = this.vars.direction == 'horizontal' ? e.deltaX : e.deltaY
         
         this.vars.target += delta * -1
-        this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)))
+        this.clampTarget()
     }
     
     debounce() {
@@ -255,8 +255,7 @@ class Smooth {
         classes.add(this.dom.listener, 'is-dragging')
 
         this.vars.target = delta
-        this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding))
-        
+        this.clampTarget()
         this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target)
     }
     
@@ -269,6 +268,7 @@ class Smooth {
         } else {
 
             this.vars.target = offset
+            this.clampTarget()
         }
     }
 
@@ -289,7 +289,14 @@ class Smooth {
             this.dom.scrollbar.drag.el.style[prop] = `${this.dom.scrollbar.drag.height}px`
         } else if(this.vars.native) {
             this.dom.scroll.style[prop] = `${this.vars.bounding}px`
+        } else {
+            this.clampTarget()
         }
+    }
+
+    clampTarget() {
+
+        this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)))
     }
     
     destroy() {

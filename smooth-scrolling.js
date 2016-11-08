@@ -132,7 +132,7 @@ var Smooth = function () {
             var delta = this.vars.direction == 'horizontal' ? e.deltaX : e.deltaY;
 
             this.vars.target += delta * -1;
-            this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)));
+            this.clampTarget();
         }
     }, {
         key: 'debounce',
@@ -330,8 +330,7 @@ var Smooth = function () {
             _domClasses2.default.add(this.dom.listener, 'is-dragging');
 
             this.vars.target = delta;
-            this.vars.target = Math.max(0, Math.min(this.vars.target, this.vars.bounding));
-
+            this.clampTarget();
             this.dom.scrollbar && (this.dom.scrollbar.drag.delta = this.vars.target);
         }
     }, {
@@ -344,6 +343,7 @@ var Smooth = function () {
             } else {
 
                 this.vars.target = offset;
+                this.clampTarget();
             }
         }
     }, {
@@ -365,7 +365,15 @@ var Smooth = function () {
                 this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else if (this.vars.native) {
                 this.dom.scroll.style[prop] = this.vars.bounding + 'px';
+            } else {
+                this.clampTarget();
             }
+        }
+    }, {
+        key: 'clampTarget',
+        value: function clampTarget() {
+
+            this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)));
         }
     }, {
         key: 'destroy',

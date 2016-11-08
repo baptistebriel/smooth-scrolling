@@ -49,6 +49,10 @@ class Parallax extends Smooth {
                 bottom: bounding.bottom + scrollY,
                 speed: el.getAttribute('data-speed') || '-1'
             }
+            
+            if(index === 4) {
+                console.log(bounding.top, scrollY, bounds.top)
+            }
 
             // this.vars.bounding = bounding.bottom > this.vars.bounding ? bounding.bottom - window.innerHeight : this.vars.bounding;
             this.cache.push(bounds)

@@ -8,7 +8,7 @@ body {
     height: 100%;
 }
 
-.is-virtual-scroll {
+.is-virtual-scroll {
     overflow: hidden;
 }
 
