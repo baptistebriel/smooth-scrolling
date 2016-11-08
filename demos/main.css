@@ -8,6 +8,20 @@ body {
     height: 100%;
 }
 
+.is-virtual-scroll {
+    overflow: hidden;
+}
+
+.is-native-scroll.y-scroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.is-native-scroll.x-scroll {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
 .vs-section {
     position: fixed;
     top: 0; right: 0; left: 0;

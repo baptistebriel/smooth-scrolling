@@ -116,6 +116,8 @@ smooth.init()
 
 `npm run demo-parallax`
 
+`npm run demo-parallax-page`
+
 `npm run demo-opacity`
 
 `npm run demo-scale`

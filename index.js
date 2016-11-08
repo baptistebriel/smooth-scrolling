@@ -67,9 +67,12 @@ class Smooth {
         this.vars.preload && this.preloadImages()
         this.vars.native && this.addFakeScrollHeight()
         
+        this.vars.native ? classes.add(this.dom.listener, 'is-native-scroll') : classes.add(this.dom.listener, 'is-virtual-scroll')
+        this.vars.direction === 'vertical' ? classes.add(this.dom.listener, 'y-scroll') : classes.add(this.dom.listener, 'x-scroll')
+        
         this.addEvents()
-
-        !this.vars.preload && this.resize()
+        this.resize()
+        
         !this.vars.native && !this.options.noscrollbar && this.addFakeScrollBar()
     }
 
@@ -104,7 +107,7 @@ class Smooth {
         const win = this.dom.listener === document.body
 
         this.vars.target = this.vars.direction === 'vertical' ? win ? window.scrollY || window.pageYOffset : this.dom.listener.scrollTop : win ? window.scrollX || window.pageXOffset : this.dom.listener.scrollLeft
-
+        
         clearTimeout(this.vars.timer)
         
         if(!this.vars.ticking) {
@@ -291,7 +294,20 @@ class Smooth {
     
     destroy() {
         
-        this.vars.native ? this.removeFakeScrollHeight() : !this.options.noscrollbar && this.removeFakeScrollBar()
+        if(this.vars.native) {
+
+            classes.remove(this.dom.listener, 'is-native-scroll')
+            
+            this.removeFakeScrollHeight()
+
+        } else {
+            
+            classes.remove(this.dom.listener, 'is-virtual-scroll')
+            
+            !this.options.noscrollbar && this.removeFakeScrollBar()
+        } 
+        
+        this.vars.direction === 'vertical' ? classes.remove(this.dom.listener, 'y-scroll') : classes.remove(this.dom.listener, 'x-scroll')
         
         this.vs && (this.vs.destroy(), this.vs = null)
         
