@@ -7,16 +7,16 @@ import event from 'dom-events'
 class Smooth {
     
     constructor(opt = {}) {
-        
+                
         this.createBound()
 
         this.options = opt
 
         this.prefix = prefix('transform')
         this.rAF = undefined
-
-        this.extends = this.constructor.name != 'Smooth'
         
+        this.extends = this.constructor.name != 'Smooth'
+            
         this.vars = {
             direction: this.options.direction || 'vertical',
             native: this.options.native || false,
