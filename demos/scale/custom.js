@@ -26,9 +26,9 @@ class Custom extends Smooth {
 
     resize() {
         
-        super.resize()
-
         this.vars.bounding = window.innerHeight * 1.5
+        
+        super.resize()
     }
 }
 

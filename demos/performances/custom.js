@@ -4,14 +4,14 @@ class Custom extends Smooth {
     
     constructor(opt) {
         
-        super(opt);
+        super(opt)
 
         this.perfs = {
             now: null,
             last: null
         }
         
-        this.dom.section = opt.section;
+        this.dom.section = opt.section
     }
     
     init() {    
@@ -36,7 +36,7 @@ class Custom extends Smooth {
         
         this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
         
-        super.resize();
+        super.resize()
     }
 }
 

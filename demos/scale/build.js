@@ -54,9 +54,9 @@ var Custom = function (_Smooth) {
         key: 'resize',
         value: function resize() {
 
-            _get(Object.getPrototypeOf(Custom.prototype), 'resize', this).call(this);
-
             this.vars.bounding = window.innerHeight * 1.5;
+
+            _get(Object.getPrototypeOf(Custom.prototype), 'resize', this).call(this);
         }
     }]);
 
@@ -133,7 +133,8 @@ var Smooth = function () {
             preload: this.options.preload || false,
             current: 0,
             target: 0,
-            height: 0,
+            height: window.innerHeight,
+            width: window.innerWidth,
             bounding: 0,
             timer: null,
             ticking: false
@@ -178,16 +179,23 @@ var Smooth = function () {
         key: 'init',
         value: function init() {
 
-            this.vars.preload && this.preloadImages();
-            this.vars.native && this.addFakeScrollHeight();
+            this.addClasses();
 
-            this.vars.native ? _domClasses2.default.add(this.dom.listener, 'is-native-scroll') : _domClasses2.default.add(this.dom.listener, 'is-virtual-scroll');
-            this.vars.direction === 'vertical' ? _domClasses2.default.add(this.dom.listener, 'y-scroll') : _domClasses2.default.add(this.dom.listener, 'x-scroll');
+            this.vars.preload && this.preloadImages();
+            this.vars.native ? this.addFakeScrollHeight() : !this.options.noscrollbar && this.addFakeScrollBar();
 
             this.addEvents();
             this.resize();
+        }
+    }, {
+        key: 'addClasses',
+        value: function addClasses() {
 
-            !this.vars.native && !this.options.noscrollbar && this.addFakeScrollBar();
+            var type = this.vars.native ? 'native' : 'virtual';
+            var direction = this.vars.direction === 'vertical' ? 'y' : 'x';
+
+            _domClasses2.default.add(this.dom.listener, 'is-' + type + '-scroll');
+            _domClasses2.default.add(this.dom.listener, direction + '-scroll');
         }
     }, {
         key: 'preloadImages',

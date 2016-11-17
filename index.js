@@ -16,7 +16,7 @@ class Smooth {
         this.rAF = undefined
         
         this.extends = this.constructor.name != 'Smooth'
-            
+        
         this.vars = {
             direction: this.options.direction || 'vertical',
             native: this.options.native || false,
@@ -24,7 +24,8 @@ class Smooth {
             preload: this.options.preload || false,
             current: 0,
             target: 0,
-            height: 0,
+            height: window.innerHeight,
+            width: window.innerWidth,
             bounding: 0,
             timer: null,
             ticking: false
@@ -64,16 +65,22 @@ class Smooth {
     
     init() {
 
+        this.addClasses()
+
         this.vars.preload && this.preloadImages()
-        this.vars.native && this.addFakeScrollHeight()
-        
-        this.vars.native ? classes.add(this.dom.listener, 'is-native-scroll') : classes.add(this.dom.listener, 'is-virtual-scroll')
-        this.vars.direction === 'vertical' ? classes.add(this.dom.listener, 'y-scroll') : classes.add(this.dom.listener, 'x-scroll')
+        this.vars.native ? this.addFakeScrollHeight() : !this.options.noscrollbar && this.addFakeScrollBar()
         
         this.addEvents()
         this.resize()
+    }
+
+    addClasses() {
         
-        !this.vars.native && !this.options.noscrollbar && this.addFakeScrollBar()
+        const type = this.vars.native ? 'native' : 'virtual'
+        const direction = this.vars.direction === 'vertical' ? 'y' : 'x'
+        
+        classes.add(this.dom.listener, `is-${type}-scroll`)
+        classes.add(this.dom.listener, `${direction}-scroll`)
     }
 
     preloadImages() {

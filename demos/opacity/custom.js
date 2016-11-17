@@ -28,9 +28,9 @@ class Custom extends Smooth {
 
     resize() {
         
-        super.resize()
-
         this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
+        
+        super.resize()
     }
 }
 
