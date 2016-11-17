@@ -73,7 +73,7 @@ class Smooth {
         this.addEvents()
         this.resize()
     }
-
+    
     addClasses() {
         
         const type = this.vars.native ? 'native' : 'virtual'
