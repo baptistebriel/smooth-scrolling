@@ -47,7 +47,7 @@ class Smooth {
                     clicked: false,
                     x: 0
                 },
-                el: create({ selector: 'div', styles: `vs-scrollbar vs-${this.vars.direction}` }),
+                el: create({ selector: 'div', styles: `vs-scrollbar vs-${this.vars.direction} vs-scrollbar-${this.constructor.name.toLowerCase()}` }),
                 drag: {
                     el: create({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,

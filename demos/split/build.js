@@ -235,7 +235,7 @@ var Smooth = function () {
                     clicked: false,
                     x: 0
                 },
-                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction }),
+                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + this.constructor.name.toLowerCase() }),
                 drag: {
                     el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,
