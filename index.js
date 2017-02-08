@@ -4,7 +4,7 @@ import prefix from 'prefix'
 import vs from 'virtual-scroll'
 import event from 'dom-events'
 
-class Smooth {
+export default class Smooth {
     
     constructor(opt = {}) {
                 
@@ -329,4 +329,4 @@ class Smooth {
     }
 }
 
-module.exports = window.Smooth = Smooth
+window.Smooth = Smooth

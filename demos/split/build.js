@@ -164,6 +164,10 @@ scroll.init();
 },{"./custom":1}],3:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _domClasses = require('dom-classes');
@@ -573,7 +577,10 @@ var Smooth = function () {
     return Smooth;
 }();
 
-module.exports = window.Smooth = Smooth;
+exports.default = Smooth;
+
+
+window.Smooth = Smooth;
 
 },{"dom-classes":6,"dom-create-element":7,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
 /* The following list is defined in React's core */
