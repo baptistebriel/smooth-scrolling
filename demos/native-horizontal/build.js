@@ -7,6 +7,159 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _index = require('../../index');
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Parallax = function (_Smooth) {
+    _inherits(Parallax, _Smooth);
+
+    function Parallax(opt) {
+        _classCallCheck(this, Parallax);
+
+        var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, opt));
+
+        _this.createExtraBound();
+
+        _this.resizing = false;
+        _this.cache = null;
+        _this.dom.divs = Array.prototype.slice.call(opt.divs, 0);
+        return _this;
+    }
+
+    _createClass(Parallax, [{
+        key: 'createExtraBound',
+        value: function createExtraBound() {
+            var _this2 = this;
+
+            ['getCache', 'inViewport'].forEach(function (fn) {
+                return _this2[fn] = _this2[fn].bind(_this2);
+            });
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+
+            this.resizing = true;
+
+            this.getCache();
+            _get(Parallax.prototype.__proto__ || Object.getPrototypeOf(Parallax.prototype), 'resize', this).call(this);
+
+            this.dom.scroll.style.width = '';
+            this.dom.scroll.style.height = this.vars.bounding + 'px';
+
+            this.resizing = false;
+        }
+    }, {
+        key: 'getCache',
+        value: function getCache() {
+            var _this3 = this;
+
+            this.cache = [];
+
+            var unit = this.vars.width / 3;
+
+            this.dom.divs.forEach(function (el, index) {
+
+                el.style.display = 'inline-block';
+                el.style.transform = 'none';
+                el.style.width = unit + 'px';
+
+                var scrollX = _this3.vars.target;
+                var bounding = el.getBoundingClientRect();
+                var bounds = {
+                    el: el,
+                    state: true,
+                    left: bounding.left + scrollX,
+                    right: bounding.right + scrollX,
+                    center: unit / 2
+                };
+
+                _this3.cache.push(bounds);
+            });
+
+            this.dom.section.style.width = this.vars.width + 'px';
+            this.vars.bounding = unit * this.dom.divs.length;
+        }
+    }, {
+        key: 'run',
+        value: function run() {
+
+            this.dom.divs.forEach(this.inViewport);
+
+            this.dom.section.style[this.prefix] = 'translate3d(' + this.vars.current * -1 + 'px,0,0)';
+
+            _get(Parallax.prototype.__proto__ || Object.getPrototypeOf(Parallax.prototype), 'run', this).call(this);
+        }
+    }, {
+        key: 'inViewport',
+        value: function inViewport(el, index) {
+
+            if (!this.cache || this.resizing) return;
+
+            var cache = this.cache[index];
+            var current = this.vars.current;
+            var left = Math.round(cache.left - current);
+            var right = Math.round(cache.right - current);
+            var inview = right > 0 && left < this.vars.width;
+
+            if (inview) {
+
+                if (!el.state) {
+                    el.innerHTML = '<span>in viewport</span>';
+                    el.state = true;
+                }
+            } else {
+
+                el.state = false;
+                el.innerHTML = '';
+            }
+        }
+    }]);
+
+    return Parallax;
+}(_index2.default);
+
+exports.default = Parallax;
+
+},{"../../index":3}],2:[function(require,module,exports){
+'use strict';
+
+var _custom = require('./custom');
+
+var _custom2 = _interopRequireDefault(_custom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var scroll = new _custom2.default({
+    preload: false,
+    native: true,
+    direction: 'vertical',
+    section: document.querySelector('.vs-section'),
+    divs: document.querySelectorAll('.vs-div')
+});
+
+scroll.init();
+
+},{"./custom":1}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _domClasses = require('dom-classes');
 
 var _domClasses2 = _interopRequireDefault(_domClasses);
@@ -419,7 +572,7 @@ exports.default = Smooth;
 
 window.Smooth = Smooth;
 
-},{"dom-classes":3,"dom-create-element":4,"dom-events":5,"prefix":9,"virtual-scroll":15}],2:[function(require,module,exports){
+},{"dom-classes":5,"dom-create-element":6,"dom-events":7,"prefix":11,"virtual-scroll":17}],4:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString,
@@ -457,7 +610,7 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -556,7 +709,7 @@ function toggle (el, name) {
   }
 }
 
-},{"indexof":6}],4:[function(require,module,exports){
+},{"indexof":8}],6:[function(require,module,exports){
 /*
 `dom-create-element`
 
@@ -603,7 +756,7 @@ function create(opt) {
 	
 	return el;
 };
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 var synth = require('synthetic-dom-events');
 
@@ -654,7 +807,7 @@ module.exports = {
     emit: emit
 };
 
-},{"synthetic-dom-events":10}],6:[function(require,module,exports){
+},{"synthetic-dom-events":12}],8:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -665,7 +818,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.2
 (function() {
   var root;
@@ -768,7 +921,7 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -860,7 +1013,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // check document first so it doesn't error in node.js
 var style = typeof document != 'undefined'
   ? document.createElement('p').style
@@ -931,7 +1084,7 @@ function prefixDashed(key){
 module.exports = prefixMemozied
 module.exports.dash = prefixDashed
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 // for compression
 var win = window;
@@ -1052,7 +1205,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":11,"./types.json":12}],11:[function(require,module,exports){
+},{"./init.json":13,"./types.json":14}],13:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -1119,7 +1272,7 @@ module.exports={
   ]
 }
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -1164,7 +1317,7 @@ module.exports={
   ]
 }
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 function E () {
   // Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -1232,13 +1385,13 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var objectAssign = require('object-assign');
@@ -1450,7 +1603,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":14,"./support":16,"bindall-standalone":2,"lethargy":7,"object-assign":8,"tiny-emitter":13}],16:[function(require,module,exports){
+},{"./clone":16,"./support":18,"bindall-standalone":4,"lethargy":9,"object-assign":10,"tiny-emitter":15}],18:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {
@@ -1464,4 +1617,4 @@ module.exports = (function getSupport() {
         isFirefox: navigator.userAgent.indexOf('Firefox') > -1
     };
 })();
-},{}]},{},[1]);
+},{}]},{},[2]);

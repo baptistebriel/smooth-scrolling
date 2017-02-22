@@ -114,11 +114,13 @@ smooth.init()
 
 ### Demos
 
-`npm run demo-horizontal`
-
 `npm run demo-parallax`
 
 `npm run demo-parallax-page`
+
+`npm run demo-horizontal`
+
+`npm run demo-native-horizontal`
 
 `npm run demo-opacity`
 

@@ -21,6 +21,7 @@
     "demo-parallax": "watchify -v -t babelify demos/parallax/index.js -o demos/parallax/build.js",
     "demo-parallax-page": "watchify -v -t babelify demos/parallax-page/index.js -o demos/parallax-page/build.js",
     "demo-horizontal": "watchify -v -t babelify demos/horizontal/index.js -o demos/horizontal/build.js",
+    "demo-native-horizontal": "watchify -v -t babelify demos/native-horizontal/index.js -o demos/native-horizontal/build.js",
     "demo-opacity": "watchify -v -t babelify demos/opacity/index.js -o demos/opacity/build.js",
     "demo-scale": "watchify -v -t babelify demos/scale/index.js -o demos/scale/build.js",
     "demo-split": "watchify -v -t babelify demos/split/index.js -o demos/split/build.js",
