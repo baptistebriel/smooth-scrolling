@@ -44,7 +44,8 @@ var Smooth = function () {
         this.prefix = (0, _prefix2.default)('transform');
         this.rAF = undefined;
 
-        this.extends = this.constructor.name != 'Smooth';
+        var constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
+        this.extends = constructorName != 'Smooth';
 
         this.vars = {
             direction: this.options.direction || 'vertical',
@@ -76,7 +77,7 @@ var Smooth = function () {
                     clicked: false,
                     x: 0
                 },
-                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + this.constructor.name.toLowerCase() }),
+                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + constructorName.toLowerCase() }),
                 drag: {
                     el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,
