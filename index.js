@@ -15,7 +15,8 @@ export default class Smooth {
         this.prefix = prefix('transform')
         this.rAF = undefined
         
-        this.extends = this.constructor.name != 'Smooth'
+        const constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
+        this.extends = constructorName != 'Smooth'
         
         this.vars = {
             direction: this.options.direction || 'vertical',
@@ -47,7 +48,7 @@ export default class Smooth {
                     clicked: false,
                     x: 0
                 },
-                el: create({ selector: 'div', styles: `vs-scrollbar vs-${this.vars.direction} vs-scrollbar-${this.constructor.name.toLowerCase()}` }),
+                el: create({ selector: 'div', styles: `vs-scrollbar vs-${this.vars.direction} vs-scrollbar-${constructorName.toLowerCase()}` }),
                 drag: {
                     el: create({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,
