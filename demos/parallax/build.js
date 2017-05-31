@@ -13,10 +13,6 @@ var _index = require('../../index');
 
 var _index2 = _interopRequireDefault(_index);
 
-var _domCss = require('dom-css');
-
-var _domCss2 = _interopRequireDefault(_domCss);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31,7 +27,7 @@ var Parallax = function (_Smooth) {
     function Parallax(opt) {
         _classCallCheck(this, Parallax);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Parallax).call(this, opt));
+        var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, opt));
 
         _this.createExtraBound();
 
@@ -54,7 +50,7 @@ var Parallax = function (_Smooth) {
         key: 'init',
         value: function init() {
 
-            _get(Object.getPrototypeOf(Parallax.prototype), 'init', this).call(this);
+            _get(Parallax.prototype.__proto__ || Object.getPrototypeOf(Parallax.prototype), 'init', this).call(this);
         }
     }, {
         key: 'resize',
@@ -64,7 +60,7 @@ var Parallax = function (_Smooth) {
 
             this.reset();
             this.getCache();
-            _get(Object.getPrototypeOf(Parallax.prototype), 'resize', this).call(this);
+            _get(Parallax.prototype.__proto__ || Object.getPrototypeOf(Parallax.prototype), 'resize', this).call(this);
 
             this.resizing = false;
         }
@@ -115,7 +111,7 @@ var Parallax = function (_Smooth) {
 
             this.dom.divs.forEach(this.inViewport);
 
-            _get(Object.getPrototypeOf(Parallax.prototype), 'run', this).call(this);
+            _get(Parallax.prototype.__proto__ || Object.getPrototypeOf(Parallax.prototype), 'run', this).call(this);
         }
     }, {
         key: 'inViewport',
@@ -150,7 +146,7 @@ var Parallax = function (_Smooth) {
 
 exports.default = Parallax;
 
-},{"../../index":3,"dom-css":8}],2:[function(require,module,exports){
+},{"../../index":3}],2:[function(require,module,exports){
 'use strict';
 
 var _custom = require('./custom');
@@ -208,7 +204,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Smooth = function () {
     function Smooth() {
-        var opt = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         _classCallCheck(this, Smooth);
 
@@ -374,7 +370,7 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
-            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var requestAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -386,7 +382,7 @@ var Smooth = function () {
     }, {
         key: 'off',
         value: function off() {
-            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var cancelAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -552,9 +548,9 @@ var Smooth = function () {
                 this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else if (this.vars.native) {
                 this.dom.scroll.style[prop] = this.vars.bounding + 'px';
-            } else {
-                this.clampTarget();
             }
+
+            !this.vars.native && this.clampTarget();
         }
     }, {
         key: 'clampTarget',
@@ -594,49 +590,7 @@ exports.default = Smooth;
 
 window.Smooth = Smooth;
 
-},{"dom-classes":6,"dom-create-element":7,"dom-events":9,"prefix":14,"virtual-scroll":23}],4:[function(require,module,exports){
-/* The following list is defined in React's core */
-var IS_UNITLESS = {
-  animationIterationCount: true,
-  boxFlex: true,
-  boxFlexGroup: true,
-  boxOrdinalGroup: true,
-  columnCount: true,
-  flex: true,
-  flexGrow: true,
-  flexPositive: true,
-  flexShrink: true,
-  flexNegative: true,
-  flexOrder: true,
-  gridRow: true,
-  gridColumn: true,
-  fontWeight: true,
-  lineClamp: true,
-  lineHeight: true,
-  opacity: true,
-  order: true,
-  orphans: true,
-  tabSize: true,
-  widows: true,
-  zIndex: true,
-  zoom: true,
-
-  // SVG-related properties
-  fillOpacity: true,
-  stopOpacity: true,
-  strokeDashoffset: true,
-  strokeOpacity: true,
-  strokeWidth: true
-};
-
-module.exports = function(name, value) {
-  if(typeof value === 'number' && !IS_UNITLESS[ name ]) {
-    return value + 'px';
-  } else {
-    return value;
-  }
-};
-},{}],5:[function(require,module,exports){
+},{"dom-classes":5,"dom-create-element":6,"dom-events":7,"prefix":11,"virtual-scroll":17}],4:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString,
@@ -674,7 +628,7 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -773,7 +727,7 @@ function toggle (el, name) {
   }
 }
 
-},{"indexof":10}],7:[function(require,module,exports){
+},{"indexof":8}],6:[function(require,module,exports){
 /*
 `dom-create-element`
 
@@ -820,66 +774,7 @@ function create(opt) {
 	
 	return el;
 };
-},{}],8:[function(require,module,exports){
-var prefix = require('prefix-style')
-var toCamelCase = require('to-camel-case')
-var cache = { 'float': 'cssFloat' }
-var addPxToStyle = require('add-px-to-style')
-
-function style (element, property, value) {
-  var camel = cache[property]
-  if (typeof camel === 'undefined') {
-    camel = detect(property)
-  }
-
-  // may be false if CSS prop is unsupported
-  if (camel) {
-    if (value === undefined) {
-      return element.style[camel]
-    }
-
-    element.style[camel] = addPxToStyle(camel, value)
-  }
-}
-
-function each (element, properties) {
-  for (var k in properties) {
-    if (properties.hasOwnProperty(k)) {
-      style(element, k, properties[k])
-    }
-  }
-}
-
-function detect (cssProp) {
-  var camel = toCamelCase(cssProp)
-  var result = prefix(camel)
-  cache[camel] = cache[cssProp] = cache[result] = result
-  return result
-}
-
-function set () {
-  if (arguments.length === 2) {
-    each(arguments[0], arguments[1])
-  } else {
-    style(arguments[0], arguments[1], arguments[2])
-  }
-}
-
-module.exports = set
-module.exports.set = set
-
-module.exports.get = function (element, properties) {
-  if (Array.isArray(properties)) {
-    return properties.reduce(function (obj, prop) {
-      obj[prop] = style(element, prop || '')
-      return obj
-    }, {})
-  } else {
-    return style(element, properties || '')
-  }
-}
-
-},{"add-px-to-style":4,"prefix-style":13,"to-camel-case":19}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 var synth = require('synthetic-dom-events');
 
@@ -930,7 +825,7 @@ module.exports = {
     emit: emit
 };
 
-},{"synthetic-dom-events":15}],10:[function(require,module,exports){
+},{"synthetic-dom-events":12}],8:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -941,7 +836,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.2
 (function() {
   var root;
@@ -1044,9 +939,16 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{}],12:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
+},{}],10:[function(require,module,exports){
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
 'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -1058,7 +960,51 @@ function toObject(val) {
 	return Object(val);
 }
 
-module.exports = Object.assign || function (target, source) {
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	var from;
 	var to = toObject(target);
 	var symbols;
@@ -1072,8 +1018,8 @@ module.exports = Object.assign || function (target, source) {
 			}
 		}
 
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
 			for (var i = 0; i < symbols.length; i++) {
 				if (propIsEnumerable.call(from, symbols[i])) {
 					to[symbols[i]] = from[symbols[i]];
@@ -1085,39 +1031,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],13:[function(require,module,exports){
-var div = null
-var prefixes = [ 'Webkit', 'Moz', 'O', 'ms' ]
-
-module.exports = function prefixStyle (prop) {
-  // re-use a dummy div
-  if (!div) {
-    div = document.createElement('div')
-  }
-
-  var style = div.style
-
-  // prop exists without prefix
-  if (prop in style) {
-    return prop
-  }
-
-  // borderRadius -> BorderRadius
-  var titleCase = prop.charAt(0).toUpperCase() + prop.slice(1)
-
-  // find the vendor-prefixed prop
-  for (var i = prefixes.length; i >= 0; i--) {
-    var name = prefixes[i] + titleCase
-    // e.g. WebkitBorderRadius or webkitBorderRadius
-    if (name in style) {
-      return name
-    }
-  }
-
-  return false
-}
-
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // check document first so it doesn't error in node.js
 var style = typeof document != 'undefined'
   ? document.createElement('p').style
@@ -1188,7 +1102,7 @@ function prefixDashed(key){
 module.exports = prefixMemozied
 module.exports.dash = prefixDashed
 
-},{}],15:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 // for compression
 var win = window;
@@ -1309,7 +1223,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":16,"./types.json":17}],16:[function(require,module,exports){
+},{"./init.json":13,"./types.json":14}],13:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -1376,7 +1290,7 @@ module.exports={
   ]
 }
 
-},{}],17:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -1421,14 +1335,14 @@ module.exports={
   ]
 }
 
-},{}],18:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 function E () {
-	// Keep this empty so it's easier to inherit from
+  // Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
 }
 
 E.prototype = {
-	on: function (name, callback, ctx) {
+  on: function (name, callback, ctx) {
     var e = this.e || (this.e = {});
 
     (e[name] || (e[name] = [])).push({
@@ -1489,138 +1403,13 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],19:[function(require,module,exports){
-
-var toSpace = require('to-space-case');
-
-
-/**
- * Expose `toCamelCase`.
- */
-
-module.exports = toCamelCase;
-
-
-/**
- * Convert a `string` to camel case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
-}
-},{"to-space-case":21}],20:[function(require,module,exports){
-
-/**
- * Expose `toNoCase`.
- */
-
-module.exports = toNoCase;
-
-
-/**
- * Test whether a string is camel-case.
- */
-
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
-
-/**
- * Remove any starting case from a `string`, like camel or snake, but keep
- * spaces and punctuation that may be important otherwise.
- *
- * @param {String} string
- * @return {String}
- */
-
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
-}
-
-
-/**
- * Separator splitter.
- */
-
-var separatorSplitter = /[\W_]+(.|$)/g;
-
-
-/**
- * Un-separate a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function unseparate (string) {
-  return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
-}
-
-
-/**
- * Camelcase splitter.
- */
-
-var camelSplitter = /(.)([A-Z]+)/g;
-
-
-/**
- * Un-camelcase a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function uncamelize (string) {
-  return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
-}
-},{}],21:[function(require,module,exports){
-
-var clean = require('to-no-case');
-
-
-/**
- * Expose `toSpaceCase`.
- */
-
-module.exports = toSpaceCase;
-
-
-/**
- * Convert a `string` to space case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toSpaceCase (string) {
-  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
-}
-},{"to-no-case":20}],22:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = function(source) {
     return JSON.parse(JSON.stringify(source));
 };
-},{}],23:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var objectAssign = require('object-assign');
@@ -1832,7 +1621,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":22,"./support":24,"bindall-standalone":5,"lethargy":11,"object-assign":12,"tiny-emitter":18}],24:[function(require,module,exports){
+},{"./clone":16,"./support":18,"bindall-standalone":4,"lethargy":9,"object-assign":10,"tiny-emitter":15}],18:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {

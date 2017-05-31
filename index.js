@@ -296,13 +296,13 @@ export default class Smooth {
             this.dom.scrollbar.drag.el.style[prop] = `${this.dom.scrollbar.drag.height}px`
         } else if(this.vars.native) {
             this.dom.scroll.style[prop] = `${this.vars.bounding}px`
-        } else {
-            this.clampTarget()
         }
+        
+        !this.vars.native && this.clampTarget();
     }
 
     clampTarget() {
-
+        
         this.vars.target = Math.round(Math.max(0, Math.min(this.vars.target, this.vars.bounding)))
     }
     

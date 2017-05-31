@@ -1,5 +1,4 @@
 import Smooth from '../../index'
-import css from 'dom-css'
 
 class Parallax extends Smooth {
     

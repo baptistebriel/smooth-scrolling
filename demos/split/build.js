@@ -31,7 +31,7 @@ var Split = function (_Smooth) {
     function Split(opt) {
         _classCallCheck(this, Split);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Split).call(this, opt));
+        var _this = _possibleConstructorReturn(this, (Split.__proto__ || Object.getPrototypeOf(Split)).call(this, opt));
 
         _this.createExtraBound();
 
@@ -78,7 +78,7 @@ var Split = function (_Smooth) {
                 });
             });
 
-            _get(Object.getPrototypeOf(Split.prototype), 'resize', this).call(this);
+            _get(Split.prototype.__proto__ || Object.getPrototypeOf(Split.prototype), 'resize', this).call(this);
         }
     }, {
         key: 'getCache',
@@ -107,7 +107,7 @@ var Split = function (_Smooth) {
 
             this.dom.sections.forEach(this.inViewport);
 
-            _get(Object.getPrototypeOf(Split.prototype), 'run', this).call(this);
+            _get(Split.prototype.__proto__ || Object.getPrototypeOf(Split.prototype), 'run', this).call(this);
         }
     }, {
         key: 'inViewport',
@@ -196,7 +196,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Smooth = function () {
     function Smooth() {
-        var opt = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         _classCallCheck(this, Smooth);
 
@@ -362,7 +362,7 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
-            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var requestAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -374,7 +374,7 @@ var Smooth = function () {
     }, {
         key: 'off',
         value: function off() {
-            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var cancelAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -540,9 +540,9 @@ var Smooth = function () {
                 this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else if (this.vars.native) {
                 this.dom.scroll.style[prop] = this.vars.bounding + 'px';
-            } else {
-                this.clampTarget();
             }
+
+            !this.vars.native && this.clampTarget();
         }
     }, {
         key: 'clampTarget',
@@ -847,7 +847,11 @@ function detect (cssProp) {
 
 function set () {
   if (arguments.length === 2) {
-    each(arguments[0], arguments[1])
+    if (typeof arguments[1] === 'string') {
+      arguments[0].style.cssText = arguments[1]
+    } else {
+      each(arguments[0], arguments[1])
+    }
   } else {
     style(arguments[0], arguments[1], arguments[2])
   }
@@ -1033,8 +1037,15 @@ module.exports = function(arr, obj){
 }).call(this);
 
 },{}],12:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
 'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -1046,7 +1057,51 @@ function toObject(val) {
 	return Object(val);
 }
 
-module.exports = Object.assign || function (target, source) {
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	var from;
 	var to = toObject(target);
 	var symbols;
@@ -1060,8 +1115,8 @@ module.exports = Object.assign || function (target, source) {
 			}
 		}
 
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
 			for (var i = 0; i < symbols.length; i++) {
 				if (propIsEnumerable.call(from, symbols[i])) {
 					to[symbols[i]] = from[symbols[i]];
@@ -1411,12 +1466,12 @@ module.exports={
 
 },{}],18:[function(require,module,exports){
 function E () {
-	// Keep this empty so it's easier to inherit from
+  // Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
 }
 
 E.prototype = {
-	on: function (name, callback, ctx) {
+  on: function (name, callback, ctx) {
     var e = this.e || (this.e = {});
 
     (e[name] || (e[name] = [])).push({
@@ -1479,15 +1534,13 @@ module.exports = E;
 
 },{}],19:[function(require,module,exports){
 
-var toSpace = require('to-space-case');
-
+var space = require('to-space-case')
 
 /**
- * Expose `toCamelCase`.
+ * Export.
  */
 
-module.exports = toCamelCase;
-
+module.exports = toCamelCase
 
 /**
  * Convert a `string` to camel case.
@@ -1496,29 +1549,27 @@ module.exports = toCamelCase;
  * @return {String}
  */
 
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
+function toCamelCase(string) {
+  return space(string).replace(/\s(\w)/g, function (matches, letter) {
+    return letter.toUpperCase()
+  })
 }
+
 },{"to-space-case":21}],20:[function(require,module,exports){
 
 /**
- * Expose `toNoCase`.
+ * Export.
  */
 
-module.exports = toNoCase;
-
+module.exports = toNoCase
 
 /**
  * Test whether a string is camel-case.
  */
 
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
+var hasSpace = /\s/
+var hasSeparator = /(_|-|\.|:)/
+var hasCamel = /([a-z][A-Z]|[A-Z][a-z])/
 
 /**
  * Remove any starting case from a `string`, like camel or snake, but keep
@@ -1528,21 +1579,18 @@ var hasSeparator = /[\W_]/;
  * @return {String}
  */
 
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
+function toNoCase(string) {
+  if (hasSpace.test(string)) return string.toLowerCase()
+  if (hasSeparator.test(string)) return (unseparate(string) || string).toLowerCase()
+  if (hasCamel.test(string)) return uncamelize(string).toLowerCase()
+  return string.toLowerCase()
 }
-
 
 /**
  * Separator splitter.
  */
 
-var separatorSplitter = /[\W_]+(.|$)/g;
-
+var separatorSplitter = /[\W_]+(.|$)/g
 
 /**
  * Un-separate a `string`.
@@ -1551,19 +1599,17 @@ var separatorSplitter = /[\W_]+(.|$)/g;
  * @return {String}
  */
 
-function unseparate (string) {
+function unseparate(string) {
   return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
+    return next ? ' ' + next : ''
+  })
 }
-
 
 /**
  * Camelcase splitter.
  */
 
-var camelSplitter = /(.)([A-Z]+)/g;
-
+var camelSplitter = /(.)([A-Z]+)/g
 
 /**
  * Un-camelcase a `string`.
@@ -1572,22 +1618,21 @@ var camelSplitter = /(.)([A-Z]+)/g;
  * @return {String}
  */
 
-function uncamelize (string) {
+function uncamelize(string) {
   return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
+    return previous + ' ' + uppers.toLowerCase().split('').join(' ')
+  })
 }
+
 },{}],21:[function(require,module,exports){
 
-var clean = require('to-no-case');
-
+var clean = require('to-no-case')
 
 /**
- * Expose `toSpaceCase`.
+ * Export.
  */
 
-module.exports = toSpaceCase;
-
+module.exports = toSpaceCase
 
 /**
  * Convert a `string` to space case.
@@ -1596,12 +1641,12 @@ module.exports = toSpaceCase;
  * @return {String}
  */
 
-
-function toSpaceCase (string) {
+function toSpaceCase(string) {
   return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
+    return match ? ' ' + match : ''
+  }).trim()
 }
+
 },{"to-no-case":20}],22:[function(require,module,exports){
 'use strict';
 
