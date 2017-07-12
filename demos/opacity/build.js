@@ -27,7 +27,7 @@ var Custom = function (_Smooth) {
     function Custom(opt) {
         _classCallCheck(this, Custom);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Custom).call(this, opt));
+        var _this = _possibleConstructorReturn(this, (Custom.__proto__ || Object.getPrototypeOf(Custom)).call(this, opt));
 
         _this.dom.section = opt.section;
         _this.dom.opacity = opt.opacity;
@@ -38,13 +38,13 @@ var Custom = function (_Smooth) {
         key: 'init',
         value: function init() {
 
-            _get(Object.getPrototypeOf(Custom.prototype), 'init', this).call(this);
+            _get(Custom.prototype.__proto__ || Object.getPrototypeOf(Custom.prototype), 'init', this).call(this);
         }
     }, {
         key: 'run',
         value: function run() {
 
-            _get(Object.getPrototypeOf(Custom.prototype), 'run', this).call(this);
+            _get(Custom.prototype.__proto__ || Object.getPrototypeOf(Custom.prototype), 'run', this).call(this);
 
             var current = Math.round(Math.abs(this.vars.current));
             var opacity = Math.max(0, Math.min(1 - current / (this.vars.height * .5), 1));
@@ -58,7 +58,7 @@ var Custom = function (_Smooth) {
 
             this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height;
 
-            _get(Object.getPrototypeOf(Custom.prototype), 'resize', this).call(this);
+            _get(Custom.prototype.__proto__ || Object.getPrototypeOf(Custom.prototype), 'resize', this).call(this);
         }
     }]);
 
@@ -119,7 +119,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Smooth = function () {
     function Smooth() {
-        var opt = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         _classCallCheck(this, Smooth);
 
@@ -285,7 +285,7 @@ var Smooth = function () {
     }, {
         key: 'on',
         value: function on() {
-            var requestAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var requestAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -297,7 +297,7 @@ var Smooth = function () {
     }, {
         key: 'off',
         value: function off() {
-            var cancelAnimationFrame = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var cancelAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
@@ -463,9 +463,9 @@ var Smooth = function () {
                 this.dom.scrollbar.drag.el.style[prop] = this.dom.scrollbar.drag.height + 'px';
             } else if (this.vars.native) {
                 this.dom.scroll.style[prop] = this.vars.bounding + 'px';
-            } else {
-                this.clampTarget();
             }
+
+            !this.vars.native && this.clampTarget();
         }
     }, {
         key: 'clampTarget',
@@ -855,8 +855,15 @@ module.exports = function(arr, obj){
 }).call(this);
 
 },{}],10:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
 'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -868,7 +875,51 @@ function toObject(val) {
 	return Object(val);
 }
 
-module.exports = Object.assign || function (target, source) {
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	var from;
 	var to = toObject(target);
 	var symbols;
@@ -882,8 +933,8 @@ module.exports = Object.assign || function (target, source) {
 			}
 		}
 
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
 			for (var i = 0; i < symbols.length; i++) {
 				if (propIsEnumerable.call(from, symbols[i])) {
 					to[symbols[i]] = from[symbols[i]];
@@ -1201,12 +1252,12 @@ module.exports={
 
 },{}],15:[function(require,module,exports){
 function E () {
-	// Keep this empty so it's easier to inherit from
+  // Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
 }
 
 E.prototype = {
-	on: function (name, callback, ctx) {
+  on: function (name, callback, ctx) {
     var e = this.e || (this.e = {});
 
     (e[name] || (e[name] = [])).push({
