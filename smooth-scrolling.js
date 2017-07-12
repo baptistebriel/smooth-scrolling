@@ -415,6 +415,7 @@ var Smooth = function () {
             }
 
             this.vars.direction === 'vertical' ? _domClasses2.default.remove(this.dom.listener, 'y-scroll') : _domClasses2.default.remove(this.dom.listener, 'x-scroll');
+            this.vars.current = 0;
 
             this.vs && (this.vs.destroy(), this.vs = null);
 
