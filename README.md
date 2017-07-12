@@ -1,3 +1,7 @@
+# Fork of https://github.com/baptistebriel/smooth-scrolling
+
+Original doc:
+
 # smooth
 
 Smooth is a small JavaScript module based on [VirtualScroll](http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/) to create smooth scrolling and parallax effects on scroll.
