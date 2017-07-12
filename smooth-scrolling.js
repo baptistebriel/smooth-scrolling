@@ -44,7 +44,12 @@ var Smooth = function () {
         this.prefix = (0, _prefix2.default)('transform');
         this.rAF = undefined;
 
-        this.extends = this.constructor.name != 'Smooth';
+        // It seems that under heavy load, Firefox will still call the RAF callback even though the RAF has been canceled
+        // To prevent that we set a flag to prevent any callback to be executed when RAF is removed
+        this.isRAFCanceled = false;
+
+        var constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
+        this.extends = constructorName != 'Smooth';
 
         this.vars = {
             direction: this.options.direction || 'vertical',
@@ -76,7 +81,7 @@ var Smooth = function () {
                     clicked: false,
                     x: 0
                 },
-                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + this.constructor.name.toLowerCase() }),
+                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + constructorName.toLowerCase() }),
                 drag: {
                     el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,
@@ -170,6 +175,9 @@ var Smooth = function () {
     }, {
         key: 'run',
         value: function run() {
+            if (this.isRAFCanceled) {
+                return;
+            }
 
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
@@ -201,6 +209,9 @@ var Smooth = function () {
         value: function on() {
             var requestAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
+            if (this.isRAFCanceled) {
+                this.isRAFCanceled = false;
+            }
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
 
@@ -249,7 +260,7 @@ var Smooth = function () {
 
             return cancelAnimationFrame;
         }(function () {
-
+            this.isRAFCanceled = true;
             cancelAnimationFrame(this.rAF);
         })
     }, {
@@ -404,6 +415,7 @@ var Smooth = function () {
             }
 
             this.vars.direction === 'vertical' ? _domClasses2.default.remove(this.dom.listener, 'y-scroll') : _domClasses2.default.remove(this.dom.listener, 'x-scroll');
+            this.vars.current = 0;
 
             this.vs && (this.vs.destroy(), this.vs = null);
 
