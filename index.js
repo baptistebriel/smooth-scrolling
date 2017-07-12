@@ -17,9 +17,9 @@ export default class Smooth {
 
         // It seems that under heavy load, Firefox will still call the RAF callback even though the RAF has been canceled
         // To prevent that we set a flag to prevent any callback to be executed when RAF is removed
-        this.isRAFCanceled = false;
+        this.isRAFCanceled = false
         
-        const constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
+        const constructorName = this.constructor.name ? this.constructor.name : 'Smooth'
         this.extends = constructorName != 'Smooth'
         
         this.vars = {
@@ -135,7 +135,7 @@ export default class Smooth {
     
     run() {
         if (this.isRAFCanceled) {
-            return;
+            return
         }
 
         this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease
@@ -165,7 +165,7 @@ export default class Smooth {
     
     on(requestAnimationFrame = true) {
         if (this.isRAFCanceled) {
-            this.isRAFCanceled = false;
+            this.isRAFCanceled = false
         }
 
         const node = this.dom.listener === document.body ? window : this.dom.listener
@@ -190,7 +190,7 @@ export default class Smooth {
     }
     
     cancelAnimationFrame() {
-        this.isRAFCanceled = true;
+        this.isRAFCanceled = true
         cancelAnimationFrame(this.rAF)
     }
     
@@ -333,6 +333,7 @@ export default class Smooth {
         } 
         
         this.vars.direction === 'vertical' ? classes.remove(this.dom.listener, 'y-scroll') : classes.remove(this.dom.listener, 'x-scroll')
+        this.vars.current = 0
         
         this.vs && (this.vs.destroy(), this.vs = null)
         
