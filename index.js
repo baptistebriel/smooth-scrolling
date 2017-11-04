@@ -60,6 +60,9 @@ export default class Smooth {
                 }
             }
         }
+
+        this.callback = this.options.callback || null
+        this.lastScroll = 0;
     }
     
     createBound() {
@@ -156,6 +159,9 @@ export default class Smooth {
             
             this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
         }
+
+        (this.callback && this.vars.current !== this.lastScroll) && this.callback(this.vars.current);
+        this.lastScroll = this.current;
     }
     
     getTransform(value) {

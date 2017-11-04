@@ -89,6 +89,9 @@ var Smooth = function () {
                 }
             }
         };
+
+        this.callback = this.options.callback || null;
+        this.lastScroll = 0;
     }
 
     _createClass(Smooth, [{
@@ -197,6 +200,9 @@ var Smooth = function () {
 
                 this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
             }
+
+            this.callback && this.vars.current !== this.lastScroll && this.callback(this.vars.current);
+            this.lastScroll = this.current;
         }
     }, {
         key: 'getTransform',
@@ -1267,13 +1273,14 @@ var keyCodes = {
     LEFT: 37,
     UP: 38,
     RIGHT: 39,
-    DOWN: 40
+    DOWN: 40,
+    SPACE: 32
 };
 
 function VirtualScroll(options) {
     bindAll(this, '_onWheel', '_onMouseWheel', '_onTouchStart', '_onTouchMove', '_onKeyDown');
 
-	this.el = window;
+    this.el = window;
     if (options && options.el) {
         this.el = options.el;
         delete options.el;
@@ -1297,10 +1304,13 @@ function VirtualScroll(options) {
         deltaX: 0,
         deltaY: 0
     };
-
     this.touchStartX = null;
     this.touchStartY = null;
     this.bodyTouchAction = null;
+
+    if (this.options.passive !== undefined) {
+        this.listenerOptions = {passive: this.options.passive};
+    }
 }
 
 VirtualScroll.prototype._notify = function(e) {
@@ -1320,7 +1330,6 @@ VirtualScroll.prototype._notify = function(e) {
 VirtualScroll.prototype._onWheel = function(e) {
     var options = this.options;
     if (this._lethargy && this._lethargy.check(e) === false) return;
-
     var evt = this._event;
 
     // In Chrome and in Firefox (at least the new one)
@@ -1381,6 +1390,7 @@ VirtualScroll.prototype._onTouchMove = function(e) {
 VirtualScroll.prototype._onKeyDown = function(e) {
     var evt = this._event;
     evt.deltaX = evt.deltaY = 0;
+    var windowHeight = window.innerHeight - 40
 
     switch(e.keyCode) {
         case keyCodes.LEFT:
@@ -1392,7 +1402,12 @@ VirtualScroll.prototype._onKeyDown = function(e) {
         case keyCodes.DOWN:
             evt.deltaY = - this.options.keyStep;
             break;
-
+        case keyCodes.SPACE && e.shiftKey:
+            evt.deltaY = windowHeight;
+            break;
+        case keyCodes.SPACE:
+            evt.deltaY = - windowHeight;
+            break;
         default:
             return;
     }
@@ -1401,12 +1416,12 @@ VirtualScroll.prototype._onKeyDown = function(e) {
 };
 
 VirtualScroll.prototype._bind = function() {
-    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel);
-    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel);
+    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel, this.listenerOptions);
+    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel, this.listenerOptions);
 
     if(support.hasTouch) {
-        this.el.addEventListener('touchstart', this._onTouchStart);
-        this.el.addEventListener('touchmove', this._onTouchMove);
+        this.el.addEventListener('touchstart', this._onTouchStart, this.listenerOptions);
+        this.el.addEventListener('touchmove', this._onTouchMove, this.listenerOptions);
     }
 
     if(support.hasPointer && support.hasTouchWin) {
@@ -1476,4 +1491,5 @@ module.exports = (function getSupport() {
         isFirefox: navigator.userAgent.indexOf('Firefox') > -1
     };
 })();
+
 },{}]},{},[1]);
