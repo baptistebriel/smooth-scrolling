@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="/">
+    <title>callback demo | smooth-scrolling</title>
+    <link rel="stylesheet" type="text/css" href="demos/main.css">
+    <style>
+        html, body {
+            overflow: hidden;
+        }
+        h1 {
+            display: block;
+            margin: 50vh auto;
+            text-align: center;
+        }
+        img {
+            display: inline-block;
+            width: 50%;
+            margin: 20rem 20rem 5rem;
+        }
+        .scrolling {
+            position: fixed;
+            top: 0;
+            left: 0;
+            font-size: 20px;
+            border: solid 1px red;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <p class="scrolling">current scroll: <span id="currentScroll">0</span>px</p>
+    <div class="vs-section">
+        <h1>callback</h1>
+        <img src="https://media.giphy.com/media/xT0BKn8hSjtftxLj20/giphy.gif">
+    </div>
+    <script src="../../smooth-scrolling.js"></script>
+
+    <script>
+        var scrollEl = document.getElementById('currentScroll');
+        var scroll = new Smooth({
+            callback: function(val) {
+                scrollEl.innerText = val;
+            }
+        })
+
+        scroll.init()
+    </script>
+</body>
+</html>
