@@ -22,12 +22,15 @@ export default class Smooth {
         const constructorName = this.constructor.name ? this.constructor.name : 'Smooth'
         this.extends = constructorName != 'Smooth'
         
+        this.callback = this.options.callback || null
+        
         this.vars = {
             direction: this.options.direction || 'vertical',
             native: this.options.native || false,
             ease: this.options.ease || 0.075,
             preload: this.options.preload || false,
             current: 0,
+            last: 0,
             target: 0,
             height: window.innerHeight,
             width: window.innerWidth,
@@ -60,9 +63,6 @@ export default class Smooth {
                 }
             }
         }
-
-        this.callback = this.options.callback || null
-        this.lastScroll = 0;
     }
     
     createBound() {
@@ -137,9 +137,7 @@ export default class Smooth {
     }
     
     run() {
-        if (this.isRAFCanceled) {
-            return
-        }
+        if (this.isRAFCanceled) return
 
         this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease
         this.vars.current < .1 && (this.vars.current = 0)
@@ -151,17 +149,18 @@ export default class Smooth {
         }
         
         if(!this.vars.native && !this.options.noscrollbar) {
-
             const size = this.dom.scrollbar.drag.height
             const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
             const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size
             const clamp = Math.max(0, Math.min(value-size, value+size))
-            
             this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
         }
 
-        (this.callback && this.vars.current !== this.lastScroll) && this.callback(this.vars.current);
-        this.lastScroll = this.current;
+        if (this.callback && this.vars.current !== this.vars.last) {
+            this.callback(this.vars.current)
+        }
+
+        this.vars.last = this.vars.current;
     }
     
     getTransform(value) {

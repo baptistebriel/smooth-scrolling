@@ -51,12 +51,15 @@ var Smooth = function () {
         var constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
         this.extends = constructorName != 'Smooth';
 
+        this.callback = this.options.callback || null;
+
         this.vars = {
             direction: this.options.direction || 'vertical',
             native: this.options.native || false,
             ease: this.options.ease || 0.075,
             preload: this.options.preload || false,
             current: 0,
+            last: 0,
             target: 0,
             height: window.innerHeight,
             width: window.innerWidth,
@@ -89,9 +92,6 @@ var Smooth = function () {
                 }
             }
         };
-
-        this.callback = this.options.callback || null;
-        this.lastScroll = 0;
     }
 
     _createClass(Smooth, [{
@@ -178,9 +178,7 @@ var Smooth = function () {
     }, {
         key: 'run',
         value: function run() {
-            if (this.isRAFCanceled) {
-                return;
-            }
+            if (this.isRAFCanceled) return;
 
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
@@ -192,17 +190,18 @@ var Smooth = function () {
             }
 
             if (!this.vars.native && !this.options.noscrollbar) {
-
                 var size = this.dom.scrollbar.drag.height;
                 var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
                 var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
                 var clamp = Math.max(0, Math.min(value - size, value + size));
-
                 this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
             }
 
-            this.callback && this.vars.current !== this.lastScroll && this.callback(this.vars.current);
-            this.lastScroll = this.current;
+            if (this.callback && this.vars.current !== this.vars.last) {
+                this.callback(this.vars.current);
+            }
+
+            this.vars.last = this.vars.current;
         }
     }, {
         key: 'getTransform',
@@ -1273,14 +1272,13 @@ var keyCodes = {
     LEFT: 37,
     UP: 38,
     RIGHT: 39,
-    DOWN: 40,
-    SPACE: 32
+    DOWN: 40
 };
 
 function VirtualScroll(options) {
     bindAll(this, '_onWheel', '_onMouseWheel', '_onTouchStart', '_onTouchMove', '_onKeyDown');
 
-    this.el = window;
+	this.el = window;
     if (options && options.el) {
         this.el = options.el;
         delete options.el;
@@ -1304,13 +1302,10 @@ function VirtualScroll(options) {
         deltaX: 0,
         deltaY: 0
     };
+
     this.touchStartX = null;
     this.touchStartY = null;
     this.bodyTouchAction = null;
-
-    if (this.options.passive !== undefined) {
-        this.listenerOptions = {passive: this.options.passive};
-    }
 }
 
 VirtualScroll.prototype._notify = function(e) {
@@ -1330,6 +1325,7 @@ VirtualScroll.prototype._notify = function(e) {
 VirtualScroll.prototype._onWheel = function(e) {
     var options = this.options;
     if (this._lethargy && this._lethargy.check(e) === false) return;
+
     var evt = this._event;
 
     // In Chrome and in Firefox (at least the new one)
@@ -1390,7 +1386,6 @@ VirtualScroll.prototype._onTouchMove = function(e) {
 VirtualScroll.prototype._onKeyDown = function(e) {
     var evt = this._event;
     evt.deltaX = evt.deltaY = 0;
-    var windowHeight = window.innerHeight - 40
 
     switch(e.keyCode) {
         case keyCodes.LEFT:
@@ -1402,12 +1397,7 @@ VirtualScroll.prototype._onKeyDown = function(e) {
         case keyCodes.DOWN:
             evt.deltaY = - this.options.keyStep;
             break;
-        case keyCodes.SPACE && e.shiftKey:
-            evt.deltaY = windowHeight;
-            break;
-        case keyCodes.SPACE:
-            evt.deltaY = - windowHeight;
-            break;
+
         default:
             return;
     }
@@ -1416,12 +1406,12 @@ VirtualScroll.prototype._onKeyDown = function(e) {
 };
 
 VirtualScroll.prototype._bind = function() {
-    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel, this.listenerOptions);
-    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel, this.listenerOptions);
+    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel);
+    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel);
 
     if(support.hasTouch) {
-        this.el.addEventListener('touchstart', this._onTouchStart, this.listenerOptions);
-        this.el.addEventListener('touchmove', this._onTouchMove, this.listenerOptions);
+        this.el.addEventListener('touchstart', this._onTouchStart);
+        this.el.addEventListener('touchmove', this._onTouchMove);
     }
 
     if(support.hasPointer && support.hasTouchWin) {
@@ -1491,5 +1481,4 @@ module.exports = (function getSupport() {
         isFirefox: navigator.userAgent.indexOf('Firefox') > -1
     };
 })();
-
 },{}]},{},[1]);

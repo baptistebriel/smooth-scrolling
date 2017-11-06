@@ -215,7 +215,14 @@ var Smooth = function () {
         this.prefix = (0, _prefix2.default)('transform');
         this.rAF = undefined;
 
-        this.extends = this.constructor.name != 'Smooth';
+        // It seems that under heavy load, Firefox will still call the RAF callback even though the RAF has been canceled
+        // To prevent that we set a flag to prevent any callback to be executed when RAF is removed
+        this.isRAFCanceled = false;
+
+        var constructorName = this.constructor.name ? this.constructor.name : 'Smooth';
+        this.extends = constructorName != 'Smooth';
+
+        this.callback = this.options.callback || null;
 
         this.vars = {
             direction: this.options.direction || 'vertical',
@@ -223,6 +230,7 @@ var Smooth = function () {
             ease: this.options.ease || 0.075,
             preload: this.options.preload || false,
             current: 0,
+            last: 0,
             target: 0,
             height: window.innerHeight,
             width: window.innerWidth,
@@ -247,7 +255,7 @@ var Smooth = function () {
                     clicked: false,
                     x: 0
                 },
-                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + this.constructor.name.toLowerCase() }),
+                el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrollbar vs-' + this.vars.direction + ' vs-scrollbar-' + constructorName.toLowerCase() }),
                 drag: {
                     el: (0, _domCreateElement2.default)({ selector: 'div', styles: 'vs-scrolldrag' }),
                     delta: 0,
@@ -341,6 +349,7 @@ var Smooth = function () {
     }, {
         key: 'run',
         value: function run() {
+            if (this.isRAFCanceled) return;
 
             this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease;
             this.vars.current < .1 && (this.vars.current = 0);
@@ -352,14 +361,18 @@ var Smooth = function () {
             }
 
             if (!this.vars.native && !this.options.noscrollbar) {
-
                 var size = this.dom.scrollbar.drag.height;
                 var bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width;
                 var value = Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size)) + size / .5 - size;
                 var clamp = Math.max(0, Math.min(value - size, value + size));
-
                 this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2));
             }
+
+            if (this.callback && this.vars.current !== this.vars.last) {
+                this.callback(this.vars.current);
+            }
+
+            this.vars.last = this.vars.current;
         }
     }, {
         key: 'getTransform',
@@ -372,6 +385,9 @@ var Smooth = function () {
         value: function on() {
             var requestAnimationFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
+            if (this.isRAFCanceled) {
+                this.isRAFCanceled = false;
+            }
 
             var node = this.dom.listener === document.body ? window : this.dom.listener;
 
@@ -420,7 +436,7 @@ var Smooth = function () {
 
             return cancelAnimationFrame;
         }(function () {
-
+            this.isRAFCanceled = true;
             cancelAnimationFrame(this.rAF);
         })
     }, {
@@ -575,6 +591,7 @@ var Smooth = function () {
             }
 
             this.vars.direction === 'vertical' ? _domClasses2.default.remove(this.dom.listener, 'y-scroll') : _domClasses2.default.remove(this.dom.listener, 'x-scroll');
+            this.vars.current = 0;
 
             this.vs && (this.vs.destroy(), this.vs = null);
 
