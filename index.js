@@ -20,7 +20,7 @@ export default class Smooth {
         this.isRAFCanceled = false
         
         const constructorName = this.constructor.name ? this.constructor.name : 'Smooth'
-        this.extends = constructorName != 'Smooth'
+        this.extends = typeof opt.extends === 'undefined' ? constructorName != 'Smooth' : opt.extends
         
         this.callback = this.options.callback || null
         
