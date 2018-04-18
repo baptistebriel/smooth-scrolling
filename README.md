@@ -30,6 +30,7 @@ smooth.init()
 - `vs` : you can pass some option for virtuall-scroll: limitInertia, mouseMultiplier, etc
 - `preload` : if set to false, there will be no resize function called after all images loaded
 - `noscrollbar` : if using virtual-scroll and set to true, it will not build a custom scrollbar
+- `callback`: function called on requestAnimationFrame
 
 ### Methods
 
@@ -59,32 +60,27 @@ Basic scrollTo function.
 import Smooth from 'smooth-scrolling'
 
 class Custom extends Smooth {
+  
+  constructor(opt = {}) {
+    super(opt)
+    this.dom.section = opt.section
+    this.dom.opacity = opt.opacity
+  }
+  
+  run() {
+    super.run()
     
-    constructor(opt = {}) {
-        
-        super(opt)
-
-        this.dom.section = opt.section
-        this.dom.opacity = opt.opacity
-    }
+    const current = Math.round(Math.abs(this.vars.current))
+    const opacity = Math.max(0, Math.min(1 - current / (this.vars.height * .5), 1))
     
-    run() {
-        
-        super.run()
-        
-        const current = Math.round(Math.abs(this.vars.current))
-        const opacity = Math.max(0, Math.min(1 - current / (this.vars.height * .5), 1))
-        
-        this.dom.opacity.style.opacity = opacity.toFixed(2)
-        this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
-    }
+    this.dom.opacity.style.opacity = opacity.toFixed(2)
+    this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
+  }
 
-    resize() {
-        
-        this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
-        
-        super.resize()
-    }
+  resize() {
+    this.vars.bounding = this.dom.section.getBoundingClientRect().height - this.vars.height
+    super.resize()
+  }
 }
 
 export default Custom
@@ -111,6 +107,8 @@ smooth.init()
 `git clone git@github.com:baptistebriel/smooth-scrolling.git`
 
 `cd smooth-scrolling/ && npm i && npm run dev`
+
+You can use `[http-server](https://www.npmjs.com/package/http-server)` or [MAMP](https://www.mamp.info) to preview the demos.
 
 ### Demos
 
