@@ -15,7 +15,7 @@ export default class Smooth {
     // To prevent that we set a flag to prevent any callback to be executed when RAF is removed
     this.isRAFCanceled = false
     const constructorName = this.constructor.name ? this.constructor.name : 'Smooth'
-    this.extends = typeof opt.extends === 'undefined' ? constructorName != 'Smooth' : opt.extends
+    this.extends = typeof opt.extends === 'undefined' ? this.constructor !== Smooth : opt.extends
     this.callback = this.options.callback || null
     this.vars = {
       direction: this.options.direction || 'vertical',
