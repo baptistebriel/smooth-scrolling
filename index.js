@@ -4,6 +4,17 @@ import prefix from 'prefix'
 import vs from 'virtual-scroll'
 import event from 'dom-events'
 
+window.requestAnimFrame = (function () {
+  return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+})();
+
 export default class Smooth {
 
   constructor(opt = {}) {
@@ -58,7 +69,7 @@ export default class Smooth {
 
   createBound() {
     ['run', 'calc', 'debounce', 'resize', 'mouseUp', 'mouseDown', 'mouseMove', 'calcScroll', 'scrollTo']
-    .forEach((fn) => this[fn] = this[fn].bind(this));
+      .forEach((fn) => this[fn] = this[fn].bind(this));
   }
 
   init() {
@@ -98,7 +109,7 @@ export default class Smooth {
     const win = this.dom.listener === document.body
     this.vars.target = this.vars.direction === 'vertical' ? win ? window.scrollY || window.pageYOffset : this.dom.listener.scrollTop : win ? window.scrollX || window.pageXOffset : this.dom.listener.scrollLeft
     clearTimeout(this.vars.timer)
-    if(!this.vars.ticking) {
+    if (!this.vars.ticking) {
       this.vars.ticking = true;
       classes.add(this.dom.listener, 'is-scrolling')
     }
@@ -113,14 +124,14 @@ export default class Smooth {
     this.vars.current += (this.vars.target - this.vars.current) * this.vars.ease
     this.vars.current < .1 && (this.vars.current = 0)
     this.requestAnimationFrame()
-    if(!this.extends){
+    if (!this.extends) {
       this.dom.section.style[this.prefix] = this.getTransform(-this.vars.current.toFixed(2))
     }
-    if(!this.vars.native && !this.options.noscrollbar) {
+    if (!this.vars.native && !this.options.noscrollbar) {
       const size = this.dom.scrollbar.drag.height
       const bounds = this.vars.direction === 'vertical' ? this.vars.height : this.vars.width
       const value = (Math.abs(this.vars.current) / (this.vars.bounding / (bounds - size))) + (size / .5) - size
-      const clamp = Math.max(0, Math.min(value-size, value+size))
+      const clamp = Math.max(0, Math.min(value - size, value + size))
       this.dom.scrollbar.drag.el.style[this.prefix] = this.getTransform(clamp.toFixed(2))
     }
     if (this.callback && this.vars.current !== this.vars.last) {
@@ -149,7 +160,7 @@ export default class Smooth {
   }
 
   requestAnimationFrame() {
-    this.rAF = requestAnimationFrame(this.run)
+    this.rAF = requestAnimFrame(this.run)
   }
 
   cancelAnimationFrame() {
@@ -221,7 +232,7 @@ export default class Smooth {
   }
 
   scrollTo(offset) {
-    if(this.vars.native) {
+    if (this.vars.native) {
       this.vars.direction == 'vertical' ? window.scrollTo(0, offset) : window.scrollTo(offset, 0)
     } else {
       this.vars.target = offset
@@ -233,14 +244,14 @@ export default class Smooth {
     const prop = this.vars.direction === 'vertical' ? 'height' : 'width';
     this.vars.height = window.innerHeight
     this.vars.width = window.innerWidth
-    if(!this.extends) {
+    if (!this.extends) {
       const bounding = this.dom.section.getBoundingClientRect()
       this.vars.bounding = this.vars.direction === 'vertical' ? bounding.height - (this.vars.native ? 0 : this.vars.height) : bounding.right - (this.vars.native ? 0 : this.vars.width)
     }
-    if(!this.vars.native && !this.options.noscrollbar) {
+    if (!this.vars.native && !this.options.noscrollbar) {
       this.dom.scrollbar.drag.height = this.vars.height * (this.vars.height / (this.vars.bounding + this.vars.height))
       this.dom.scrollbar.drag.el.style[prop] = `${this.dom.scrollbar.drag.height}px`
-    } else if(this.vars.native) {
+    } else if (this.vars.native) {
       this.dom.scroll.style[prop] = `${this.vars.bounding}px`
     }
     !this.vars.native && this.clampTarget();
@@ -251,7 +262,7 @@ export default class Smooth {
   }
 
   destroy() {
-    if(this.vars.native) {
+    if (this.vars.native) {
       classes.remove(this.dom.listener, 'is-native-scroll')
       this.removeFakeScrollHeight()
     } else {
