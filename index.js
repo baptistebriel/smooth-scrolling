@@ -36,6 +36,7 @@ export default class Smooth {
       mouseMultiplier: this.options.vs && this.options.vs.mouseMultiplier || 1,
       touchMultiplier: this.options.vs && this.options.vs.touchMultiplier || 1.5,
       firefoxMultiplier: this.options.vs && this.options.vs.firefoxMultiplier || 30,
+      useKeyboard: this.options.vs && this.options.vs.hasOwnProperty('useKeyboard') ? this.options.vs.useKeyboard : true,
       preventTouch: this.options.vs && this.options.vs.hasOwnProperty('preventTouch') ? this.options.vs.preventTouch : true,
       passive: this.options.vs && this.options.vs.hasOwnProperty('passive') ? this.options.vs.passive : undefined,
     })

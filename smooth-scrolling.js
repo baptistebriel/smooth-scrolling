@@ -61,6 +61,7 @@ function () {
       mouseMultiplier: this.options.vs && this.options.vs.mouseMultiplier || 1,
       touchMultiplier: this.options.vs && this.options.vs.touchMultiplier || 1.5,
       firefoxMultiplier: this.options.vs && this.options.vs.firefoxMultiplier || 30,
+      useKeyboard: this.options.vs && this.options.vs.hasOwnProperty('useKeyboard') ? this.options.vs.useKeyboard : true,
       preventTouch: this.options.vs && this.options.vs.hasOwnProperty('preventTouch') ? this.options.vs.preventTouch : true,
       passive: this.options.vs && this.options.vs.hasOwnProperty('passive') ? this.options.vs.passive : undefined
     });
@@ -1247,7 +1248,9 @@ function VirtualScroll(options) {
         keyStep: 120,
         preventTouch: false,
         unpreventTouchClass: 'vs-touchmove-allowed',
-        limitInertia: false
+        limitInertia: false,
+        useKeyboard: true,
+        useTouch: true
     }, options);
 
     if (this.options.limitInertia) this._lethargy = new Lethargy();
@@ -1374,7 +1377,7 @@ VirtualScroll.prototype._bind = function() {
     if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel, this.listenerOptions);
     if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel, this.listenerOptions);
 
-    if(support.hasTouch) {
+    if(support.hasTouch && this.options.useTouch) {
         this.el.addEventListener('touchstart', this._onTouchStart, this.listenerOptions);
         this.el.addEventListener('touchmove', this._onTouchMove, this.listenerOptions);
     }
@@ -1386,7 +1389,7 @@ VirtualScroll.prototype._bind = function() {
         this.el.addEventListener('MSPointerMove', this._onTouchMove, true);
     }
 
-    if(support.hasKeyDown) document.addEventListener('keydown', this._onKeyDown);
+    if(support.hasKeyDown && this.options.useKeyboard) document.addEventListener('keydown', this._onKeyDown);
 };
 
 VirtualScroll.prototype._unbind = function() {
@@ -1404,7 +1407,7 @@ VirtualScroll.prototype._unbind = function() {
         this.el.removeEventListener('MSPointerMove', this._onTouchMove, true);
     }
 
-    if(support.hasKeyDown) document.removeEventListener('keydown', this._onKeyDown);
+    if(support.hasKeyDown && this.options.useKeyboard) document.removeEventListener('keydown', this._onKeyDown);
 };
 
 VirtualScroll.prototype.on = function(cb, ctx) {
