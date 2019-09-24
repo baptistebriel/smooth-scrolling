@@ -57,11 +57,12 @@ function () {
       ticking: false
     };
     this.vs = this.vars["native"] ? null : new _virtualScroll["default"]({
-      limitInertia: this.options.vs && this.options.vs.limitInertia || false,
+      limitInertia: this.options.vs && this.options.vs.hasOwnProperty('limitInertia') ? this.options.vs.limitInertia : false,
       mouseMultiplier: this.options.vs && this.options.vs.mouseMultiplier || 1,
       touchMultiplier: this.options.vs && this.options.vs.touchMultiplier || 1.5,
       firefoxMultiplier: this.options.vs && this.options.vs.firefoxMultiplier || 30,
-      preventTouch: this.options.vs && this.options.vs.preventTouch || true
+      preventTouch: this.options.vs && this.options.vs.hasOwnProperty('preventTouch') ? this.options.vs.preventTouch : true,
+      passive: this.options.vs && this.options.vs.hasOwnProperty('passive') ? this.options.vs.passive : undefined
     });
     this.dom = {
       listener: this.options.listener || document.body,
