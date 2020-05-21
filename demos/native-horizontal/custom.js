@@ -43,7 +43,7 @@ class Parallax extends Smooth {
       this.cache.push(bounds)
     })
     this.dom.section.style.width = `${this.vars.width}px`
-    this.vars.bounding = (unit * this.dom.divs.length)
+    this.vars.bounding = (unit * (this.dom.divs.length - 3)) + this.vars.height
   }
 
   run() {
@@ -61,7 +61,7 @@ class Parallax extends Smooth {
     const inview = right > 0 && left < this.vars.width
     if(inview) {
       if(!el.state) {
-        el.innerHTML = '<span>in viewport</span>'
+        el.innerHTML = `<span>${index - 1} in viewport</span>`
         el.state = true
       }
     } else {
