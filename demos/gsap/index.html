@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="/">
+  <title>native scrollbar demo | smooth-scrolling</title>
+  <link rel="stylesheet" type="text/css" href="demos/main.css">
+  <style>
+  body{
+    overflow: scroll;
+  }
+  img {
+    display: inline-block;
+  }
+  img:first-of-type {
+    width: 50%;
+    margin: 20rem 20rem 5rem;
+  }
+  img:nth-child(2) {
+    margin: 2rem;
+  }
+  img:nth-child(3) {
+    margin: 2rem 10rem 6rem;
+  }
+  img:nth-child(3) {
+    margin: 25rem 5rem 10rem;
+  }
+  img:nth-child(4) {
+    margin: 5rem 10rem;
+  }
+  img:nth-child(5) {
+    margin: 5rem 2rem;
+  }
+  img:nth-child(6) {
+    margin: 20rem 5rem;
+  }
+</style>
+</head>
+<body>
+  <div class="vs-section">
+    <img src="https://media.giphy.com/media/xT0BKn8hSjtftxLj20/giphy.gif">
+    <img src="https://media.giphy.com/media/l41lM3jUUM2uilC4U/giphy.gif">
+    <img src="https://media.giphy.com/media/3o6gb8Bde4Im14Ykow/giphy.gif">
+    <img src="https://media.giphy.com/media/g52Y39pUaT21i/giphy.gif">
+    <img src="https://media.giphy.com/media/oj2x5dSxLQsi4/giphy.gif">
+    <img src="https://media.giphy.com/media/lHhrUlDykov4c/giphy.gif">
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/ScrollTrigger.min.js"></script>
+  <script src="smooth-scrolling.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger)
+
+    var scroll = new Smooth({
+      native: true,
+      preload: true,
+      callback: () => {
+        ScrollTrigger.update()
+      }
+    })
+    
+    ScrollTrigger.scrollerProxy(scroll.dom.listener, {
+      scrollTop(value) {
+        return arguments.length ? scroll.scrollTo(value) : scroll.vars.target;
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }
+      }
+    })
+
+    var images = document.querySelectorAll('img')
+    images.forEach(img => {
+      gsap.fromTo(img, {
+        autoAlpha: 0,
+        y: 50
+      }, {
+        scrollTrigger: img,
+        autoAlpha: 1,
+        y: 0,
+        delay: 0.5
+      })
+    })
+
+    scroll.init()
+    
+    ScrollTrigger.refresh()
+  </script>
+</body>
+</html>
