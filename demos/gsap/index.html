@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <base href="/">
-  <title>native scrollbar demo | smooth-scrolling</title>
+  <title>gsap scrolltrigger demo | smooth-scrolling</title>
   <link rel="stylesheet" type="text/css" href="demos/main.css">
   <style>
   body{
@@ -52,13 +52,13 @@
     gsap.registerPlugin(ScrollTrigger)
 
     var scroll = new Smooth({
-      native: true,
+      native: false,
       preload: true,
       callback: () => {
         ScrollTrigger.update()
       }
     })
-    
+
     ScrollTrigger.scrollerProxy(scroll.dom.listener, {
       scrollTop(value) {
         return arguments.length ? scroll.scrollTo(value) : scroll.vars.target;
@@ -68,22 +68,42 @@
       }
     })
 
-    var images = document.querySelectorAll('img')
-    images.forEach(img => {
+    scroll.init()
+
+    ScrollTrigger.refresh()
+    
+    var images = Array.from(document.querySelectorAll('img'))
+    images.forEach((img) => {
       gsap.fromTo(img, {
         autoAlpha: 0,
         y: 50
       }, {
-        scrollTrigger: img,
         autoAlpha: 1,
         y: 0,
-        delay: 0.5
+        scrollTrigger: {
+          trigger: img,
+          start: 'top center',
+          end: '+=50%',
+          markers: true
+        }
       })
     })
-
-    scroll.init()
     
-    ScrollTrigger.refresh()
+    // Use this code only on dev mode
+    // If scroll has native: false, the section will have position: fixed
+    // therefore there is no scroll on body element
+    // GSAP markers need to scroll with the section to be able to debug
+    if (!scroll.vars.native) {
+      setTimeout(() => {
+        var markers = [
+          ...document.querySelectorAll('.gsap-marker-start'),
+          ...document.querySelectorAll('.gsap-marker-end')
+        ]
+        markers.forEach((marker) => {
+          scroll.dom.section.appendChild(marker)
+        })
+      }, 0)
+    }
   </script>
 </body>
 </html>
